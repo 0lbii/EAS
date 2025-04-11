@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.4.4</version>
+	</parent>
+
+	<groupId>edu.asu</groupId>
+
+	<artifactId>stratego</artifactId>
+
+	<version>0.0.1-SNAPSHOT</version>
+
+	<name>2507</name>
+
+    <description>Stratego</description>
+    
+	<properties>
+		<java.version>21</java.version>
+	</properties>
+
+    <dependencies>
+        <!-- Spring Boot dependencies -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- JavaFX dependencies -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>21.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-base</artifactId>
+            <version>21.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>21.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>21.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-media</artifactId>
+            <version>21.0.2</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins> 	 
+            <plugin> 				
+                <groupId>org.openjfx</groupId> 				
+                <artifactId>javafx-maven-plugin</artifactId> 				
+                <version>0.0.8</version> 				
+                <configuration> 					
+                    <mainClass>edu.asu.stratego.Client</mainClass> 					
+                    <jvmArgs> 						
+                        --add-modules javafx.controls,javafx.base,javafx.fxml,javafx.graphics,javafx.media 					
+                    </jvmArgs> 			
+                </configuration> 			
+            </plugin> 		
+        </plugins> 	 
+    </build>
+
+</project>
