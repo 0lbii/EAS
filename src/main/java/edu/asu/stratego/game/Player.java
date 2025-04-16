@@ -2,8 +2,6 @@ package edu.asu.stratego.game;
 
 import java.io.Serializable;
 
-import edu.asu.stratego.game.PieceColor;
-
 /**
  * Contains information about a player.
  */
@@ -12,6 +10,11 @@ public class Player implements Serializable {
     private static final long serialVersionUID = 649459794036226272L;
     private String nickname;
     private PieceColor color;
+
+    /**
+     * Creates a new instance of Player
+     */
+    public Player() { }
     
     /**
      * @param nickname the player's nickname

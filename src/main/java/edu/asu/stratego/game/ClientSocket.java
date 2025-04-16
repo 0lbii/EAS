@@ -25,7 +25,11 @@ public final class ClientSocket {
      */
     public static void connect(String serverIP, int port) 
             throws UnknownHostException, IOException {
-        socket = new Socket(serverIP, port);
+        if (socket != null && !socket.isClosed()) {
+            socket.close();
+            socket = null;
+        }
+        socket = new Socket(serverIP, port);      
     }
     
     /**

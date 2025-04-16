@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Optional;
+import java.util.logging.*;
 
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
@@ -27,6 +28,8 @@ import edu.asu.stratego.util.HashTables;
  * Task to handle the Stratego game on the client-side.
  */
 public class ClientGameManager implements Runnable {
+
+    private static final Logger logger = Logger.getLogger(ClientGameManager.class.getName());
     
     private static Object setupPieces = new Object();
     private static Object sendMove    = new Object();
@@ -88,6 +91,7 @@ public class ClientGameManager implements Runnable {
             serverConnectThread.join();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            logger.log(Level.SEVERE, "Error occurred while trying to connect to the server", e);
             // Show the error message in the interface
             Platform.runLater(() -> {
                 Alert alert = new Alert(AlertType.ERROR);
@@ -104,7 +108,6 @@ public class ClientGameManager implements Runnable {
                     Platform.exit();
                 }
             });
-            e.printStackTrace(); 
         }
     }
     
@@ -138,6 +141,7 @@ public class ClientGameManager implements Runnable {
                 Game.getPlayer().setColor(PieceColor.RED);
         }
         catch (IOException | ClassNotFoundException e) {
+            logger.log(Level.SEVERE, "Error occurred during opponent communication", e);
             // Show the error message in the interface
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -154,7 +158,6 @@ public class ClientGameManager implements Runnable {
                     Platform.exit();
                 }
             });
-            e.printStackTrace();
         }
     }
     
@@ -195,6 +198,7 @@ public class ClientGameManager implements Runnable {
                 });
             }
             catch (InterruptedException | IOException | ClassNotFoundException e) {
+                logger.log(Level.SEVERE, "Error occurred while setting up the board", e);
                 // Show the error message in the interface
                 Platform.runLater(() -> {
                     Alert alert = new Alert(AlertType.ERROR);
@@ -211,7 +215,6 @@ public class ClientGameManager implements Runnable {
                         Platform.exit();
                     }
                 });
-                e.printStackTrace();
             }
         }
     }
@@ -228,6 +231,7 @@ public class ClientGameManager implements Runnable {
                 updateBoardAndGUI();
             }
             catch (ClassNotFoundException | IOException | InterruptedException e) {
+                logger.log(Level.SEVERE, "Error occurred during the game", e);
                 // Show the error message in the interface
                 Platform.runLater(() -> {
                     Alert alert = new Alert(AlertType.ERROR);
@@ -244,7 +248,6 @@ public class ClientGameManager implements Runnable {
                         Platform.exit();
                     }
                 });
-                e.printStackTrace();
             }
         }
         
@@ -261,6 +264,7 @@ public class ClientGameManager implements Runnable {
         try {
 			Game.setStatus((GameStatus) fromServer.readObject());
 		} catch (ClassNotFoundException | IOException e1) {
+            logger.log(Level.SEVERE, "Error retrieving game status", e1);
             // Show the error message in the interface
             Platform.runLater(() -> {
                 Alert alert = new Alert(AlertType.ERROR);
@@ -277,7 +281,6 @@ public class ClientGameManager implements Runnable {
                     Platform.exit();
                 } 
             });
-            e1.printStackTrace();
 		}
     }
 
@@ -352,6 +355,7 @@ public class ClientGameManager implements Runnable {
                 scoutSquare.getPiecePane().setPiece(HashTables.PIECE_MAP.get(startSquare.getPiece().getPieceSpriteKey()));
                 startSquare.getPiecePane().setPiece(null);
             } catch (Exception e) {
+                logger.log(Level.SEVERE, "Error moving the scout ahead of the attack", e);
                 // Show the error message in the interface
                 Platform.runLater(() -> {
                     Alert alert = new Alert(AlertType.ERROR);
@@ -368,7 +372,6 @@ public class ClientGameManager implements Runnable {
                         Platform.exit();
                     }
                 });
-                e.printStackTrace();
             }
         });
     }
@@ -396,6 +399,7 @@ public class ClientGameManager implements Runnable {
                 endSquare.getPiecePane().setPiece(HashTables.PIECE_MAP.get(animEndPiece.getPieceSpriteKey()));
             }
             catch (Exception e) {
+                logger.log(Level.SEVERE, "Error revealing the pieces involved in the attack", e);
                 // Show the error message in the interface
                 Platform.runLater(() -> {
                     Alert alert = new Alert(AlertType.ERROR);
@@ -409,7 +413,6 @@ public class ClientGameManager implements Runnable {
                         Platform.exit();
                     }
                 });
-            e.printStackTrace();
             }
         });
 
@@ -430,6 +433,7 @@ public class ClientGameManager implements Runnable {
                 }
             }
             catch (Exception e) {
+                logger.log(Level.SEVERE, "Error removing defeated pieces from the board", e);
                 // Show the error message in the interface
                 Platform.runLater(() -> {
                     Alert alert = new Alert(AlertType.ERROR);
@@ -443,7 +447,6 @@ public class ClientGameManager implements Runnable {
                         Platform.exit();
                     }
                 });
-                e.printStackTrace();
             }
         });
         
@@ -464,10 +467,8 @@ public class ClientGameManager implements Runnable {
         Platform.runLater(() -> {
             // obselete: ClientSquare startSquare = Game.getBoard().getSquare(Game.getMove().getStart().x, Game.getMove().getStart().y);
             ClientSquare endSquare = Game.getBoard().getSquare(Game.getMove().getEnd().x, Game.getMove().getEnd().y);
-
             // Get the piece at the end square
             Piece endPiece = endSquare.getPiece(); 
-            
             // Draw
             if(endPiece == null) 
                 endSquare.getPiecePane().setPiece(null);
@@ -494,13 +495,11 @@ public class ClientGameManager implements Runnable {
         Platform.runLater(() -> {
             // Arrow
             ClientSquare arrowSquare = Game.getBoard().getSquare(Game.getMove().getStart().x, Game.getMove().getStart().y);
-            
             // Change the arrow to an image (and depending on what color the arrow should be)
             if(Game.getMove().getMoveColor() == PieceColor.RED)
                 arrowSquare.getPiecePane().setPiece(ImageConstants.MOVEARROW_RED);
             else
                 arrowSquare.getPiecePane().setPiece(ImageConstants.MOVEARROW_BLUE);
-
             // Rotate the arrow to show the direction of the move
             if(Game.getMove().getStart().x > Game.getMove().getEnd().x) 
                 arrowSquare.getPiecePane().getPiece().setRotate(0);
@@ -510,7 +509,6 @@ public class ClientGameManager implements Runnable {
                 arrowSquare.getPiecePane().getPiece().setRotate(180);
             else
                 arrowSquare.getPiecePane().getPiece().setRotate(270);
-
             // Fade out the arrow
             FadeTransition ft = new FadeTransition(Duration.millis(1500), arrowSquare.getPiecePane().getPiece());
             ft.setFromValue(1.0);
