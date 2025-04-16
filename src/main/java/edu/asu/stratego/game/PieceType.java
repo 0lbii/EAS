@@ -4,6 +4,7 @@ package edu.asu.stratego.game;
  * Represents the different Stratego pieces.
  */
 public enum PieceType {
+
     SCOUT(2, 8),
     MINER(3, 5),
     SERGEANT(4, 4),
@@ -47,34 +48,26 @@ public enum PieceType {
      */
     public BattleOutcome attack(PieceType defender) {
         // Defender is a flag.
-        if (defender == PieceType.FLAG)
+        if (defender == FLAG)
             return BattleOutcome.WIN;
-        
-        // Attacking piece and defending piece are the same piece type.
-        else if (this.value == defender.value)
-            return BattleOutcome.DRAW;
         
         // Defender is a spy.
-        else if (defender == PieceType.SPY)
+        else if (defender == SPY)
             return BattleOutcome.WIN;
 
-        // Defender is Marshal (10) and Attacker is Spy
-        else if(defender == PieceType.MARSHAL && this == PieceType.SPY) {
+        // Defender is Marshal (10) and Attacker is Spy.
+        else if(defender == MARSHAL && this == SPY) 
         	return BattleOutcome.WIN;
-        }
         
         // Defender is a bomb.
-        else if (defender == PieceType.BOMB) {
-            if (this == PieceType.MINER)
-                return BattleOutcome.WIN;
-            else
-                return BattleOutcome.LOSE;
-        }
+        else if (defender == BOMB) 
+            return (this == MINER) ? BattleOutcome.WIN : BattleOutcome.LOSE;
+
+        // Attacking piece and defending piece are the same piece type.
+        else if (this.value == defender.value)
+            return BattleOutcome.DRAW;    
         
         // Otherwise, compare piece values.
-        else if (this.value > defender.value)
-            return BattleOutcome.WIN;
-        else
-            return BattleOutcome.LOSE;
+        return (this.value > defender.value) ? BattleOutcome.WIN : BattleOutcome.LOSE;
     }
 }

@@ -34,46 +34,25 @@ public class Piece implements Serializable {
      * player's color, and whether or not the piece belongs to the opponent.
      */
     private void setPieceImage() {
-        if (this.color == PieceColor.RED) {
+        String colorPrefix = (this.color == PieceColor.RED) ? "RED" : "BLUE";
+        if (this.isOpponentPiece) {
+            this.spriteKey = colorPrefix + "_BACK";
+        } else {
             switch (type) {
-                case SCOUT:      this.spriteKey = "RED_02";   break;
-                case MINER:      this.spriteKey = "RED_03";   break;
-                case SERGEANT:   this.spriteKey = "RED_04";   break;
-                case LIEUTENANT: this.spriteKey = "RED_05";   break;
-                case CAPTAIN:    this.spriteKey = "RED_06";   break;
-                case MAJOR:      this.spriteKey = "RED_07";   break;
-                case COLONEL:    this.spriteKey = "RED_08";   break;
-                case GENERAL:    this.spriteKey = "RED_09";   break;
-                case MARSHAL:    this.spriteKey = "RED_10";   break;
-                case BOMB:       this.spriteKey = "RED_BOMB"; break;
-                case FLAG:       this.spriteKey = "RED_FLAG"; break;
-                case SPY:        this.spriteKey = "RED_SPY";  break;
-                default:                                      break;
+                case SCOUT:      this.spriteKey = colorPrefix + "_02";   break;
+                case MINER:      this.spriteKey = colorPrefix + "_03";   break;
+                case SERGEANT:   this.spriteKey = colorPrefix + "_04";   break;
+                case LIEUTENANT: this.spriteKey = colorPrefix + "_05";   break;
+                case CAPTAIN:    this.spriteKey = colorPrefix + "_06";   break;
+                case MAJOR:      this.spriteKey = colorPrefix + "_07";   break;
+                case COLONEL:    this.spriteKey = colorPrefix + "_08";   break;
+                case GENERAL:    this.spriteKey = colorPrefix + "_09";   break;
+                case MARSHAL:    this.spriteKey = colorPrefix + "_10";   break;
+                case BOMB:       this.spriteKey = colorPrefix + "_BOMB"; break;
+                case FLAG:       this.spriteKey = colorPrefix + "_FLAG"; break;
+                case SPY:        this.spriteKey = colorPrefix + "_SPY";  break;
+                default: break;
             }
-            
-            if (this.isOpponentPiece)
-                this.spriteKey = "RED_BACK";
-        }
-        
-        else {
-            switch (type) {
-                case SCOUT:      this.spriteKey = "BLUE_02";   break;
-                case MINER:      this.spriteKey = "BLUE_03";   break;
-                case SERGEANT:   this.spriteKey = "BLUE_04";   break;
-                case LIEUTENANT: this.spriteKey = "BLUE_05";   break;
-                case CAPTAIN:    this.spriteKey = "BLUE_06";   break;
-                case MAJOR:      this.spriteKey = "BLUE_07";   break;
-                case COLONEL:    this.spriteKey = "BLUE_08";   break;
-                case GENERAL:    this.spriteKey = "BLUE_09";   break;
-                case MARSHAL:    this.spriteKey = "BLUE_10";   break;
-                case BOMB:       this.spriteKey = "BLUE_BOMB"; break;
-                case FLAG:       this.spriteKey = "BLUE_FLAG"; break;
-                case SPY:        this.spriteKey = "BLUE_SPY";  break;
-                default:                                       break;
-            }
-            
-            if (this.isOpponentPiece)
-                this.spriteKey = "BLUE_BACK";
         }
     }
     
@@ -84,6 +63,9 @@ public class Piece implements Serializable {
         return type;
     }
     
+    /**
+     * @return the color of the piece.
+     */
     public PieceColor getPieceColor() {
         return color;
     }
