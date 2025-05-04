@@ -2,6 +2,8 @@ package edu.asu.stratego.gui;
  
 import java.io.IOException;
  
+import edu.asu.stratego.game.ClientSocket;
+import edu.asu.stratego.game.Game;
 import javafx.application.Platform;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -12,9 +14,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
- 
-import edu.asu.stratego.game.ClientSocket;
-import edu.asu.stratego.game.Game;
  
 /**
  * Wrapper class for a JavaFX scene. Contains a scene UI and its associated
@@ -109,9 +108,12 @@ public class ConnectionScene {
                     playerLogin.wait();    // Wait for connection attempt.
                 }
                 catch (InterruptedException e) {
-                    // TODO Handle this exception somehow...
-                    e.printStackTrace();
+                    Thread.currentThread().interrupt();
+                    Platform.runLater(() -> {
+                        statusLabel.setText("Connection attempt was interrupted.");
+                    });
                 }
+                
             }
            
             nicknameField.setEditable(true);

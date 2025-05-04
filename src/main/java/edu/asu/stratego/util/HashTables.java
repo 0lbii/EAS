@@ -42,9 +42,12 @@ public class HashTables{
         PIECE_MAP.put("BLUE_BACK", ImageConstants.BLUE_BACK);
     }
 
-    public final static HashMap<String, AudioClip> SOUND_MAP = new HashMap<String, AudioClip>(1);
+    public final static HashMap<String, AudioClip> SOUND_MAP = new HashMap<String, AudioClip>(5);
     static {
-    	// TODO Sound hashmap disabled
-        //SOUND_MAP.put("cornfield", SoundConstants.CORNFIELD);
+        SOUND_MAP.put("MOVE", SoundConstants.MOVE_SOUND);
+        SOUND_MAP.put("ATTACK", SoundConstants.ATTACK_SOUND);
+        SOUND_MAP.put("WIN", SoundConstants.WIN_SOUND);
+        SOUND_MAP.put("SELECT", SoundConstants.SELECT_SOUND);
+        SOUND_MAP.put("CORNFIELD", SoundConstants.CORNFIELD);
     }
 }

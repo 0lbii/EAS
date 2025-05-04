@@ -1,13 +1,13 @@
 package edu.asu.stratego.gui.board;
 
+import edu.asu.stratego.game.Game;
+import edu.asu.stratego.game.PieceColor;
+import edu.asu.stratego.gui.ClientStage;
 import javafx.animation.FillTransition;
 import javafx.application.Platform;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
-import edu.asu.stratego.game.Game;
-import edu.asu.stratego.game.PieceColor;
-import edu.asu.stratego.gui.ClientStage;
 
 /**
  * JavaFX rectangle that is layered behind the semi-transparent board border to 
@@ -85,9 +85,11 @@ public class BoardTurnIndicator {
                     }
                 }
                 catch (InterruptedException e) {
-                    // TODO Handle this exception somehow...
-                    e.printStackTrace();
+                    Thread.currentThread().interrupt();
+                    System.err.println("Turn indicator update thread interrupted. Exiting thread.");
+                    return;
                 }
+                
             }
         }
     }

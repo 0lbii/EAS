@@ -330,7 +330,7 @@ public class ServerGameManager implements Runnable {
     
     private boolean isCaptured(PieceColor inColor) {
     	if(playerOne.getColor() == inColor) {
-    		if(board.getSquare(playerOneFlag.x, playerOneFlag.y).getPiece().getPieceType() != PieceType.FLAG) 
+    		if(board.getSquare(playerOneFlag.x, playerOneFlag.y).getPiece().getPieceType() != PieceType.FLAG)
     			return true;
     	}
     	if(playerTwo.getColor() == inColor) {
@@ -413,8 +413,9 @@ public class ServerGameManager implements Runnable {
     }
 
     private boolean isOpponentPiece(int row, int col, PieceColor inColor) {
-    	return board.getSquare(row, col).getPiece().getPieceColor() != inColor;
-    }
+        Piece piece = board.getSquare(row, col).getPiece();
+        return piece != null && piece.getPieceColor() != inColor;
+    }    
     
     private boolean isNullPiece(int row, int col) {
     	return board.getSquare(row, col).getPiece() == null;

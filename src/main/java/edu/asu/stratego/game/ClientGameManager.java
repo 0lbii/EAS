@@ -4,8 +4,17 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Optional;
-import java.util.logging.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import edu.asu.stratego.game.board.ClientSquare;
+import edu.asu.stratego.gui.BoardScene;
+import edu.asu.stratego.gui.ClientStage;
+import edu.asu.stratego.gui.ConnectionScene;
+import edu.asu.stratego.gui.board.BoardTurnIndicator;
+import edu.asu.stratego.media.ImageConstants;
+import edu.asu.stratego.media.PlaySound;
+import edu.asu.stratego.util.HashTables;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -15,14 +24,6 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.util.Duration;
-
-import edu.asu.stratego.game.board.ClientSquare;
-import edu.asu.stratego.gui.BoardScene;
-import edu.asu.stratego.gui.ClientStage;
-import edu.asu.stratego.gui.ConnectionScene;
-import edu.asu.stratego.gui.board.BoardTurnIndicator;
-import edu.asu.stratego.media.ImageConstants;
-import edu.asu.stratego.util.HashTables;
 
 /**
  * Task to handle the Stratego game on the client-side.
@@ -425,6 +426,7 @@ public class ClientGameManager implements Runnable {
                 ClientSquare startSquare = Game.getBoard().getSquare(Game.getMove().getStart().x, Game.getMove().getStart().y);
                 ClientSquare endSquare = Game.getBoard().getSquare(Game.getMove().getEnd().x, Game.getMove().getEnd().y);
                 // If the piece dies, fade it out (also considers a draw, where both "win" are set to false)
+                PlaySound.playEffect1("ATTACK", 80);
                 if(Game.getMove().isAttackWin() == false) {
                     fadeOutPiece(startSquare);
                 }
@@ -468,7 +470,7 @@ public class ClientGameManager implements Runnable {
             // obselete: ClientSquare startSquare = Game.getBoard().getSquare(Game.getMove().getStart().x, Game.getMove().getStart().y);
             ClientSquare endSquare = Game.getBoard().getSquare(Game.getMove().getEnd().x, Game.getMove().getEnd().y);
             // Get the piece at the end square
-            Piece endPiece = endSquare.getPiece(); 
+            Piece endPiece = endSquare.getPiece();
             // Draw
             if(endPiece == null) 
                 endSquare.getPiecePane().setPiece(null);
@@ -525,6 +527,7 @@ public class ClientGameManager implements Runnable {
     }
     
 	public static Object getSendMove() {
+        PlaySound.playEffect1("MOVE", 100);
 		return sendMove;
 	}
 
@@ -534,6 +537,7 @@ public class ClientGameManager implements Runnable {
     
     private void revealAll() {
     	// End game, reveal all pieces
+        PlaySound.playEffect1("WIN", 80);
     	Platform.runLater(() -> {
     		for(int row = 0; row < 10; row++) {
     			for(int col = 0; col < 10; col++) {
