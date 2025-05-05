@@ -3,7 +3,7 @@ package edu.asu.stratego.game;
 import edu.asu.stratego.game.board.ClientBoard;
 
 /**
- * Contains information about the Stratego game, which is shared between the 
+ * Contains information about the Stratego game, which is shared between the
  * JavaFX GUI and the ClientGameManager.
  * 
  * @see edu.asu.stratego.gui.ClientStage
@@ -12,27 +12,27 @@ import edu.asu.stratego.game.board.ClientBoard;
 public class Game {
     private static Player player;
     private static Player opponent;
-    
+
     private static Move move;
     private static MoveStatus moveStatus;
-    
+
     private static GameStatus status;
     private static PieceColor turn;
     private static ClientBoard board;
-    
+
     /**
      * Initializes data fields for a new game.
      */
     public Game() {
-        player   = new Player();
+        player = new Player();
         opponent = new Player();
-        
+
         move = new Move();
         moveStatus = MoveStatus.OPP_TURN;
-        
+
         status = GameStatus.SETTING_UP;
-        turn   = PieceColor.RED;
-        
+        turn = PieceColor.RED;
+
         board = new ClientBoard();
     }
 
@@ -106,19 +106,19 @@ public class Game {
         Game.board = board;
     }
 
-	public static Move getMove() {
-		return move;
-	}
+    public static Move getMove() {
+        return move;
+    }
 
-	public static void setMove(Move move) {
-		Game.move = move;
-	}
+    public static void setMove(Move move) {
+        Game.move = move;
+    }
 
-	public static MoveStatus getMoveStatus() {
-		return moveStatus;
-	}
+    public static MoveStatus getMoveStatus() {
+        return moveStatus;
+    }
 
-	public static void setMoveStatus(MoveStatus moveStatus) {
-		Game.moveStatus = moveStatus;
-	}
+    public static void setMoveStatus(MoveStatus moveStatus) {
+        Game.moveStatus = moveStatus;
+    }
 }
