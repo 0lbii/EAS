@@ -5,22 +5,25 @@ package edu.asu.stratego.game.board;
  */
 public class ServerBoard {
 
-    private final int SIZE = 10;
-    private ServerSquare[][] squares;
-    
+    private static final int SIZE = 10;
+    private final ServerSquare[][] squares;
+
     /**
      * Creates a new instance of Board.
      */
     public ServerBoard() {
         squares = new ServerSquare[SIZE][SIZE];
-        
-        for (int row = 0; row < SIZE; ++row) {
-            for (int col = 0; col < SIZE; ++col) {
+        initializeSquares();
+    }
+
+    private void initializeSquares() {
+        for (int row = 0; row < SIZE; row++) {
+            for (int col = 0; col < SIZE; col++) {
                 squares[row][col] = new ServerSquare();
             }
         }
     }
-    
+
     /**
      * Returns the board square located at (row, col).
      * 

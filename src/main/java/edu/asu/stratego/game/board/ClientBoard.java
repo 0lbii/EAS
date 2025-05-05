@@ -11,29 +11,30 @@ public class ClientBoard {
 
     private final BoardPane piecePane;
     private final BoardEventPane eventPane;
-    private final int size = 10;
-    private ClientSquare[][] squares;
-    
+    private static final int size = 10;
+    private final ClientSquare[][] squares;
+
     /**
      * Creates a new instance of Board.
      */
     public ClientBoard() {
         // Initialize the board GUI.
-        squares = new ClientSquare[size][size];
-        for (int row = 0; row < size; ++row) {
-            for (int col = 0; col < size; ++col) {
-                if ((row + col) % 2 == 0)
-                    squares[row][col] = new ClientSquare(BoardSquareType.DARK);
-                else
-                    squares[row][col] = new ClientSquare(BoardSquareType.LIGHT);
+        this.squares = new ClientSquare[size][size];
+        initializeSquares();
+        // Initialize board layers.
+        this.piecePane = new BoardPane(this);
+        this.eventPane = new BoardEventPane(this);
+    }
+
+    private void initializeSquares() {
+        for (int row = 0; row < size; row++) {
+            for (int col = 0; col < size; col++) {
+                BoardSquareType type = ((row + col) % 2 == 0) ? BoardSquareType.DARK : BoardSquareType.LIGHT;
+                squares[row][col] = new ClientSquare(type);
             }
         }
-        
-        // Initialize board layers.
-        piecePane = new BoardPane(this);
-        eventPane = new BoardEventPane(this);
     }
-    
+
     /**
      * Returns the board square located at (row, col).
      * 
@@ -44,14 +45,14 @@ public class ClientBoard {
     public ClientSquare getSquare(int row, int col) {
         return squares[row][col];
     }
-    
+
     /**
      * @return the BoardPane.
      */
     public BoardPane getPiecePane() {
         return piecePane;
     }
-    
+
     /**
      * @return the BoardEventPane.
      */

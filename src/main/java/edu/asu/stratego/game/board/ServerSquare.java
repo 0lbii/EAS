@@ -7,7 +7,7 @@ import edu.asu.stratego.game.Piece;
  */
 public class ServerSquare {
 
-    private Piece piece = null;
+    private Piece piece;
 
     /**
      * @return the piece

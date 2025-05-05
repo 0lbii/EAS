@@ -10,19 +10,20 @@ import edu.asu.stratego.gui.board.BoardSquareType;
  */
 public class ClientSquare {
 
-    private Piece piece = null;
-    private BoardSquarePane piecePane;
-    private BoardSquareEventPane eventPane;
-    
+    private Piece piece;
+    private final BoardSquarePane piecePane;
+    private final BoardSquareEventPane eventPane;
+
     /**
      * Creates a new instance of Square.
+     * 
      * @param type the square background image
      */
     public ClientSquare(BoardSquareType type) {
         piecePane = new BoardSquarePane(type);
         eventPane = new BoardSquareEventPane();
     }
-    
+
     /**
      * @return the BoardSquarePane associated with this Square
      */
