@@ -1,6 +1,7 @@
 package edu.asu.stratego.util;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import javafx.scene.image.Image;
 import javafx.scene.media.AudioClip;
@@ -42,12 +43,15 @@ public class HashTables{
         PIECE_MAP.put("BLUE_BACK", ImageConstants.BLUE_BACK);
     }
 
-    public final static HashMap<String, AudioClip> SOUND_MAP = new HashMap<String, AudioClip>(5);
-    static {
-        SOUND_MAP.put("MOVE", SoundConstants.MOVE_SOUND);
-        SOUND_MAP.put("ATTACK", SoundConstants.ATTACK_SOUND);
-        SOUND_MAP.put("WIN", SoundConstants.WIN_SOUND);
-        SOUND_MAP.put("SELECT", SoundConstants.SELECT_SOUND);
-        SOUND_MAP.put("CORNFIELD", SoundConstants.CORNFIELD);
+    public enum SoundType {
+        MOVE, ATTACK, WIN, SELECT, CORNFIELD
     }
+    
+    public static final Map<SoundType, AudioClip> SOUND_MAP = Map.of(
+        SoundType.MOVE, SoundConstants.MOVE_SOUND,
+        SoundType.ATTACK, SoundConstants.ATTACK_SOUND,
+        SoundType.WIN, SoundConstants.WIN_SOUND,
+        SoundType.SELECT, SoundConstants.SELECT_SOUND,
+        SoundType.CORNFIELD, SoundConstants.CORNFIELD
+    );    
 }

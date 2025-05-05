@@ -5,6 +5,7 @@ import edu.asu.stratego.gui.board.BoardTurnIndicator;
 import edu.asu.stratego.gui.board.setup.SetupPanel;
 import edu.asu.stratego.media.ImageConstants;
 import edu.asu.stratego.media.PlaySound;
+import edu.asu.stratego.util.HashTables.SoundType;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -67,7 +68,7 @@ public class BoardScene {
         Rectangle background = BoardTurnIndicator.getTurnIndicator();
         
         
-        PlaySound.playMusic("CORNFIELD", 5);
+        PlaySound.playMusic(SoundType.CORNFIELD, 1);
         
         // Resize the board.
         final int size = 10;

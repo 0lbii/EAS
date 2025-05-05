@@ -15,6 +15,7 @@ import edu.asu.stratego.gui.board.BoardTurnIndicator;
 import edu.asu.stratego.media.ImageConstants;
 import edu.asu.stratego.media.PlaySound;
 import edu.asu.stratego.util.HashTables;
+import edu.asu.stratego.util.HashTables.SoundType;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -426,7 +427,7 @@ public class ClientGameManager implements Runnable {
                 ClientSquare startSquare = Game.getBoard().getSquare(Game.getMove().getStart().x, Game.getMove().getStart().y);
                 ClientSquare endSquare = Game.getBoard().getSquare(Game.getMove().getEnd().x, Game.getMove().getEnd().y);
                 // If the piece dies, fade it out (also considers a draw, where both "win" are set to false)
-                PlaySound.playEffect1("ATTACK", 80);
+                PlaySound.playEffect(SoundType.ATTACK, 100);
                 if(Game.getMove().isAttackWin() == false) {
                     fadeOutPiece(startSquare);
                 }
@@ -527,7 +528,7 @@ public class ClientGameManager implements Runnable {
     }
     
 	public static Object getSendMove() {
-        PlaySound.playEffect1("MOVE", 100);
+        PlaySound.playEffect(SoundType.MOVE, 100);
 		return sendMove;
 	}
 
@@ -537,7 +538,7 @@ public class ClientGameManager implements Runnable {
     
     private void revealAll() {
     	// End game, reveal all pieces
-        PlaySound.playEffect1("WIN", 80);
+        PlaySound.playEffect(SoundType.WIN, 100);
     	Platform.runLater(() -> {
     		for(int row = 0; row < 10; row++) {
     			for(int col = 0; col < 10; col++) {
