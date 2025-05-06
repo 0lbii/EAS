@@ -17,67 +17,70 @@ import edu.asu.stratego.gui.ClientStage;
 import edu.asu.stratego.gui.board.BoardSquareEventPane;
 
 /**
- * A setup timer. This timer counts down from a start time.
+ * SetupTimer is responsible for displaying and running a countdown during the
+ * setup phase.
+ * When the timer reaches zero, a random setup is triggered automatically.
  */
 public class SetupTimer {
-    private static final int START_TIME = 300;
-    private Timeline timeline;
-    private Label timerLabel = new Label();
-    private IntegerProperty secondsLeft = 
-            new SimpleIntegerProperty(START_TIME);
-    
+
+    private static final int DEFAULT_DURATION = 300; // Default setup time in seconds
+    private final Timeline timeline;
+    private final Label timerLabel;
+    private final IntegerProperty secondsLeft;
+
     /**
-     * Creates a new instance of SetupTimer.
+     * Constructs a SetupTimer with the default duration (5 minutes).
      */
     public SetupTimer() {
+        this(DEFAULT_DURATION);
+    }
+
+    /**
+     * Constructs a SetupTimer with a custom duration.
+     * 
+     * @param durationInSeconds The number of seconds for the countdown.
+     */
+    public SetupTimer(int durationInSeconds) {
+        this.timeline = new Timeline();
+        this.timerLabel = new Label();
+        this.secondsLeft = new SimpleIntegerProperty(durationInSeconds);
+
         final double UNIT = ClientStage.getUnit();
-        
+
+        // Bind the label's text to the countdown value
         timerLabel.textProperty().bind(secondsLeft.asString());
         timerLabel.setFont(Font.font("Century Gothic", UNIT / 3));
         timerLabel.setTextFill(new Color(0.9, 0.5, 0.0, 1.0));
         timerLabel.setAlignment(Pos.TOP_LEFT);
     }
-    
+
     /**
-     * Task to start the timer and count down from the start time.
-     */
-    private class StartTimer implements Runnable {
-        @Override
-        public void run() {
-            secondsLeft.set(START_TIME);
-            timeline = new Timeline();
-            timeline.getKeyFrames().add(
-                    new KeyFrame(Duration.seconds(START_TIME + 1),
-                    new KeyValue(secondsLeft, 0)));
-            timeline.playFromStart();
-            timeline.setOnFinished(new TimerFinished());
-        }
-    }
-    
-    /**
-     * Creates a new thread to start the timer task.
+     * Starts the countdown timer from the initial time.
      */
     public void startTimer() {
-        Thread startTimer = new Thread(new StartTimer());
-        startTimer.setDaemon(true);
-        startTimer.start();
+        secondsLeft.set((int) secondsLeft.get());
+
+        timeline.getKeyFrames().setAll(
+                new KeyFrame(Duration.seconds(secondsLeft.get() + 1),
+                        new KeyValue(secondsLeft, 0)));
+        timeline.setOnFinished(new TimerFinished());
+        timeline.playFromStart();
     }
-    
+
     /**
-     * @return JavaFX label that displays how many seconds are left in the 
-     * timer.
+     * @return A JavaFX label showing the remaining time.
      */
     public Label getLabel() {
         return timerLabel;
     }
-    
+
     /**
-     * Executes when the timer finishes counting down to zero.
+     * Triggered when the timer reaches zero. Starts random board setup.
      */
-    private class TimerFinished implements EventHandler<ActionEvent> {
+    private static class TimerFinished implements EventHandler<ActionEvent> {
         @Override
         public void handle(ActionEvent event) {
-            BoardSquareEventPane.randomSetup();
+            BoardSquareEventPane.randomSetup(); // Automatically place remaining pieces
         }
     }
 }
