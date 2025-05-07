@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.logging.*;
 
 import edu.asu.stratego.game.board.ServerBoard;
+import edu.asu.stratego.util.CoordinateUtils;
 
 /**
  * Task to manage a Stratego game between two clients.
@@ -229,8 +230,8 @@ public class ServerGameManager implements Runnable {
         // Get turn from client.
         if (playerOne.getColor() == turn) {
             move = (Move) fromPlayerOne.readObject();
-            move.setStart(9-move.getStart().x, 9-move.getStart().y);
-            move.setEnd(9-move.getEnd().x, 9-move.getEnd().y);
+            move.setStart(CoordinateUtils.rotate180(move.getStart()));
+            move.setEnd(CoordinateUtils.rotate180(move.getEnd()));
         }
         else {
             move = (Move) fromPlayerTwo.readObject();
@@ -287,8 +288,8 @@ public class ServerGameManager implements Runnable {
     }
 
     private void rotateMove(Move move, Move moveToPlayerOne, Move moveToPlayerTwo, Piece startPiece, Piece endPiece, boolean attackWin, boolean defendWin) {
-        moveToPlayerOne.setStart(new Point(9 - move.getStart().x, 9 - move.getStart().y));
-        moveToPlayerOne.setEnd(new Point(9 - move.getEnd().x, 9 - move.getEnd().y));
+        moveToPlayerOne.setStart(CoordinateUtils.rotate180(move.getStart()));
+        moveToPlayerOne.setEnd(CoordinateUtils.rotate180(move.getEnd()));
         moveToPlayerOne.setMoveColor(move.getMoveColor());
         moveToPlayerOne.setStartPiece(startPiece);
         moveToPlayerOne.setEndPiece(endPiece);
@@ -395,21 +396,11 @@ public class ServerGameManager implements Runnable {
     }
     
     private static boolean isLake(int row, int col) {
-    	if (col == 2 || col == 3 || col == 6 || col == 7) {
-            if (row == 4 || row == 5)
-                return true;
-        }
-        
-    	return false;
+        return (col == 2 || col == 3 || col == 6 || col == 7) && (row == 4 || row == 5);
     }
     
     private static boolean isInBounds(int row, int col) {
-    	if(row < 0 || row > 9)
-    		return false;
-    	if(col < 0 || col > 9)
-    		return false;
-    	
-    	return true;
+        return row >= 0 && row <= 9 && col >= 0 && col <= 9;
     }
 
     private boolean isOpponentPiece(int row, int col, PieceColor inColor) {

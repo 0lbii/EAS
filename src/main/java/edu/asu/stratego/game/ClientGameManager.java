@@ -3,7 +3,6 @@ package edu.asu.stratego.game;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,16 +13,13 @@ import edu.asu.stratego.gui.ConnectionScene;
 import edu.asu.stratego.gui.board.BoardTurnIndicator;
 import edu.asu.stratego.media.ImageConstants;
 import edu.asu.stratego.media.PlaySound;
+import edu.asu.stratego.util.AlertUtils;
 import edu.asu.stratego.util.HashTables;
 import edu.asu.stratego.util.HashTables.SoundType;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
 import javafx.util.Duration;
 
 /**
@@ -96,19 +92,13 @@ public class ClientGameManager implements Runnable {
             logger.log(Level.SEVERE, "Error occurred while trying to connect to the server", e);
             // Show the error message in the interface
             Platform.runLater(() -> {
-                Alert alert = new Alert(AlertType.ERROR);
-                alert.setTitle("Connection problem");
-                alert.setHeaderText("Connection interrupted");
-                alert.setContentText("An error occurred while trying to connect to the server. Do you want to try again?");
-                ButtonType retry = new ButtonType("Retry");
-                ButtonType cancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-                alert.getButtonTypes().setAll(retry, cancel);
-                Optional<ButtonType> result = alert.showAndWait();
-                if (result.isPresent() && result.get() == retry) {
-                    connectToServer();
-                } else if (result.get() == cancel) {
-                    Platform.exit();
-                }
+                AlertUtils.showRetryAlert(
+                    "Connection problem",
+                    "Connection interrupted",
+                    "An error occurred while trying to connect to the server. Do you want to try again?",
+                    this::connectToServer,
+                    Platform::exit
+                );
             });
         }
     }
@@ -146,19 +136,13 @@ public class ClientGameManager implements Runnable {
             logger.log(Level.SEVERE, "Error occurred during opponent communication", e);
             // Show the error message in the interface
             Platform.runLater(() -> {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Communication problem");
-                alert.setHeaderText("Communication problem with the opponent");
-                alert.setContentText("The opponent's information could not be received. Do you want to try again?");
-                ButtonType retry = new ButtonType("Retry");
-                ButtonType cancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-                alert.getButtonTypes().setAll(retry, cancel);
-                Optional<ButtonType> result = alert.showAndWait();
-                if (result.isPresent() && result.get() == retry) {
-                    waitForOpponent();
-                } else if (result.get() == cancel) {
-                    Platform.exit();
-                }
+                AlertUtils.showRetryAlert(
+                    "Communication problem",
+                    "Communication problem with the opponent",
+                    "The opponent's information could not be received. Do you want to try again?",
+                    this::connectToServer,
+                    Platform::exit
+                );
             });
         }
     }
@@ -203,19 +187,13 @@ public class ClientGameManager implements Runnable {
                 logger.log(Level.SEVERE, "Error occurred while setting up the board", e);
                 // Show the error message in the interface
                 Platform.runLater(() -> {
-                    Alert alert = new Alert(AlertType.ERROR);
-                    alert.setTitle("Configuration problem");
-                    alert.setHeaderText("Problem configuring the dashboard");
-                    alert.setContentText("There was a problem configuring the pieces. Do you want to try again?");
-                    ButtonType retry = new ButtonType("Retry");
-                    ButtonType cancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-                    alert.getButtonTypes().setAll(retry, cancel);
-                    Optional<ButtonType> result = alert.showAndWait();
-                    if (result.isPresent() && result.get() == retry) {
-                        setupBoard();
-                    } else if (result.get() == cancel) {
-                        Platform.exit();
-                    }
+                    AlertUtils.showRetryAlert(
+                        "Configuration problem",
+                        "Problem configuring the dashboard",
+                        "There was a problem configuring the pieces. Do you want to try again?",
+                        this::connectToServer,
+                        Platform::exit
+                    );
                 });
             }
         }
@@ -236,19 +214,13 @@ public class ClientGameManager implements Runnable {
                 logger.log(Level.SEVERE, "Error occurred during the game", e);
                 // Show the error message in the interface
                 Platform.runLater(() -> {
-                    Alert alert = new Alert(AlertType.ERROR);
-                    alert.setTitle("Game problem");
-                    alert.setHeaderText("Problem in the game");
-                    alert.setContentText("An error occurred during the game. Do you want to try again?");
-                    ButtonType retry = new ButtonType("Retry");
-                    ButtonType cancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-                    alert.getButtonTypes().setAll(retry, cancel);
-                    Optional<ButtonType> result = alert.showAndWait();
-                    if (result.isPresent() && result.get() == retry) {
-                        playGame();
-                    } else if (result.get() == cancel) {
-                        Platform.exit();
-                    }
+                    AlertUtils.showRetryAlert(
+                        "Game problem",
+                        "Problem in the game",
+                        "An error occurred during the game. Do you want to try again?",
+                        this::connectToServer,
+                        Platform::exit
+                    );
                 });
             }
         }
@@ -269,19 +241,13 @@ public class ClientGameManager implements Runnable {
             logger.log(Level.SEVERE, "Error retrieving game status", e1);
             // Show the error message in the interface
             Platform.runLater(() -> {
-                Alert alert = new Alert(AlertType.ERROR);
-                alert.setTitle("Connection problem");
-                alert.setHeaderText("Connection interrupted");
-                alert.setContentText("An error occurred while retrieving the game status. Do you want to try again?");
-                ButtonType retry = new ButtonType("Retry");
-                ButtonType cancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-                alert.getButtonTypes().setAll(retry, cancel);
-                Optional<ButtonType> result = alert.showAndWait();
-                if (result.isPresent() && result.get() == retry) {
-                    initializeGameBoard();
-                } else if (result.get() == cancel) {
-                    Platform.exit();
-                } 
+                AlertUtils.showRetryAlert(
+                    "Connection problem",
+                    "Connection interrupted",
+                    "An error occurred while retrieving the game status. Do you want to try again?",
+                    this::connectToServer,
+                    Platform::exit
+                );
             });
 		}
     }
@@ -360,19 +326,13 @@ public class ClientGameManager implements Runnable {
                 logger.log(Level.SEVERE, "Error moving the scout ahead of the attack", e);
                 // Show the error message in the interface
                 Platform.runLater(() -> {
-                    Alert alert = new Alert(AlertType.ERROR);
-                    alert.setTitle("Game problem");
-                    alert.setHeaderText("Problem in the game");
-                    alert.setContentText("An error occurred while trying to move the Scout ahead of the attack. Do you want to try again?");
-                    ButtonType retry = new ButtonType("Retry");
-                    ButtonType cancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-                    alert.getButtonTypes().setAll(retry, cancel);
-                    Optional<ButtonType> result = alert.showAndWait();
-                    if (result.isPresent() && result.get() == retry) {
-                        moveScoutAheadOfAttack(moveX, moveY);
-                    } else if (result.get() == cancel) {
-                        Platform.exit();
-                    }
+                    AlertUtils.showRetryAlert(
+                        "Game problem",
+                        "Problem in the game",
+                        "An error occurred while trying to move the Scout ahead of the attack. Do you want to try again?",
+                        this::connectToServer,
+                        Platform::exit
+                    );
                 });
             }
         });
@@ -404,16 +364,13 @@ public class ClientGameManager implements Runnable {
                 logger.log(Level.SEVERE, "Error revealing the pieces involved in the attack", e);
                 // Show the error message in the interface
                 Platform.runLater(() -> {
-                    Alert alert = new Alert(AlertType.ERROR);
-                    alert.setTitle("Game problem");
-                    alert.setHeaderText("Problem in the game");
-                    alert.setContentText("An error occurred while revealing the pieces involved in the attack. Do you want to try again?");
-                    ButtonType cancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-                    alert.getButtonTypes().setAll(cancel);
-                    Optional<ButtonType> result = alert.showAndWait();
-                    if (result.get() == cancel) {
-                        Platform.exit();
-                    }
+                    AlertUtils.showRetryAlert(
+                        "Game problem",
+                        "Problem in the game",
+                        "An error occurred while revealing the pieces involved in the attack. Do you want to try again?",
+                        this::connectToServer,
+                        Platform::exit
+                    );
                 });
             }
         });
@@ -439,16 +396,13 @@ public class ClientGameManager implements Runnable {
                 logger.log(Level.SEVERE, "Error removing defeated pieces from the board", e);
                 // Show the error message in the interface
                 Platform.runLater(() -> {
-                    Alert alert = new Alert(AlertType.ERROR);
-                    alert.setTitle("Game problem");
-                    alert.setHeaderText("Problem in the game");
-                    alert.setContentText("An error occurred while removing defeated pieces from the board. Do you want to try again?");
-                    ButtonType cancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-                    alert.getButtonTypes().setAll(cancel);
-                    Optional<ButtonType> result = alert.showAndWait();
-                    if (result.get() == cancel) {
-                        Platform.exit();
-                    }
+                    AlertUtils.showRetryAlert(
+                        "Game problem",
+                        "Problem in the game",
+                        "An error occurred while removing defeated pieces from the board. Do you want to try again?",
+                        this::connectToServer,
+                        Platform::exit
+                    );
                 });
             }
         });
