@@ -32,6 +32,11 @@ public class BoardSquareEventPane extends GridPane {
     private static ArrayList<Point> validMoves;
     private ImageView hover;
     
+    // Constants for board size and move limits
+    private static final int BOARD_SIZE = 10;
+    private static final int SCOUT_MOVE_RANGE = 8;
+    private static final int REGULAR_MOVE_RANGE = 1;
+    
     /**
      * Creates a new instance of BoardSquareEventPane.
      */
@@ -58,25 +63,26 @@ public class BoardSquareEventPane extends GridPane {
             int row = GridPane.getRowIndex(hover);
             int col = GridPane.getColumnIndex(hover);
             
+            GameStatus gameStatus = Game.getStatus();
+            MoveStatus moveStatus = Game.getMoveStatus();
+            
             // Setting up
-            if (Game.getStatus() == GameStatus.SETTING_UP) {
-	            checkMove(row, col, hover);
-	        }
+            if (gameStatus == GameStatus.SETTING_UP) {
+                checkMove(row, col, hover);
+            }
             // Waiting for opponent
-            else if(Game.getStatus() == GameStatus.WAITING_OPP){ 
-            	invalidMove(hover);
+            else if(gameStatus == GameStatus.WAITING_OPP) { 
+                invalidMove(hover);
             }
             // In progress
-            else if(Game.getStatus() == GameStatus.IN_PROGRESS) {
-            	if(Game.getMoveStatus() == MoveStatus.OPP_TURN)
-            		invalidMove(hover);
-            	else if(Game.getMoveStatus() == MoveStatus.NONE_SELECTED)
-            		checkMove(row, col, hover);
-            	else if(Game.getMoveStatus() == MoveStatus.START_SELECTED) {
-            		// <moved to be handled elsewhere>
-            	}
+            else if(gameStatus == GameStatus.IN_PROGRESS) {
+                if(moveStatus == MoveStatus.OPP_TURN)
+                    invalidMove(hover);
+                else if(moveStatus == MoveStatus.NONE_SELECTED)
+                    checkMove(row, col, hover);
+                // START_SELECTED case is handled elsewhere
             }
-        };
+        }
     }
     
     /**
@@ -86,38 +92,28 @@ public class BoardSquareEventPane extends GridPane {
     private class OffHover implements EventHandler<MouseEvent> {
         @Override
         public void handle(MouseEvent e) {
-            ImageView hover = (ImageView) e.getSource();            
-            // Change the behavior of the off hover based on the game/move status
-            if(Game.getStatus() == GameStatus.SETTING_UP)
-            	hover.setImage(ImageConstants.HIGHLIGHT_NONE);
-            else if(Game.getStatus() == GameStatus.WAITING_OPP) 
-            	hover.setImage(ImageConstants.HIGHLIGHT_NONE);
-            else if(Game.getStatus() == GameStatus.IN_PROGRESS) { 
-            	if(Game.getMoveStatus() == MoveStatus.OPP_TURN) 
-            		hover.setImage(ImageConstants.HIGHLIGHT_NONE);
-            	else if(Game.getMoveStatus() == MoveStatus.NONE_SELECTED)
-            		hover.setImage(ImageConstants.HIGHLIGHT_NONE);
-            	else if(Game.getMoveStatus() == MoveStatus.START_SELECTED) {
-            		// Moved elsewhere: Function to only allow highlighting of squares piece can move to 
-            	}
-            }
-        };
+            ImageView hover = (ImageView) e.getSource();
+            // Reset hover image to none regardless of game state
+            hover.setImage(ImageConstants.HIGHLIGHT_NONE);
+        }
     }
 
     // Set the image to a red highlight indicating an invalid move
     private void invalidMove(ImageView inImage) {
-    	inImage.setImage(ImageConstants.HIGHLIGHT_INVALID);
+        inImage.setImage(ImageConstants.HIGHLIGHT_INVALID);
     }
+    
     // Set the image to a green highlight indicating a valid move
     private void validMove(ImageView inImage) {
-    	inImage.setImage(ImageConstants.HIGHLIGHT_VALID);
+        inImage.setImage(ImageConstants.HIGHLIGHT_VALID);
     }
+    
     // Check if the move is valid and set the hover accordingly
     private void checkMove(int row, int col, ImageView inImage) {
         if (isHoverValid(row, col))
-            validMove(hover);
+            validMove(inImage);
         else
-            invalidMove(hover);
+            invalidMove(inImage);
     }
     
     /**
@@ -127,9 +123,9 @@ public class BoardSquareEventPane extends GridPane {
         @Override
         public void handle(MouseEvent e) {
             // Square position.
-        	ImageView source = (ImageView) e.getSource();
-        	
-        	int row = GridPane.getRowIndex((Node) source);
+            ImageView source = (ImageView) e.getSource();
+            
+            int row = GridPane.getRowIndex((Node) source);
             int col = GridPane.getColumnIndex((Node) source);
 
             // The square and the piece at this position.
@@ -145,238 +141,256 @@ public class BoardSquareEventPane extends GridPane {
             
             /* Game Setup Handler */
             if (Game.getStatus() == GameStatus.SETTING_UP && isHoverValid(row, col)) {
-                
-                // Get the selected piece (piece type and count) from the SetupPanel.
-                PieceType selectedPiece = SetupPieces.getSelectedPieceType();
-                int selectedPieceCount = 0;
-                if (selectedPiece != null)
-                    selectedPieceCount = SetupPieces.getPieceCount(selectedPiece);
-                
-            	// If the square contains a piece...
-                if (squarePiece != null) {
-                    
-                	// Remove the existing piece if it is the same piece on board as the 
-                    // selected piece (in SetupPanel) or if no piece is selected (in SetupPanel).
-                    if (squarePiece.getPieceType() == selectedPiece || selectedPiece == null) {
-                        if (squarePiece.getPieceType() != null)
-                            SetupPieces.incrementPieceCount(squarePiece.getPieceType());
-                        squarePane.setPiece(null);
-                        square.setPiece(null);
-                    }
-                    
-                    // Replace the existing piece with the selected piece (in SetupPanel).
-                    else if (squarePiece.getPieceType() != selectedPiece && selectedPieceCount > 0) {
-                    	SetupPieces.decrementPieceCount(selectedPiece);
-                    	SetupPieces.incrementPieceCount(squarePiece.getPieceType());
-                        square.setPiece(new Piece(selectedPiece, playerColor, false));
-                        squarePane.setPiece(HashTables.PIECE_MAP.get(square.getPiece().getPieceSpriteKey()));
-                    }
-                }
-                
-                // Otherwise, if the square does not contain a piece...
-                else {
-                	// Place a new piece on the square.
-                    if (selectedPiece != null && selectedPieceCount > 0) {
-                        square.setPiece(new Piece(selectedPiece, playerColor, false));
-                        squarePane.setPiece(HashTables.PIECE_MAP.get(square.getPiece().getPieceSpriteKey()));
-                        SetupPieces.decrementPieceCount(selectedPiece);
-                    }
-                }
+                handleSetupPhase(row, col, square, squarePane, squarePiece, playerColor);
             }
             else if(Game.getStatus() == GameStatus.IN_PROGRESS && Game.getTurn() == playerColor) {
-            	// If it is the first piece being selected to move (start)
-            	if(Game.getMoveStatus() == MoveStatus.NONE_SELECTED && isHoverValid(row, col)) {
-            		Game.getMove().setStart(row, col);
-
-            		// Backup opacity check to fix rare race condition
-            		Game.getBoard().getSquare(row, col).getPiecePane().getPiece().setOpacity(1.0);
-
-            		// Update the movestatus to reflect a start has been selected
-            		Game.setMoveStatus(MoveStatus.START_SELECTED);
-            		
-            		// Calculate and display the valid moves upon selecting the piece
-            		validMoves = computeValidMoves(row, col);
-            		displayValidMoves(row, col);
-            	}
-            	// If a start piece has already been selected, but user is changing start piece
-            	else if(Game.getMoveStatus() == MoveStatus.START_SELECTED && !isNullPiece(row, col)) {
-        			Piece highlightPiece = Game.getBoard().getSquare(row, col).getPiece();
-        			if(highlightPiece.getPieceColor() == playerColor) {
-                		Game.getMove().setStart(row, col);
-                		
-                		// Backup opacity check to fix rare race condition
-                		Game.getBoard().getSquare(row, col).getPiecePane().getPiece().setOpacity(1.0);
-                		
-                		// Calculate and display the valid moves upon selecting the piece
-                		validMoves = computeValidMoves(row, col);
-                		displayValidMoves(row, col);
-        			}
-            	}
-            	if(Game.getMoveStatus() == MoveStatus.START_SELECTED && isValidMove(row, col)) {
-            		// Remove the hover off all pieces
-                    for (int rowClear = 0; rowClear < 10; ++rowClear) {
-                        for (int colClear = 0; colClear < 10; ++colClear) {
-                            Game.getBoard().getSquare(rowClear, colClear).getEventPane().getHover().setImage(ImageConstants.HIGHLIGHT_NONE);
-                            Game.getBoard().getSquare(rowClear, colClear).getEventPane().getHover().setOpacity(1.0);
-                        }
-                    }
-
-                    // Set the end location and color in the move
-            		Game.getMove().setEnd(row, col);
-            		Game.getMove().setMoveColor(Game.getPlayer().getColor());
-
-            		// Change the movestatus to reflect that the end point has been selected
-            		Game.setMoveStatus(MoveStatus.END_SELECTED);
-            		
-            		synchronized (ClientGameManager.getSendMove()) {
-            			ClientGameManager.getSendMove().notify();
-            		}
-            	}
+                handleGamePhase(row, col, playerColor);
             }
         }
     }
     
-    public boolean isValidMove(int row, int col) {
-    	// Iterate through validMoves arraylist and check if a square is a valid move (after computing valid moves)
-    	if(validMoves != null && validMoves.size() > 0) {
-    		for(int i = 0; i < validMoves.size(); i++) {
-    			if(row == validMoves.get(i).getX() && col == validMoves.get(i).getY()) 
-    				return true;
-    		}
-    	}
-    	return false;
+    /**
+     * Handles piece placement during the setup phase
+     */
+    private void handleSetupPhase(int row, int col, ClientSquare square, BoardSquarePane squarePane,
+                                Piece squarePiece, PieceColor playerColor) {
+        // Get the selected piece (piece type and count) from the SetupPanel.
+        PieceType selectedPiece = SetupPieces.getSelectedPieceType();
+        int selectedPieceCount = 0;
+        if (selectedPiece != null)
+            selectedPieceCount = SetupPieces.getPieceCount(selectedPiece);
+        
+        // If the square contains a piece...
+        if (squarePiece != null) {
+            
+            // Remove the existing piece if it is the same piece on board as the 
+            // selected piece (in SetupPanel) or if no piece is selected (in SetupPanel).
+            if (squarePiece.getPieceType() == selectedPiece || selectedPiece == null) {
+                if (squarePiece.getPieceType() != null)
+                    SetupPieces.incrementPieceCount(squarePiece.getPieceType());
+                squarePane.setPiece(null);
+                square.setPiece(null);
+            }
+            
+            // Replace the existing piece with the selected piece (in SetupPanel).
+            else if (squarePiece.getPieceType() != selectedPiece && selectedPieceCount > 0) {
+                SetupPieces.decrementPieceCount(selectedPiece);
+                SetupPieces.incrementPieceCount(squarePiece.getPieceType());
+                square.setPiece(new Piece(selectedPiece, playerColor, false));
+                squarePane.setPiece(HashTables.PIECE_MAP.get(square.getPiece().getPieceSpriteKey()));
+            }
+        }
+        
+        // Otherwise, if the square does not contain a piece...
+        else {
+            // Place a new piece on the square.
+            if (selectedPiece != null && selectedPieceCount > 0) {
+                square.setPiece(new Piece(selectedPiece, playerColor, false));
+                squarePane.setPiece(HashTables.PIECE_MAP.get(square.getPiece().getPieceSpriteKey()));
+                SetupPieces.decrementPieceCount(selectedPiece);
+            }
+        }
     }
     
+    /**
+     * Handles piece movement during the game phase
+     */
+    private void handleGamePhase(int row, int col, PieceColor playerColor) {
+        MoveStatus moveStatus = Game.getMoveStatus();
+        
+        // If it is the first piece being selected to move (start)
+        if(moveStatus == MoveStatus.NONE_SELECTED && isHoverValid(row, col)) {
+            Game.getMove().setStart(row, col);
+
+            // Backup opacity check to fix rare race condition
+            Game.getBoard().getSquare(row, col).getPiecePane().getPiece().setOpacity(1.0);
+
+            // Update the movestatus to reflect a start has been selected
+            Game.setMoveStatus(MoveStatus.START_SELECTED);
+            
+            // Calculate and display the valid moves upon selecting the piece
+            validMoves = computeValidMoves(row, col);
+            displayValidMoves(row, col);
+        }
+        // If a start piece has already been selected, but user is changing start piece
+        else if(moveStatus == MoveStatus.START_SELECTED && !isNullPiece(row, col)) {
+            Piece highlightPiece = Game.getBoard().getSquare(row, col).getPiece();
+            if(highlightPiece.getPieceColor() == playerColor) {
+                Game.getMove().setStart(row, col);
+                
+                // Backup opacity check to fix rare race condition
+                Game.getBoard().getSquare(row, col).getPiecePane().getPiece().setOpacity(1.0);
+                
+                // Calculate and display the valid moves upon selecting the piece
+                validMoves = computeValidMoves(row, col);
+                displayValidMoves(row, col);
+            }
+        }
+        
+        // If a valid move is selected as the endpoint
+        if(moveStatus == MoveStatus.START_SELECTED && isValidMove(row, col)) {
+            clearAllHighlights();
+
+            // Set the end location and color in the move
+            Game.getMove().setEnd(row, col);
+            Game.getMove().setMoveColor(Game.getPlayer().getColor());
+
+            // Change the movestatus to reflect that the end point has been selected
+            Game.setMoveStatus(MoveStatus.END_SELECTED);
+            
+            synchronized (ClientGameManager.getSendMove()) {
+                ClientGameManager.getSendMove().notify();
+            }
+        }
+    }
+    
+    /**
+     * Clear all highlights from the board
+     */
+    private void clearAllHighlights() {
+        for (int rowClear = 0; rowClear < BOARD_SIZE; ++rowClear) {
+            for (int colClear = 0; colClear < BOARD_SIZE; ++colClear) {
+                Game.getBoard().getSquare(rowClear, colClear).getEventPane().getHover().setImage(ImageConstants.HIGHLIGHT_NONE);
+                Game.getBoard().getSquare(rowClear, colClear).getEventPane().getHover().setOpacity(1.0);
+            }
+        }
+    }
+    
+    /**
+     * Checks if a square is a valid move destination
+     */
+    public boolean isValidMove(int row, int col) {
+        // Iterate through validMoves arraylist and check if a square is a valid move
+        if(validMoves != null && !validMoves.isEmpty()) {
+            for(Point validPoint : validMoves) {
+                if(row == validPoint.getX() && col == validPoint.getY()) 
+                    return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Highlights the selected piece and its valid moves
+     */
     private void displayValidMoves(int pieceRow, int pieceCol) {
-    	// Iterate through and unhighlight/unglow all squares/pieces
-        for (int row = 0; row < 10; ++row) {
-            for (int col = 0; col < 10; ++col) {
+        // Iterate through and unhighlight/unglow all squares/pieces
+        clearAllHighlightsAndEffects();
+
+        // Glow and set a white highlight around the selected piece
+        Game.getBoard().getSquare(pieceRow, pieceCol).getPiecePane().getPiece().setEffect(new Glow(0.75));                      
+        Game.getBoard().getSquare(pieceRow, pieceCol).getEventPane().getHover().setImage(ImageConstants.HIGHLIGHT_WHITE);
+
+        // Iterate through all valid moves and highlight respective squares
+        for (Point validMove : validMoves) {
+            int x = (int) validMove.getX();
+            int y = (int) validMove.getY();
+            Game.getBoard().getSquare(x, y).getEventPane().getHover().setImage(ImageConstants.HIGHLIGHT_VALID);
+            Game.getBoard().getSquare(x, y).getEventPane().getHover().setOpacity(0.5);
+        }
+    }
+    
+    /**
+     * Clears all highlights and glow effects from the board
+     */
+    private void clearAllHighlightsAndEffects() {
+        for (int row = 0; row < BOARD_SIZE; ++row) {
+            for (int col = 0; col < BOARD_SIZE; ++col) {
                 Game.getBoard().getSquare(row, col).getEventPane().getHover().setImage(ImageConstants.HIGHLIGHT_NONE);
                 Game.getBoard().getSquare(row, col).getEventPane().getHover().setOpacity(1.0);
                 Game.getBoard().getSquare(row, col).getPiecePane().getPiece().setEffect(new Glow(0.0));                      
             }
         }
-
-        // Glow and set a white highlight around the selected piece
-        Game.getBoard().getSquare(pieceRow,pieceCol).getPiecePane().getPiece().setEffect(new Glow(0.75));                      
-        Game.getBoard().getSquare(pieceRow,pieceCol).getEventPane().getHover().setImage(ImageConstants.HIGHLIGHT_WHITE);
-
-        // Iterate through all valid moves and highlight respective squares
-        for (Point validMove : validMoves) {
-            Game.getBoard().getSquare((int) validMove.getX(), (int) validMove.getY()).getEventPane().getHover().setImage(ImageConstants.HIGHLIGHT_VALID);
-            Game.getBoard().getSquare((int) validMove.getX(), (int) validMove.getY()).getEventPane().getHover().setOpacity(0.5);
-        }
     }
     
+    /**
+     * Computes all valid moves for a piece at the given position
+     */
     private ArrayList<Point> computeValidMoves(int row, int col) {    	
-    	// Set the max distance of a valid move to 1
-    	int max = 1;
-    	
-    	// Set the max distance of a valid move to the board width if the piece is a scout
-    	PieceType pieceType = Game.getBoard().getSquare(row, col).getPiece().getPieceType();
-    	if(pieceType == PieceType.SCOUT)
-    		max = 8;
-    	
-    	ArrayList<Point> validMoves = new ArrayList<Point>();
-    	
-    	// Iterate through each direction and add valid moves based on if:
-    	// 1) The square is in bounds (inside the board)
-    	// 2) If the square is not a lake
-    	// 3) If the square has no piece on it OR there is a piece, but it is an opponent piece
-    	
-    	if(pieceType != PieceType.BOMB && pieceType != PieceType.FLAG) {
-	    	// Negative Row (UP)
-	    	for(int i = -1; i >= -max; --i) {
-	    		if(isInBounds(row+i,col) && (!isLake(row+i, col) || (!isNullPiece(row+i, col) && !isOpponentPiece(row+i, col)))) {
-	    			if(isNullPiece(row+i, col) || isOpponentPiece(row+i, col)) {
-	    				validMoves.add(new Point(row+i, col));
-	    				
-	    				if(!isNullPiece(row+i, col) && isOpponentPiece(row+i, col))
-	    					break;
-	    			}
-	    			else
-	    			    break;
-	    		}
-	    		else
-	    			break;
-	    	}
-	    	// Positive Col (RIGHT)
-	    	for(int i = 1; i <= max; ++i) {
-	    		if(isInBounds(row,col+i) && (!isLake(row, col+i) || (!isNullPiece(row, col+i) && !isOpponentPiece(row, col+i)))) {
-	    			if(isNullPiece(row, col+i) || isOpponentPiece(row, col+i)) {
-	    				validMoves.add(new Point(row, col+i));
-	    				
-	    				if(!isNullPiece(row, col+i) && isOpponentPiece(row, col+i))
-	    					break;
-	    			}
-	    			else
-                        break;
-	    		}
-	    		else
-	    			break;
-	    	}
-	    	// Positive Row (DOWN)
-	    	for(int i = 1; i <= max; ++i) {
-	    		if(isInBounds(row+i,col) && (!isLake(row+i, col) || (!isNullPiece(row+i, col) && !isOpponentPiece(row+i, col)))) {
-	    			if(isNullPiece(row+i, col) || isOpponentPiece(row+i, col)) {
-	    				validMoves.add(new Point(row+i, col));
-	    				
-	    				if(!isNullPiece(row+i, col) && isOpponentPiece(row+i, col))
-	    					break;
-	    			}
-	    			else
-                        break;
-	    		}
-	    		else
-	    			break;
-	    	}
-	    	// Negative Col (LEFT)
-	    	for(int i = -1; i >= -max; --i) {
-	    		if(isInBounds(row,col+i) && (!isLake(row, col+i) || (!isNullPiece(row, col+i) && !isOpponentPiece(row, col+i)))) {
-	    			if(isNullPiece(row, col+i) || isOpponentPiece(row, col+i)) {
-	    				validMoves.add(new Point(row, col+i));
-	    				
-	    				if(!isNullPiece(row, col+i) && isOpponentPiece(row, col+i))
-	    					break;
-	    			}
-	    			else
-                        break;
-	    		}
-	    		else
-	    			break;
-	    	}
-    	}
-    	
-    	return validMoves;
+        Piece piece = Game.getBoard().getSquare(row, col).getPiece();
+        PieceType pieceType = piece.getPieceType();
+        
+        // Return empty list for immobile pieces
+        if(pieceType == PieceType.BOMB || pieceType == PieceType.FLAG) {
+            return new ArrayList<>();
+        }
+        
+        // Set the max distance based on piece type
+        int max = (pieceType == PieceType.SCOUT) ? SCOUT_MOVE_RANGE : REGULAR_MOVE_RANGE;
+        
+        ArrayList<Point> validMoves = new ArrayList<>();
+        
+        // Check in all four directions
+        checkDirection(row, col, -1, 0, max, validMoves); // UP
+        checkDirection(row, col, 0, 1, max, validMoves);  // RIGHT
+        checkDirection(row, col, 1, 0, max, validMoves);  // DOWN
+        checkDirection(row, col, 0, -1, max, validMoves); // LEFT
+        
+        return validMoves;
+    }
+    
+    /**
+     * Helper method to check for valid moves in a specific direction
+     */
+    private void checkDirection(int startRow, int startCol, int rowDelta, int colDelta, int maxDistance, ArrayList<Point> validMoves) {
+        for (int i = 1; i <= maxDistance; i++) {
+            int newRow = startRow + (i * rowDelta);
+            int newCol = startCol + (i * colDelta);
+            
+            // Check if position is in bounds
+            if (!isInBounds(newRow, newCol)) {
+                break;
+            }
+            
+            // Check if the square is a lake
+            if (isLake(newRow, newCol)) {
+                break;
+            }
+            
+            // Check if square has a friendly piece (blocking movement)
+            if (!isNullPiece(newRow, newCol) && !isOpponentPiece(newRow, newCol)) {
+                break;
+            }
+            
+            // Valid empty square or opponent piece
+            validMoves.add(new Point(newRow, newCol));
+            
+            // Stop after capturing a piece
+            if (!isNullPiece(newRow, newCol) && isOpponentPiece(newRow, newCol)) {
+                break;
+            }
+        }
     }
 
-    // Returns true if the given square is a lake
+    /**
+     * Returns true if the given square is a lake
+     */
     private static boolean isLake(int row, int col) {
-    	if (col == 2 || col == 3 || col == 6 || col == 7) {
-            if (row == 4 || row == 5)
-                return true;
+        if ((col == 2 || col == 3 || col == 6 || col == 7) && (row == 4 || row == 5)) {
+            return true;
         }
-    	return false;
+        return false;
     }
     
-    // Returns false if the given square is outside of the board
+    /**
+     * Returns false if the given square is outside of the board
+     */
     private static boolean isInBounds(int row, int col) {
-    	if(row < 0 || row > 9)
-    		return false;
-    	if(col < 0 || col > 9)
-    		return false;
-    	
-    	return true;
+        return row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE;
     }
     
-    // Returns true if the piece is the opponent (from the client's perspective)
+    /**
+     * Returns true if the piece is the opponent (from the client's perspective)
+     */
     private static boolean isOpponentPiece(int row, int col) {
-    	return Game.getBoard().getSquare(row, col).getPiece().getPieceColor() != Game.getPlayer().getColor();
+        return Game.getBoard().getSquare(row, col).getPiece().getPieceColor() != Game.getPlayer().getColor();
     }
     
-    // Returns true if the piece is null
+    /**
+     * Returns true if the piece is null
+     */
     private static boolean isNullPiece(int row, int col) {
-    	return Game.getBoard().getSquare(row, col).getPiece() == null;
+        return Game.getBoard().getSquare(row, col).getPiece() == null;
     }
 
     /**
@@ -386,9 +400,9 @@ public class BoardSquareEventPane extends GridPane {
     public static void randomSetup() {
         PieceColor playerColor = Game.getPlayer().getColor();
         
-        // Iterate through each square
-        for (int col = 0; col < 10; ++col) {
-            for (int row = 6; row < 10; ++row) {
+        // Iterate through each square in the player's setup area
+        for (int col = 0; col < BOARD_SIZE; ++col) {
+            for (int row = 6; row < BOARD_SIZE; ++row) {
                 BoardSquarePane squarePane = Game.getBoard().getSquare(row, col).getPiecePane();
                 ClientSquare square = Game.getBoard().getSquare(row, col);
                 Piece squarePiece = square.getPiece();
@@ -397,33 +411,41 @@ public class BoardSquareEventPane extends GridPane {
                 ArrayList<PieceType> availTypes = 
                         new ArrayList<PieceType>(Arrays.asList(PieceType.values()));
 
-                // If the square is null (will not overwrite existing pieces)
+                // If the square is empty, place a random piece
                 if(squarePiece == null) {
-                    PieceType pieceType = null;
-                     
-                    // While the pieceType that is going to be placed is null, loop finding a random one
-                    // checking that its count is > 0
-                    while(pieceType == null) {
-                        int randInt = (int) (Math.random() * availTypes.size());
-                        if(SetupPieces.getPieceCount(availTypes.get(randInt)) > 0)
-                            pieceType = availTypes.get(randInt);
-                        // There are no more available for that piecetype, remove it from the array so it won't be randomly generated again
-                        else
-                            availTypes.remove(randInt);
-                    }
-
-                    // Set the square to the piecetype once a suitable piecetype has been found
-                    square.setPiece(new Piece(pieceType, playerColor, false));
-                    squarePane.setPiece(HashTables.PIECE_MAP.get(square.getPiece().getPieceSpriteKey()));
-
-                    // And lower the availability count of that piece
-                    SetupPieces.decrementPieceCount(pieceType);
+                    placeRandomPiece(square, squarePane, availTypes, playerColor);
                 }
             }
         }
         
         // Trigger finishSetup so the game will begin
         SetupPanel.finishSetup();
+    }
+    
+    /**
+     * Helper method to place a random piece on a square
+     */
+    private static void placeRandomPiece(ClientSquare square, BoardSquarePane squarePane, 
+                                        ArrayList<PieceType> availTypes, PieceColor playerColor) {
+        PieceType pieceType = null;
+         
+        // Find a random piece type with available pieces
+        while(pieceType == null && !availTypes.isEmpty()) {
+            int randInt = (int) (Math.random() * availTypes.size());
+            if(SetupPieces.getPieceCount(availTypes.get(randInt)) > 0) {
+                pieceType = availTypes.get(randInt);
+            } else {
+                // Remove unavailable piece types
+                availTypes.remove(randInt);
+            }
+        }
+
+        // If we found an available piece type, place it
+        if (pieceType != null) {
+            square.setPiece(new Piece(pieceType, playerColor, false));
+            squarePane.setPiece(HashTables.PIECE_MAP.get(square.getPiece().getPieceSpriteKey()));
+            SetupPieces.decrementPieceCount(pieceType);
+        }
     }
     
     /**
@@ -434,35 +456,36 @@ public class BoardSquareEventPane extends GridPane {
      * @return true if the square is valid, false otherwise
      */
     private boolean isHoverValid(int row, int col) {
-    	PieceColor playerColor = Game.getPlayer().getColor();
-    	
-        /* Initially assumes that the square is valid. */
+        PieceColor playerColor = Game.getPlayer().getColor();
+        GameStatus gameStatus = Game.getStatus();
+        MoveStatus moveStatus = Game.getMoveStatus();
         
         // Lakes are always invalid.
-        if (isLake(row, col))
+        if (isLake(row, col)) {
+            return false;
+        }
+        
+        // Game state specific validation
+        if (gameStatus == GameStatus.SETTING_UP) {
+            // The game is setting up and the square is outside of the setup area.
+            return row > 5;
+        } 
+        else if (gameStatus == GameStatus.WAITING_OPP) {
+            // The player has finished setting up and is waiting for the opponent.
+            return false;
+        } 
+        else if (gameStatus == GameStatus.IN_PROGRESS) {
+            // It's the opponent's turn
+            if (moveStatus == MoveStatus.OPP_TURN) {
                 return false;
-        
-        // The game is setting up and the square is outside of the setup area.
-        if (Game.getStatus() == GameStatus.SETTING_UP && row <= 5)
-            return false;
-        
-        // The player has finished setting up and is waiting for the opponent.
-        else if (Game.getStatus() == GameStatus.WAITING_OPP)
-            return false;
-        
-        else if (Game.getStatus() == GameStatus.IN_PROGRESS) {
-        	if(Game.getMoveStatus() == MoveStatus.OPP_TURN)
-        		return false;
-        		
-        	if(Game.getMoveStatus() == MoveStatus.NONE_SELECTED) {
-        		if(Game.getBoard().getSquare(row, col).getPiece() != null) {
-        			Piece highlightPiece = Game.getBoard().getSquare(row, col).getPiece();
-        			
-        			if(highlightPiece.getPieceColor() != playerColor)
-        				return false;
-        		} else 
-        			return false;
-        	}
+            }
+            
+            // Player is selecting first piece to move
+            if (moveStatus == MoveStatus.NONE_SELECTED) {
+                // Must select a non-null piece of player's color
+                Piece piece = Game.getBoard().getSquare(row, col).getPiece();
+                return piece != null && piece.getPieceColor() == playerColor;
+            }
         }
         
         return true;
