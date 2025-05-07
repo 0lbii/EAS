@@ -16,10 +16,18 @@ import javafx.util.Duration;
  */
 public class BoardTurnIndicator {
     
-    private static Color red  = new Color(0.48, 0.13, 0.13, 1.0);
-    private static Color blue = new Color(0.22, 0.24, 0.55, 1.0);
+    // Constants for colors
+    private static final Color RED_COLOR = new Color(0.48, 0.13, 0.13, 1.0);
+    private static final Color BLUE_COLOR = new Color(0.22, 0.24, 0.55, 1.0);
     
-    private static Object turnIndicatorTrigger = new Object();
+    // Constants for animation times
+    private static final int RED_TRANSITION_TIME = 2000;
+    private static final int BLUE_TRANSITION_TIME = 3000;
+    
+    // Synchronization object for turn changes
+    private static final Object turnIndicatorTrigger = new Object();
+    
+    // The visual indicator
     private static Rectangle turnIndicator;
     
     /**
@@ -29,68 +37,107 @@ public class BoardTurnIndicator {
         final int SIDE = ClientStage.getSide();
         turnIndicator = new Rectangle(0, 0, SIDE, SIDE);
         
-        // Set the setup game turn color.
-        if (Game.getPlayer().getColor() == PieceColor.RED)
-            turnIndicator.setFill(red);
-        else
-            turnIndicator.setFill(blue);
+        // Set the initial turn color based on player's assigned color
+        initializeIndicatorColor();
         
-        // Start thread to automatically update turn color.
+        // Start thread to automatically update turn color
+        startUpdateThread();
+    }
+    
+    /**
+     * Initializes the indicator color based on the player's assigned color
+     */
+    private void initializeIndicatorColor() {
+        if (Game.getPlayer().getColor() == PieceColor.RED) {
+            turnIndicator.setFill(RED_COLOR);
+        } else {
+            turnIndicator.setFill(BLUE_COLOR);
+        }
+    }
+    
+    /**
+     * Starts the thread that listens for turn changes
+     */
+    private void startUpdateThread() {
         Thread updateColor = new Thread(new UpdateColor());
         updateColor.setDaemon(true);
+        updateColor.setName("TurnIndicator-Thread");
         updateColor.start();
     }
     
     /**
-     * @return the turn indicator (JavaFX rectangle)
+     * Returns the turn indicator (JavaFX rectangle)
+     * @return the turn indicator rectangle
      */
     public static Rectangle getTurnIndicator() {
         return turnIndicator;
     }
     
     /**
-     * @return Object used to communicate between the ClientGameManager and the 
+     * Returns the object used to communicate between the ClientGameManager and the 
      * BoardTurnIndicator to indicate when the player turn color has changed.
+     * @return object used for turn change synchronization
      */
     public static Object getTurnIndicatorTrigger() {
         return turnIndicatorTrigger;
     }
     
+    /**
+     * Runnable implementation that updates the turn indicator color
+     * whenever it receives a notification
+     */
     private class UpdateColor implements Runnable {
         @Override
         public void run() {
             synchronized (turnIndicatorTrigger) {
                 try {
-                    while (true) {
-                        // Wait for player turn color to change.
+                    while (!Thread.currentThread().isInterrupted()) {
+                        // Wait for player turn color to change
                         turnIndicatorTrigger.wait();
                         
-                        Platform.runLater(() -> {
-                            // Blue -> Red.
-                            if (Game.getTurn() == PieceColor.RED && 
-                                    BoardTurnIndicator.getTurnIndicator().getFill() != red) {
-                                FillTransition ft = new FillTransition(Duration.millis(2000), 
-                                        BoardTurnIndicator.getTurnIndicator(), blue, red);
-                                ft.play();
-                            }
-                            
-                            // Red -> Blue.
-                            else if (Game.getTurn() == PieceColor.BLUE && 
-                                    BoardTurnIndicator.getTurnIndicator().getFill() != blue) {
-                                FillTransition ft = new FillTransition(Duration.millis(3000), 
-                                        BoardTurnIndicator.getTurnIndicator(), red, blue);
-                                ft.play();
-                            }
-                        });
+                        // Update UI on the JavaFX application thread
+                        Platform.runLater(this::updateIndicatorColor);
                     }
                 }
                 catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     System.err.println("Turn indicator update thread interrupted. Exiting thread.");
-                    return;
                 }
-                
             }
+        }
+        
+        /**
+         * Updates the indicator color based on the current turn
+         */
+        private void updateIndicatorColor() {
+            PieceColor currentTurn = Game.getTurn();
+            Color currentFill = (Color) turnIndicator.getFill();
+            
+            // Only perform transition if color is actually changing
+            if (currentTurn == PieceColor.RED && currentFill != RED_COLOR) {
+                // Transition from blue to red
+                performTransition(BLUE_COLOR, RED_COLOR, RED_TRANSITION_TIME);
+            } 
+            else if (currentTurn == PieceColor.BLUE && currentFill != BLUE_COLOR) {
+                // Transition from red to blue
+                performTransition(RED_COLOR, BLUE_COLOR, BLUE_TRANSITION_TIME);
+            }
+        }
+        
+        /**
+         * Performs a color transition animation on the turn indicator
+         * 
+         * @param fromColor starting color
+         * @param toColor ending color
+         * @param duration duration in milliseconds
+         */
+        private void performTransition(Color fromColor, Color toColor, int duration) {
+            FillTransition transition = new FillTransition(
+                    Duration.millis(duration), 
+                    turnIndicator, 
+                    fromColor, 
+                    toColor);
+            transition.play();
         }
     }
 }
