@@ -1,5 +1,7 @@
 package edu.asu.stratego.gui.board.setup;
 
+import edu.asu.stratego.gui.ClientStage;
+import edu.asu.stratego.gui.board.BoardSquareEventPane;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -13,9 +15,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
 
-import edu.asu.stratego.gui.ClientStage;
-import edu.asu.stratego.gui.board.BoardSquareEventPane;
-
 /**
  * SetupTimer is responsible for displaying and running a countdown during the
  * setup phase.
@@ -27,12 +26,14 @@ public class SetupTimer {
     private final Timeline timeline;
     private final Label timerLabel;
     private final IntegerProperty secondsLeft;
+    private final BoardSquareEventPane boardPane;
+
 
     /**
      * Constructs a SetupTimer with the default duration (5 minutes).
      */
-    public SetupTimer() {
-        this(DEFAULT_DURATION);
+    public SetupTimer(BoardSquareEventPane boardPane) {
+        this(DEFAULT_DURATION, boardPane);
     }
 
     /**
@@ -40,10 +41,11 @@ public class SetupTimer {
      * 
      * @param durationInSeconds The number of seconds for the countdown.
      */
-    public SetupTimer(int durationInSeconds) {
+    public SetupTimer(int durationInSeconds, BoardSquareEventPane boardPane) {
         this.timeline = new Timeline();
         this.timerLabel = new Label();
         this.secondsLeft = new SimpleIntegerProperty(durationInSeconds);
+        this.boardPane = boardPane;
 
         final double UNIT = ClientStage.getUnit();
 
@@ -77,10 +79,10 @@ public class SetupTimer {
     /**
      * Triggered when the timer reaches zero. Starts random board setup.
      */
-    private static class TimerFinished implements EventHandler<ActionEvent> {
+    private class TimerFinished implements EventHandler<ActionEvent> {
         @Override
         public void handle(ActionEvent event) {
-            BoardSquareEventPane.randomSetup(); // Automatically place remaining pieces
+            boardPane.randomSetup(); // Automatically place remaining pieces
         }
     }
 }

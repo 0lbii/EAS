@@ -1,6 +1,7 @@
 package edu.asu.stratego.gui;
 
 import edu.asu.stratego.game.Game;
+import edu.asu.stratego.gui.board.BoardSquareEventPane;
 import edu.asu.stratego.gui.board.BoardTurnIndicator;
 import edu.asu.stratego.gui.board.setup.SetupPanel;
 import edu.asu.stratego.media.ImageConstants;
@@ -82,8 +83,18 @@ public class BoardScene {
         }
         
         // Create the setup panel.
-        new SetupPanel();
-        setupPanel = SetupPanel.getSetupPanel();
+        BoardSquareEventPane boardEventPane = new BoardSquareEventPane();
+        SetupPanel setupPanelWrapper = new SetupPanel(boardEventPane);
+        boardEventPane.setSetupPanel(setupPanelWrapper);
+
+        for (int row = 0; row < 10; ++row) {
+            for (int col = 0; col < 10; ++col) {
+                BoardSquareEventPane pane = Game.getBoard().getSquare(row, col).getEventPane();
+                pane.setSetupPanel(setupPanelWrapper);
+            }
+        }
+
+        setupPanel = setupPanelWrapper.getPanel();
         StackPane.setMargin(setupPanel, new Insets(UNIT, 0, 0, 0));
         StackPane.setAlignment(setupPanel, Pos.TOP_CENTER);
         

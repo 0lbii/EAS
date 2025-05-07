@@ -1,8 +1,13 @@
 package edu.asu.stratego.gui.board.setup;
 
-import java.util.EnumMap;
 import java.util.Arrays;
+import java.util.EnumMap;
 
+import edu.asu.stratego.game.Game;
+import edu.asu.stratego.game.PieceType;
+import edu.asu.stratego.gui.ClientStage;
+import edu.asu.stratego.util.HashTables;
+import edu.asu.stratego.util.MutableBoolean;
 import javafx.event.EventHandler;
 import javafx.scene.control.Label;
 import javafx.scene.effect.ColorAdjust;
@@ -13,28 +18,26 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
-import edu.asu.stratego.game.Game;
-import edu.asu.stratego.game.PieceType;
-import edu.asu.stratego.gui.ClientStage;
-import edu.asu.stratego.util.HashTables;
-import edu.asu.stratego.util.MutableBoolean;
-
 public class SetupPieces {
 
     private static final int NUM_PIECE_TYPES = 12;
     private static final String LABEL_PREFIX = " x";
 
-    private static EnumMap<PieceType, MutableBoolean> pieceSelected = new EnumMap<>(PieceType.class);
-    private static EnumMap<PieceType, Integer> availability = new EnumMap<>(PieceType.class);
-    private static EnumMap<PieceType, ImageView> pieceImages = new EnumMap<>(PieceType.class);
-    private static EnumMap<PieceType, Label> pieceCount = new EnumMap<>(PieceType.class);
+    private final EnumMap<PieceType, MutableBoolean> pieceSelected = new EnumMap<>(PieceType.class);
+    private final EnumMap<PieceType, Integer> availability = new EnumMap<>(PieceType.class);
+    private final EnumMap<PieceType, ImageView> pieceImages = new EnumMap<>(PieceType.class);
+    private final EnumMap<PieceType, Label> pieceCount = new EnumMap<>(PieceType.class);
 
-    private static PieceType selectedPieceType;
-    private static ColorAdjust zeroPieces = new ColorAdjust();
-    private static boolean allPiecesPlaced;
+    private PieceType selectedPieceType;
+    private final ColorAdjust zeroPieces = new ColorAdjust();
+    private boolean allPiecesPlaced;
+
+
+    private final SetupPanel setupPanel;
 
     // This method initializes the setup panel with all piece types and their counts
-    public SetupPieces() {
+    public SetupPieces(SetupPanel setupPanel) {
+        this.setupPanel = setupPanel;
         final double UNIT = ClientStage.getUnit();
         zeroPieces.setSaturation(-1.0);
         selectedPieceType = null;
@@ -100,16 +103,16 @@ public class SetupPieces {
         }
     }
 
-    public static PieceType getSelectedPieceType() {
+    public PieceType getSelectedPieceType() {
         return selectedPieceType;
     }
 
-    public static int getPieceCount(PieceType type) {
+    public int getPieceCount(PieceType type) {
         return availability.getOrDefault(type, 0);
     }
 
     // Increases the available count of a piece type and updates its label
-    public static void incrementPieceCount(PieceType type) {
+    public void incrementPieceCount(PieceType type) {
         availability.put(type, availability.get(type) + 1);
         pieceCount.get(type).setText(LABEL_PREFIX + availability.get(type));
 
@@ -121,7 +124,7 @@ public class SetupPieces {
     }
 
     // Decreases the available count of a piece type and updates the GUI accordingly
-    public static void decrementPieceCount(PieceType type) {
+    public void decrementPieceCount(PieceType type) {
         availability.put(type, availability.get(type) - 1);
         pieceCount.get(type).setText(LABEL_PREFIX + availability.get(type));
 
@@ -136,14 +139,14 @@ public class SetupPieces {
     }
 
     // Notifies the setup panel when all pieces have been placed or removed
-    private static void notifyReadyStatus() {
-        Object updateReadyStatus = SetupPanel.getUpdateReadyStatus();
+    private void notifyReadyStatus() {
+        Object updateReadyStatus = setupPanel.getUpdateReadyStatus();
         synchronized (updateReadyStatus) {
             updateReadyStatus.notify();
         }
     }
 
-    public static boolean getAllPiecesPlaced() {
+    public boolean getAllPiecesPlaced() {
         return allPiecesPlaced;
     }
 
