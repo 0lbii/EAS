@@ -62,8 +62,6 @@ public class ClientGameManager implements Runnable {
     @Override
     public void run() {
         connectToServer();
-        waitForOpponent();
-
         showMainMenu();
     }
     
@@ -150,13 +148,11 @@ public class ClientGameManager implements Runnable {
         }
     }
     
-    
-
     /**
      * Displays the main menu scene on the JavaFX application thread. 
      * The menu provides options for starting a new game, viewing match 
      * history, accessing the user profile, and adjusting settings.
-     * When "Nueva partida" is selected, the setup and gameplay sequence begins.
+     * When "Nueva partida" or "New Game" is selected, the setup and gameplay sequence begins.
      */
     private void showMainMenu() {
         Platform.runLater(() -> {
@@ -164,15 +160,13 @@ public class ClientGameManager implements Runnable {
                 mainMenuScene = new MainMenuScene();
                 mainMenuScene.setNewGameAction(() -> {
                     new Thread(() -> {
+                        waitForOpponent();
                         setupBoard();
                         playGame();
                     }).start();
                 });
                 mainMenuScene.setSettingsAction(this::showSettingsScreen);
-            } else {
-                mainMenuScene.updateTexts();
             }
-
             stage.setScene(mainMenuScene.getScene());
         });
     }

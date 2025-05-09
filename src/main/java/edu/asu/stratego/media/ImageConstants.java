@@ -19,6 +19,7 @@ public class ImageConstants {
     public final static Image LIGHT_GRASS = load("/images/board/grass2.png");
 
     public final static Image LOGIN_REGISTER = load("/images/board/login_register.png");
+    public final static Image MAIN_MENU = load("/images/board/menu_panel.png");
 
     public final static Image HIGHLIGHT_NONE = load("/images/board/highlight_none.png");
     public final static Image HIGHLIGHT_VALID = load("/images/board/highlight_valid.png");

@@ -2,8 +2,10 @@ package edu.asu.stratego.gui.board.setup;
 
 import edu.asu.stratego.game.ClientGameManager;
 import edu.asu.stratego.game.Game;
+import edu.asu.stratego.game.ResourceBundleManager;
 import edu.asu.stratego.gui.ClientStage;
 import edu.asu.stratego.gui.board.BoardSquareEventPane;
+import edu.asu.stratego.languages.LanguageObserver;
 import edu.asu.stratego.media.ImageConstants;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -20,7 +22,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
-public class SetupPanel {
+public class SetupPanel implements LanguageObserver{
 
     private final GridPane setupPanel = new GridPane();
     private final GridPane piecePane = new GridPane();
@@ -129,8 +131,7 @@ public class SetupPanel {
         GridPane.setMargin(instructionPane, new Insets(UNIT * 0.15, 0.0, 0.0, 0.0));
 
         // Add instructions.
-        instructions.setText("place a piece: select a piece above and click on the board\n" +
-                             "   remove a piece: click on an existing piece on the board");
+        instructions.setText(ResourceBundleManager.get("setup.instructions"));
 
         // Ready button + event handlers.
         readyButton.setImage(ImageConstants.READY_IDLE);
@@ -171,7 +172,7 @@ public class SetupPanel {
          * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
         GridPane.setMargin(readyLabel, new Insets(UNIT * 0.8, 0.0, 0.0, UNIT * 1.5));
-        readyLabel.setText("Waiting for opponent...");
+        readyLabel.setText(ResourceBundleManager.get("waiting.message"));
         readyLabel.setFont(Font.font("Century Gothic", UNIT * 0.6));
         readyLabel.setTextFill(new Color(1.0, 0.7, 0.0, 1.0));
     }
@@ -268,5 +269,11 @@ public class SetupPanel {
 
     public GridPane getPanel() {
         return setupPanel;
+    }
+
+    @Override
+    public void onLanguageChanged() {
+        instructions.setText(ResourceBundleManager.get("setup.instructions"));
+        readyLabel.setText(ResourceBundleManager.get("waiting.message"));
     }
 }

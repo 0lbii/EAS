@@ -1,6 +1,8 @@
 package edu.asu.stratego.gui;
 
 import edu.asu.stratego.game.ResourceBundleManager;
+import edu.asu.stratego.languages.LanguageObservable;
+import edu.asu.stratego.languages.LanguageObserver;
 import edu.asu.stratego.media.ImageConstants;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -10,7 +12,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
-public class MainMenuScene {
+public class MainMenuScene implements LanguageObserver {
 
     private Scene scene;
     private Button newGameButton = new Button();
@@ -21,6 +23,7 @@ public class MainMenuScene {
     private static final int SIDE = ClientStage.getSide();
 
     public MainMenuScene() {
+        LanguageObservable.addObserver(this); // Observer
 
         updateTexts(); // Initial translations
 
@@ -35,7 +38,7 @@ public class MainMenuScene {
         VBox content = new VBox(logoImage, menuBox);
         content.setAlignment(Pos.CENTER);
 
-        ImageView backgroundImage = new ImageView(ImageConstants.LOGIN_REGISTER);
+        ImageView backgroundImage = new ImageView(ImageConstants.MAIN_MENU);
         backgroundImage.setFitHeight(SIDE);
         backgroundImage.setFitWidth(SIDE);
         backgroundImage.setPreserveRatio(false);
@@ -49,6 +52,11 @@ public class MainMenuScene {
         historyButton.setStyle(buttonStyle);
         profileButton.setStyle(buttonStyle);
         settingsButton.setStyle(buttonStyle);
+    }
+
+    @Override
+    public void onLanguageChanged() {
+        updateTexts();
     }
 
     public void updateTexts() {

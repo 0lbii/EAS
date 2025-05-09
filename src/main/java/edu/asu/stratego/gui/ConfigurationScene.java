@@ -54,7 +54,7 @@ public class ConfigurationScene {
         VBox content = new VBox(logoImage, settingsBox);
         content.setAlignment(Pos.CENTER);
 
-        ImageView backgroundImage = new ImageView(ImageConstants.LOGIN_REGISTER);
+        ImageView backgroundImage = new ImageView(ImageConstants.MAIN_MENU);
         backgroundImage.setFitHeight(SIDE);
         backgroundImage.setFitWidth(SIDE);
         backgroundImage.setPreserveRatio(false);
