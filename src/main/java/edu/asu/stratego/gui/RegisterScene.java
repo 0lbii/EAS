@@ -1,9 +1,6 @@
 package edu.asu.stratego.gui;
 
-import services.PlayerService;
-
 import edu.asu.stratego.media.ImageConstants;
-
 import javafx.application.Platform;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -12,11 +9,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import services.PlayerService;
 
 /**
  * Wrapper class for the registration scene in the application.
@@ -30,6 +28,11 @@ public class RegisterScene {
 
     private static final int SIDE = ClientStage.getSide();
 
+    private static final String BUTTON_STYLE = "-fx-font-size: 18px; -fx-pref-width: 220px; -fx-pref-height: 45px;";
+    private static final String LABEL_STYLE = "-fx-font-size: 18px; -fx-text-fill: white;";
+    private static final String TEXTFIELD_STYLE = "-fx-font-size: 16px; -fx-pref-width: 220px; -fx-pref-height: 40px;";
+    private static final String STATUS_LABEL_STYLE = "-fx-text-fill: white;";
+
     /**
      * Creates a new instance of RegisterScene.
      */
@@ -40,20 +43,36 @@ public class RegisterScene {
         TextField passwordField = new TextField();
         Button registerBtn = new Button("Register");
         Button loginBtn = new Button("Back to Login");
+        registerBtn.setStyle(BUTTON_STYLE);
+        loginBtn.setStyle(BUTTON_STYLE);
 
         nicknameField.setPromptText("Nickname");
         emailField.setPromptText("Email");
         passwordField.setPromptText("Password");
 
+        nicknameField.setStyle(TEXTFIELD_STYLE);
+        emailField.setStyle(TEXTFIELD_STYLE);
+        passwordField.setStyle(TEXTFIELD_STYLE);
+
         Label statusLabel = new Label();
+        statusLabel.setStyle(STATUS_LABEL_STYLE);
+
+        // Labels
+        Label nickLabel = new Label("Nickname: ");
+        Label emailLabel = new Label("Email: ");
+        Label passLabel = new Label("Password: ");
+
+        nickLabel.setStyle(LABEL_STYLE);
+        emailLabel.setStyle(LABEL_STYLE);
+        passLabel.setStyle(LABEL_STYLE);
 
         // Create layout grid for the registration form
         GridPane registerPanel = new GridPane();
-        registerPanel.add(new Label("Nickname: "), 0, 0);
+        registerPanel.add(nickLabel, 0, 0);
         registerPanel.add(nicknameField, 1, 0);
-        registerPanel.add(new Label("Email: "), 0, 1);
+        registerPanel.add(emailLabel, 0, 1);
         registerPanel.add(emailField, 1, 1);
-        registerPanel.add(new Label("Password: "), 0, 2);
+        registerPanel.add(passLabel, 0, 2);
         registerPanel.add(passwordField, 1, 2);
         registerPanel.add(registerBtn, 1, 3);
         registerPanel.add(loginBtn, 1, 4);

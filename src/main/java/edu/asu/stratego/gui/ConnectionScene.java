@@ -1,13 +1,10 @@
 package edu.asu.stratego.gui;
 
-import services.PlayerService;
+import java.io.IOException;
 
 import edu.asu.stratego.game.ClientSocket;
 import edu.asu.stratego.game.Game;
 import edu.asu.stratego.media.ImageConstants;
-
-import java.io.IOException;
-
 import javafx.application.Platform;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -21,6 +18,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import services.PlayerService;
 
 /**
  * Wrapper class for a JavaFX scene. Contains a scene UI and its associated
@@ -56,18 +54,41 @@ public class ConnectionScene {
         sceneRoot.setMaxSize(SIDE, SIDE);
         loginPanel.getChildren().clear();
 
-        // Add form fields
-        loginPanel.add(new Label("Email: "), 0, 0);
+        // Style constants
+        String BUTTON_STYLE = "-fx-font-size: 18px; -fx-pref-width: 220px; -fx-pref-height: 45px;";
+        String LABEL_STYLE = "-fx-font-size: 18px; -fx-text-fill: white;";
+        String TEXTFIELD_STYLE = "-fx-font-size: 16px; -fx-pref-width: 220px; -fx-pref-height: 40px;";
+        String STATUS_LABEL_STYLE = "-fx-text-fill: white;";
+
+        // Create labels
+        Label emailLabel = new Label("Email: ");
+        Label passwordLabel = new Label("Password: ");
+        Label ipLabel = new Label("Server IP: ");
+        emailLabel.setStyle(LABEL_STYLE);
+        passwordLabel.setStyle(LABEL_STYLE);
+        ipLabel.setStyle(LABEL_STYLE);
+
+        // Style input fields
+        emailField.setStyle(TEXTFIELD_STYLE);
+        passwordField.setStyle(TEXTFIELD_STYLE);
+        serverIPField.setStyle(TEXTFIELD_STYLE);
+
+        // Style buttons and status label
+        loginButton.setStyle(BUTTON_STYLE);
+        registerButton.setStyle(BUTTON_STYLE);
+        statusLabel.setStyle(STATUS_LABEL_STYLE);
+
+        // Layout for the login form
+        loginPanel.add(emailLabel, 0, 0);
         loginPanel.add(emailField, 1, 0);
-        loginPanel.add(new Label("Password: "), 0, 1);
+        loginPanel.add(passwordLabel, 0, 1);
         loginPanel.add(passwordField, 1, 1);
-        loginPanel.add(new Label("Server IP: "), 0, 2);
+        loginPanel.add(ipLabel, 0, 2);
         loginPanel.add(serverIPField, 1, 2);
         loginPanel.add(loginButton, 1, 3);
         loginPanel.add(registerButton, 1, 4);
         loginPanel.add(statusLabel, 1, 5);
 
-        // Adjust spacing and alignment
         loginPanel.setHgap(10);
         loginPanel.setVgap(10);
         loginPanel.setAlignment(Pos.CENTER);
@@ -75,27 +96,27 @@ public class ConnectionScene {
         GridPane.setHalignment(registerButton, HPos.CENTER);
         GridPane.setHalignment(statusLabel, HPos.CENTER);
 
-        // Add the logo image
+        // Logo image
         ImageView logoImage = new ImageView(ImageConstants.stratego_logo);
         logoImage.setFitWidth(SIDE / 2.0);
         logoImage.setPreserveRatio(true);
         VBox.setMargin(logoImage, new Insets(0, 0, 20, 0));
 
-        // Combine logo and form in a vertical layout
+        // Combine logo and form
         VBox content = new VBox(logoImage, loginPanel);
         content.setAlignment(Pos.CENTER);
 
-        // Add background image
+        // Background image
         ImageView backgroundImage = new ImageView(ImageConstants.LOGIN_REGISTER);
         backgroundImage.setFitHeight(SIDE);
         backgroundImage.setFitWidth(SIDE);
         backgroundImage.setPreserveRatio(false);
 
-        // Compose final scene
+        // Final scene composition
         sceneRoot.getChildren().addAll(backgroundImage, content);
         scene = new Scene(sceneRoot, SIDE, SIDE);
 
-        // Set button actions
+        // Button actions
         loginButton.setOnAction(e -> Platform.runLater(new ProcessFields()));
         registerButton.setOnAction(e -> {
             RegisterScene registerScene = new RegisterScene();
@@ -103,6 +124,7 @@ public class ConnectionScene {
             clientStage.setScene(registerScene.getScene());
         });
     }
+
 
     /**
      * Handles the login process including validation and status updates.

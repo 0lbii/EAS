@@ -9,7 +9,9 @@ import java.util.logging.Logger;
 import edu.asu.stratego.game.board.ClientSquare;
 import edu.asu.stratego.gui.BoardScene;
 import edu.asu.stratego.gui.ClientStage;
+import edu.asu.stratego.gui.ConfigurationScene;
 import edu.asu.stratego.gui.ConnectionScene;
+import edu.asu.stratego.gui.MainMenuScene;
 import edu.asu.stratego.gui.board.BoardTurnIndicator;
 import edu.asu.stratego.media.ImageConstants;
 import edu.asu.stratego.media.PlaySound;
@@ -39,6 +41,8 @@ public class ClientGameManager implements Runnable {
     private ObjectInputStream  fromServer;
     
     private ClientStage stage;
+
+    private MainMenuScene mainMenuScene;
     
     /**
      * Creates a new instance of ClientGameManager.
@@ -60,8 +64,7 @@ public class ClientGameManager implements Runnable {
         connectToServer();
         waitForOpponent();
 
-        setupBoard();
-        playGame();
+        showMainMenu();
     }
     
     /**
@@ -147,6 +150,45 @@ public class ClientGameManager implements Runnable {
         }
     }
     
+    
+
+    /**
+     * Displays the main menu scene on the JavaFX application thread. 
+     * The menu provides options for starting a new game, viewing match 
+     * history, accessing the user profile, and adjusting settings.
+     * When "Nueva partida" is selected, the setup and gameplay sequence begins.
+     */
+    private void showMainMenu() {
+        Platform.runLater(() -> {
+            if (mainMenuScene == null) {
+                mainMenuScene = new MainMenuScene();
+                mainMenuScene.setNewGameAction(() -> {
+                    new Thread(() -> {
+                        setupBoard();
+                        playGame();
+                    }).start();
+                });
+                mainMenuScene.setSettingsAction(this::showSettingsScreen);
+            } else {
+                mainMenuScene.updateTexts();
+            }
+
+            stage.setScene(mainMenuScene.getScene());
+        });
+    }
+
+    /**
+     * Displays the settings scene, allowing the user to change application language 
+     * and navigate to the profile editing screen.
+     */
+    private void showSettingsScreen() {
+        Platform.runLater(() -> {
+            ConfigurationScene configScene = new ConfigurationScene(this::showMainMenu);
+            stage.setScene(configScene.getScene());
+        });
+    }
+
+
     /**
      * Switches to the game setup scene. Players will place their pieces to 
      * their initial starting positions. Once the pieces are placed, their 

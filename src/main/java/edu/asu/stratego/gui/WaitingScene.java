@@ -1,9 +1,13 @@
 package edu.asu.stratego.gui;
 
+import edu.asu.stratego.media.ImageConstants;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.VBox;
 
 /**
  * Wrapper class for a JavaFX scene. Contains a scene UI to indicate that the 
@@ -12,21 +16,42 @@ import javafx.scene.paint.Color;
  * scene is analogous to a loading screen.
  */
 public class WaitingScene {
-    
-    private final int WINDOW_WIDTH  = 300;
-    private final int WINDOW_HEIGHT = 150;
-    
-    Scene scene;
-    
+
+    private static final int SIDE = ClientStage.getSide();
+    private Scene scene;
+
     /**
      * Creates a new instance of WaitingScene.
      */
     public WaitingScene() {
-        // Create UI.
-        StackPane pane = new StackPane();
-        pane.getChildren().add(new Label("Waiting for an opponent..."));
-        
-        scene = new Scene(pane, WINDOW_WIDTH, WINDOW_HEIGHT);
-        scene.setFill(Color.LIGHTGRAY);
+        // Create message label
+        Label waitingLabel = new Label("Waiting for an opponent...");
+        waitingLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: white;");
+
+        // Create logo image
+        ImageView logoImage = new ImageView(ImageConstants.stratego_logo);
+        logoImage.setFitWidth(SIDE / 2.0);
+        logoImage.setPreserveRatio(true);
+        VBox.setMargin(logoImage, new Insets(0, 0, 20, 0));
+
+        // Combine logo and label
+        VBox content = new VBox(logoImage, waitingLabel);
+        content.setAlignment(Pos.CENTER);
+
+        // Background image
+        ImageView backgroundImage = new ImageView(ImageConstants.LOGIN_REGISTER);
+        backgroundImage.setFitWidth(SIDE);
+        backgroundImage.setFitHeight(SIDE);
+        backgroundImage.setPreserveRatio(false);
+
+        // Root layout
+        StackPane root = new StackPane(backgroundImage, content);
+        root.setMaxSize(SIDE, SIDE);
+
+        scene = new Scene(root, SIDE, SIDE);
+    }
+
+    public Scene getScene() {
+        return scene;
     }
 }

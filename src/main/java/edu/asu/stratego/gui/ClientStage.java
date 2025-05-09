@@ -64,7 +64,7 @@ public class ClientStage extends Stage {
      */
     public void setWaitingScene() {
         waiting = new WaitingScene();
-        this.setScene(waiting.scene);
+        this.setScene(waiting.getScene());
     }
 
     /**
