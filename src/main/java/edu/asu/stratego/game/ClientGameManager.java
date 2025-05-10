@@ -11,8 +11,10 @@ import edu.asu.stratego.gui.BoardScene;
 import edu.asu.stratego.gui.ClientStage;
 import edu.asu.stratego.gui.ConfigurationScene;
 import edu.asu.stratego.gui.ConnectionScene;
+import edu.asu.stratego.gui.ExitScene;
 import edu.asu.stratego.gui.HistoryScene;
 import edu.asu.stratego.gui.MainMenuScene;
+import edu.asu.stratego.gui.ResumeGameScene;
 import edu.asu.stratego.gui.board.BoardTurnIndicator;
 import edu.asu.stratego.media.ImageConstants;
 import edu.asu.stratego.media.PlaySound;
@@ -169,6 +171,8 @@ public class ClientGameManager implements Runnable {
                 });
                 mainMenuScene.setSettingsAction(this::showSettingsScreen);
                 mainMenuScene.setHistoryAction(this::showHistoryScreen);
+                mainMenuScene.setResumeAction(this::showResumeGameScreen);
+                mainMenuScene.setExitAction(this::showExitScreen);
 
             }
             stage.setScene(mainMenuScene.getScene());
@@ -193,6 +197,26 @@ public class ClientGameManager implements Runnable {
         Platform.runLater(() -> {
             HistoryScene historyScene = new HistoryScene(this::showMainMenu);
             stage.setScene(historyScene.getScene());
+        });
+    }
+
+    /**
+     * Muestra la pantalla de reanudar partidas (AÚN SIN IMPLEMENTAR)
+     */
+    private void showResumeGameScreen() {
+        Platform.runLater(() -> {
+            ResumeGameScene resumeScene = new ResumeGameScene(this::showMainMenu);
+            stage.setScene(resumeScene.getScene());
+        });
+    }
+
+    /**
+     * Muestra la pantalla de reanudar partidas (AÚN SIN IMPLEMENTAR)
+     */
+    private void showExitScreen() {
+        Platform.runLater(() -> {
+            ExitScene exitScene = new ExitScene();
+            stage.setScene(exitScene.getScene());
         });
     }
 

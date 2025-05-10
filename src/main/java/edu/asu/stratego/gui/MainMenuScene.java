@@ -16,9 +16,11 @@ public class MainMenuScene implements LanguageObserver {
 
     private Scene scene;
     private Button newGameButton = new Button();
+    private Button resumeButton = new Button();
     private Button historyButton = new Button();
     private Button profileButton = new Button();
     private Button settingsButton = new Button();
+    private Button exitButton = new Button();
 
     private static final int SIDE = ClientStage.getSide();
 
@@ -27,7 +29,8 @@ public class MainMenuScene implements LanguageObserver {
 
         updateTexts(); // Initial translations
 
-        VBox menuBox = new VBox(15, newGameButton, historyButton, profileButton, settingsButton);
+        VBox menuBox = new VBox(15, newGameButton, historyButton, profileButton, settingsButton, resumeButton,
+                exitButton);
         menuBox.setAlignment(Pos.CENTER);
 
         ImageView logoImage = new ImageView(ImageConstants.stratego_logo);
@@ -52,6 +55,8 @@ public class MainMenuScene implements LanguageObserver {
         historyButton.setStyle(buttonStyle);
         profileButton.setStyle(buttonStyle);
         settingsButton.setStyle(buttonStyle);
+        resumeButton.setStyle(buttonStyle);
+        exitButton.setStyle(buttonStyle);
     }
 
     @Override
@@ -64,6 +69,9 @@ public class MainMenuScene implements LanguageObserver {
         historyButton.setText(ResourceBundleManager.get("menu.history"));
         profileButton.setText(ResourceBundleManager.get("menu.profile"));
         settingsButton.setText(ResourceBundleManager.get("menu.settings"));
+        resumeButton.setText(ResourceBundleManager.get("menu.resume"));
+        exitButton.setText(ResourceBundleManager.get("menu.exit"));
+
     }
 
     public void setNewGameAction(Runnable action) {
@@ -76,6 +84,14 @@ public class MainMenuScene implements LanguageObserver {
 
     public void setHistoryAction(Runnable action) {
         historyButton.setOnAction(e -> action.run());
+    }
+
+    public void setResumeAction(Runnable action) {
+        resumeButton.setOnAction(e -> action.run());
+    }
+
+    public void setExitAction(Runnable action) {
+        exitButton.setOnAction(e -> action.run());
     }
 
     public Scene getScene() {
