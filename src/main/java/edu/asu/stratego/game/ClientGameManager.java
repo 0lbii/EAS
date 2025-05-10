@@ -11,9 +11,12 @@ import edu.asu.stratego.gui.BoardScene;
 import edu.asu.stratego.gui.ClientStage;
 import edu.asu.stratego.gui.ConfigurationScene;
 import edu.asu.stratego.gui.ConnectionScene;
+import edu.asu.stratego.gui.ExitScene;
+import edu.asu.stratego.gui.ResumeGameScene;
 import edu.asu.stratego.gui.HistoryScene;
 import edu.asu.stratego.gui.MainMenuScene;
 import edu.asu.stratego.gui.ProfileScene;
+
 import edu.asu.stratego.gui.board.BoardTurnIndicator;
 import edu.asu.stratego.media.ImageConstants;
 import edu.asu.stratego.media.PlaySound;
@@ -171,8 +174,10 @@ public class ClientGameManager implements Runnable {
                 mainMenuScene.setSettingsAction(this::showSettingsScreen);
 
                 mainMenuScene.setProfileAction(this::showProfileScreen);
-                
+
                 mainMenuScene.setHistoryAction(this::showHistoryScreen);
+                mainMenuScene.setResumeAction(this::showResumeGameScreen);
+                mainMenuScene.setExitAction(this::showExitScreen);
 
             }
             stage.setScene(mainMenuScene.getScene());
@@ -201,8 +206,28 @@ public class ClientGameManager implements Runnable {
     }
 
     /**
-<<<<<<< HEAD
-     * Displays the profile scene, allowing the user to see their own profile 
+     * Muestra la pantalla de reanudar partidas (AÚN SIN IMPLEMENTAR)
+     */
+    private void showResumeGameScreen() {
+        Platform.runLater(() -> {
+            ResumeGameScene resumeScene = new ResumeGameScene(this::showMainMenu);
+            stage.setScene(resumeScene.getScene());
+        });
+    }
+
+    /**
+     * show scene of exiting the game and the program
+     */
+    private void showExitScreen() {
+        Platform.runLater(() -> {
+            ExitScene exitScene = new ExitScene();
+            stage.setScene(exitScene.getScene());
+        });
+    }
+
+    /**
+     * <<<<<<< HEAD
+     * Displays the profile scene, allowing the user to see their own profile
      */
     private void showProfileScreen() {
         Platform.runLater(() -> {
@@ -211,14 +236,13 @@ public class ClientGameManager implements Runnable {
         });
     }
 
-
     /**
-     * Switches to the game setup scene. Players will place their pieces to 
-     * their initial starting positions. Once the pieces are placed, their 
-=======
      * Switches to the game setup scene. Players will place their pieces to
      * their initial starting positions. Once the pieces are placed, their
->>>>>>> 905380814e461334e371dc85a26d0c2a01e12ebd
+     * =======
+     * Switches to the game setup scene. Players will place their pieces to
+     * their initial starting positions. Once the pieces are placed, their
+     * >>>>>>> 905380814e461334e371dc85a26d0c2a01e12ebd
      * positions are sent to the server.
      */
     private void setupBoard() {
