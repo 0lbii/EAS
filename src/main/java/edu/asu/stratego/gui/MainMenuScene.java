@@ -74,6 +74,10 @@ public class MainMenuScene implements LanguageObserver {
         settingsButton.setOnAction(e -> action.run());
     }
 
+    public void setProfileAction(Runnable action) {
+        profileButton.setOnAction(e -> action.run());
+    }
+
     public Scene getScene() {
         return scene;
     }

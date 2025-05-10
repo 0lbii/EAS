@@ -10,6 +10,7 @@ public class Player implements Serializable {
     private static final long serialVersionUID = 649459794036226272L;
     private String nickname;
     private PieceColor color;
+    private String email;
 
     /**
      * Creates a new instance of Player
@@ -42,5 +43,19 @@ public class Player implements Serializable {
      */
     public PieceColor getColor() {
         return color;
+    }
+
+    /**
+     * @param email the player's email
+     */
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    /**
+     * @return the player's email
+     */
+    public String getEmail() {
+        return email;
     }
 }

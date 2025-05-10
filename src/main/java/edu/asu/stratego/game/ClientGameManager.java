@@ -12,6 +12,7 @@ import edu.asu.stratego.gui.ClientStage;
 import edu.asu.stratego.gui.ConfigurationScene;
 import edu.asu.stratego.gui.ConnectionScene;
 import edu.asu.stratego.gui.MainMenuScene;
+import edu.asu.stratego.gui.ProfileScene;
 import edu.asu.stratego.gui.board.BoardTurnIndicator;
 import edu.asu.stratego.media.ImageConstants;
 import edu.asu.stratego.media.PlaySound;
@@ -166,6 +167,8 @@ public class ClientGameManager implements Runnable {
                     }).start();
                 });
                 mainMenuScene.setSettingsAction(this::showSettingsScreen);
+
+                mainMenuScene.setProfileAction(this::showProfileScreen);
             }
             stage.setScene(mainMenuScene.getScene());
         });
@@ -179,6 +182,17 @@ public class ClientGameManager implements Runnable {
         Platform.runLater(() -> {
             ConfigurationScene configScene = new ConfigurationScene(this::showMainMenu);
             stage.setScene(configScene.getScene());
+        });
+    }
+
+
+    /**
+     * Displays the profile scene, allowing the user to see their own profile 
+     */
+    private void showProfileScreen() {
+        Platform.runLater(() -> {
+            ProfileScene profileScene = new ProfileScene(this::showMainMenu);
+            stage.setScene(profileScene.getScene());
         });
     }
 

@@ -5,17 +5,26 @@ import edu.asu.stratego.util.HashTables.SoundType;
 import javafx.scene.media.AudioClip;
 
 public class PlaySound {
-    public static void playMusic(SoundType soundType, int Volume) {
-        AudioClip music = HashTables.SOUND_MAP.get(soundType);
-        music.setVolume(Volume);
-		music.setCycleCount(AudioClip.INDEFINITE);
-        music.play();
-        System.out.println("Played music (" + soundType + ", " + Volume * 100 + "% volume)");
+    private static AudioClip currentMusic = null;
+
+    public static void playMusic(SoundType soundType, int volume) {
+        stopMusic();
+        currentMusic = HashTables.SOUND_MAP.get(soundType);
+        currentMusic.setVolume(volume);
+        currentMusic.setCycleCount(AudioClip.INDEFINITE);
+        currentMusic.play();
     }
 
     public static void playEffect(SoundType soundType, int Volume) {
         AudioClip effect = HashTables.SOUND_MAP.get(soundType);
         effect.setVolume(Volume);
         effect.play();
+    }
+
+    public static void stopMusic() {
+        if (currentMusic != null) {
+            currentMusic.stop();
+            currentMusic = null;
+        }
     }
 }
