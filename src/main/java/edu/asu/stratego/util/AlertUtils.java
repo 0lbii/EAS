@@ -18,7 +18,8 @@ public class AlertUtils {
      * @param onRetry  code to run if the user clicks "Retry"
      * @param onCancel code to run if the user clicks "Cancel"
      */
-    public static void showRetryAlert(String title, String header, String content, Runnable onRetry, Runnable onCancel) {
+    public static void showRetryAlert(String title, String header, String content, Runnable onRetry,
+            Runnable onCancel) {
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle(title);
@@ -39,4 +40,22 @@ public class AlertUtils {
             }
         });
     }
+
+    /**
+     * Shows an informational alert dialog on the JavaFX thread.
+     *
+     * @param title   the title of the alert window
+     * @param header  the header text of the alert
+     * @param content the content text of the alert
+     */
+    public static void showInfoAlert(String title, String header, String content) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle(title);
+            alert.setHeaderText(header);
+            alert.setContentText(content);
+            alert.showAndWait();
+        });
+    }
+
 }
