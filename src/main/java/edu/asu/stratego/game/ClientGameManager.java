@@ -14,7 +14,6 @@ import edu.asu.stratego.gui.ConnectionScene;
 import edu.asu.stratego.gui.ExitScene;
 import edu.asu.stratego.gui.HistoryScene;
 import edu.asu.stratego.gui.MainMenuScene;
-import edu.asu.stratego.gui.ResumeGameScene;
 import edu.asu.stratego.gui.board.BoardTurnIndicator;
 import edu.asu.stratego.media.ImageConstants;
 import edu.asu.stratego.media.PlaySound;
@@ -170,6 +169,9 @@ public class ClientGameManager implements Runnable {
                     }).start();
                 });
                 mainMenuScene.setSettingsAction(this::showSettingsScreen);
+
+                mainMenuScene.setProfileAction(this::showProfileScreen);
+
                 mainMenuScene.setHistoryAction(this::showHistoryScreen);
                 mainMenuScene.setResumeAction(this::showResumeGameScreen);
                 mainMenuScene.setExitAction(this::showExitScreen);
@@ -221,8 +223,23 @@ public class ClientGameManager implements Runnable {
     }
 
     /**
+     * <<<<<<< HEAD
+     * Displays the profile scene, allowing the user to see their own profile
+     */
+    private void showProfileScreen() {
+        Platform.runLater(() -> {
+            ProfileScene profileScene = new ProfileScene(this::showMainMenu);
+            stage.setScene(profileScene.getScene());
+        });
+    }
+
+    /**
      * Switches to the game setup scene. Players will place their pieces to
      * their initial starting positions. Once the pieces are placed, their
+     * =======
+     * Switches to the game setup scene. Players will place their pieces to
+     * their initial starting positions. Once the pieces are placed, their
+     * >>>>>>> 905380814e461334e371dc85a26d0c2a01e12ebd
      * positions are sent to the server.
      */
     private void setupBoard() {

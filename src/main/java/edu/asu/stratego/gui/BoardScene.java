@@ -65,7 +65,7 @@ public class BoardScene {
          */
         
         // Set the background color (turn indicator).
-        BoardTurnIndicator indicator = new BoardTurnIndicator();
+        BoardTurnIndicator indicator = new BoardTurnIndicator(); // do not eliminate, it makes background not null
         Rectangle background = BoardTurnIndicator.getTurnIndicator();
         
         

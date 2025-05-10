@@ -81,7 +81,7 @@ public class SetupPanel implements LanguageObserver{
         headerText.add(nameDisplay, 0, 0);
 
         // Setup Timer.
-        Label setupTimer = new Label("Setup Time Left: ");
+        Label setupTimer = new Label(ResourceBundleManager.get("setup.timer.label"));
         setupTimer.setFont(Font.font("Century Gothic", UNIT / 3));
         setupTimer.setTextFill(new Color(0.9, 0.5, 0.0, 1.0));
         setupTimer.setAlignment(Pos.TOP_LEFT);

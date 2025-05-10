@@ -148,6 +148,7 @@ public class ConnectionScene {
             models.Player player = service.findByEmailAndPassword(email, password);
             if (player != null) {
                 Game.getPlayer().setNickname(player.getNickname());
+                Game.getPlayer().setEmail(player.getEmail());
                 statusLabel.setText("Welcome " + player.getNickname() + "!");
             } else {
                 statusLabel.setText("Invalid credentials");

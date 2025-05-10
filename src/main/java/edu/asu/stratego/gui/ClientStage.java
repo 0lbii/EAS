@@ -3,6 +3,8 @@ package edu.asu.stratego.gui;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 
+import edu.asu.stratego.media.PlaySound;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 
 /**
@@ -34,6 +36,12 @@ public class ClientStage extends Stage {
         setConnectionScene();
         this.setTitle("ASU Stratego");
         this.setResizable(false);
+        this.setOnCloseRequest(event -> {
+            PlaySound.stopMusic();
+            Platform.exit();
+            System.exit(0);
+        });
+
         this.show();
     }
 
