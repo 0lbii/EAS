@@ -12,11 +12,9 @@ import edu.asu.stratego.gui.ClientStage;
 import edu.asu.stratego.gui.ConfigurationScene;
 import edu.asu.stratego.gui.ConnectionScene;
 import edu.asu.stratego.gui.ExitScene;
-import edu.asu.stratego.gui.ResumeGameScene;
 import edu.asu.stratego.gui.HistoryScene;
 import edu.asu.stratego.gui.MainMenuScene;
 import edu.asu.stratego.gui.ProfileScene;
-
 import edu.asu.stratego.gui.board.BoardTurnIndicator;
 import edu.asu.stratego.media.ImageConstants;
 import edu.asu.stratego.media.PlaySound;
@@ -176,7 +174,7 @@ public class ClientGameManager implements Runnable {
                 mainMenuScene.setProfileAction(this::showProfileScreen);
 
                 mainMenuScene.setHistoryAction(this::showHistoryScreen);
-                mainMenuScene.setResumeAction(this::showResumeGameScreen);
+                
                 mainMenuScene.setExitAction(this::showExitScreen);
 
             }
@@ -196,7 +194,7 @@ public class ClientGameManager implements Runnable {
     }
 
     /**
-     * MOSTRAR MENSAJE DE QUE NO ESTÁ IMPLEMENTADO
+     * Displays the history scene, allowing the user to replay un unfinished game
      */
     private void showHistoryScreen() {
         Platform.runLater(() -> {
@@ -206,17 +204,7 @@ public class ClientGameManager implements Runnable {
     }
 
     /**
-     * Muestra la pantalla de reanudar partidas (AÚN SIN IMPLEMENTAR)
-     */
-    private void showResumeGameScreen() {
-        Platform.runLater(() -> {
-            ResumeGameScene resumeScene = new ResumeGameScene(this::showMainMenu);
-            stage.setScene(resumeScene.getScene());
-        });
-    }
-
-    /**
-     * show scene of exiting the game and the program
+     * Displays the exit scene, allowing the user to exit the application
      */
     private void showExitScreen() {
         Platform.runLater(() -> {
@@ -226,7 +214,6 @@ public class ClientGameManager implements Runnable {
     }
 
     /**
-     * <<<<<<< HEAD
      * Displays the profile scene, allowing the user to see their own profile
      */
     private void showProfileScreen() {

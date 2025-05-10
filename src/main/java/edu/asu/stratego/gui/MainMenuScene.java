@@ -16,7 +16,6 @@ public class MainMenuScene implements LanguageObserver {
 
     private Scene scene;
     private Button newGameButton = new Button();
-    private Button resumeButton = new Button();
     private Button historyButton = new Button();
     private Button profileButton = new Button();
     private Button settingsButton = new Button();
@@ -29,8 +28,7 @@ public class MainMenuScene implements LanguageObserver {
 
         updateTexts(); // Initial translations
 
-        VBox menuBox = new VBox(15, newGameButton, historyButton, profileButton, settingsButton, resumeButton,
-                exitButton);
+        VBox menuBox = new VBox(15, newGameButton, historyButton, profileButton, settingsButton, exitButton);
         menuBox.setAlignment(Pos.CENTER);
 
         ImageView logoImage = new ImageView(ImageConstants.stratego_logo);
@@ -55,7 +53,6 @@ public class MainMenuScene implements LanguageObserver {
         historyButton.setStyle(buttonStyle);
         profileButton.setStyle(buttonStyle);
         settingsButton.setStyle(buttonStyle);
-        resumeButton.setStyle(buttonStyle);
         exitButton.setStyle(buttonStyle);
     }
 
@@ -69,7 +66,6 @@ public class MainMenuScene implements LanguageObserver {
         historyButton.setText(ResourceBundleManager.get("menu.history"));
         profileButton.setText(ResourceBundleManager.get("menu.profile"));
         settingsButton.setText(ResourceBundleManager.get("menu.settings"));
-        resumeButton.setText(ResourceBundleManager.get("menu.resume"));
         exitButton.setText(ResourceBundleManager.get("menu.exit"));
 
     }
@@ -88,10 +84,6 @@ public class MainMenuScene implements LanguageObserver {
 
     public void setHistoryAction(Runnable action) {
         historyButton.setOnAction(e -> action.run());
-    }
-
-    public void setResumeAction(Runnable action) {
-        resumeButton.setOnAction(e -> action.run());
     }
 
     public void setExitAction(Runnable action) {
