@@ -12,8 +12,11 @@ import edu.asu.stratego.gui.ClientStage;
 import edu.asu.stratego.gui.ConfigurationScene;
 import edu.asu.stratego.gui.ConnectionScene;
 import edu.asu.stratego.gui.ExitScene;
+import edu.asu.stratego.gui.ResumeGameScene;
 import edu.asu.stratego.gui.HistoryScene;
 import edu.asu.stratego.gui.MainMenuScene;
+import edu.asu.stratego.gui.ProfileScene;
+
 import edu.asu.stratego.gui.board.BoardTurnIndicator;
 import edu.asu.stratego.media.ImageConstants;
 import edu.asu.stratego.media.PlaySound;
@@ -213,7 +216,7 @@ public class ClientGameManager implements Runnable {
     }
 
     /**
-     * Muestra la pantalla de reanudar partidas (AÚN SIN IMPLEMENTAR)
+     * show scene of exiting the game and the program
      */
     private void showExitScreen() {
         Platform.runLater(() -> {
