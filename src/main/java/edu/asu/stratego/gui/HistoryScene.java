@@ -1,6 +1,8 @@
 package edu.asu.stratego.gui;
 
 import edu.asu.stratego.game.ResourceBundleManager;
+import edu.asu.stratego.languages.LanguageObservable;
+import edu.asu.stratego.languages.LanguageObserver;
 import edu.asu.stratego.media.ImageConstants;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -11,25 +13,25 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
-public class HistoryScene {
+public class HistoryScene implements LanguageObserver {
+
     private Scene scene;
     private Button backButton = new Button();
+
+    private Label titleLabel = new Label();
+    private Label messageLabel = new Label();
 
     private static final int SIDE = ClientStage.getSide();
 
     public HistoryScene(Runnable onBack) {
-        // UI Components
-        Label titleLabel = new Label(ResourceBundleManager.get("menu.history"));
+        LanguageObservable.addObserver(this);
+
+        // Styles
         titleLabel.setStyle("-fx-font-size: 24px; -fx-text-fill: white; -fx-font-weight: bold;");
-
-        Label messageLabel = new Label("No se ha implementado aún esta función");
         messageLabel.setStyle("-fx-font-size: 18px; -fx-text-fill: white;");
+        backButton.setStyle("-fx-font-size: 18px; -fx-pref-width: 220px; -fx-pref-height: 45px;");
 
-        backButton.setText(ResourceBundleManager.get("menu.back"));
-
-        // Style
-        String buttonStyle = "-fx-font-size: 18px; -fx-pref-width: 220px; -fx-pref-height: 45px;";
-        backButton.setStyle(buttonStyle);
+        updateTexts();
 
         // Layout
         VBox historyBox = new VBox(20, titleLabel, messageLabel, backButton);
@@ -52,8 +54,18 @@ public class HistoryScene {
         root.setMaxSize(SIDE, SIDE);
         this.scene = new Scene(root, SIDE, SIDE);
 
-        // Logic
         backButton.setOnAction(e -> onBack.run());
+    }
+
+    @Override
+    public void onLanguageChanged() {
+        updateTexts();
+    }
+
+    private void updateTexts() {
+        titleLabel.setText(ResourceBundleManager.get("menu.history"));
+        messageLabel.setText(ResourceBundleManager.get("history.notimplemented"));
+        backButton.setText(ResourceBundleManager.get("menu.back"));
     }
 
     public Scene getScene() {

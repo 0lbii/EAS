@@ -19,28 +19,25 @@ public class ProfileScene implements LanguageObserver {
     private final Button backButton = new Button();
     private final Label nicknameLabel = new Label();
     private final Label emailLabel = new Label();
+    private final Label titleLabel = new Label();
 
     private static final int SIDE = ClientStage.getSide();
 
     public ProfileScene(Runnable onBackAction) {
         LanguageObservable.addObserver(this);
 
-        String nickname = Game.getPlayer().getNickname();
-        String email = Game.getPlayer().getEmail();
-
-        nicknameLabel.setText(ResourceBundleManager.get("profile.nickname") + ": " + nickname);
+        // Styles
+        titleLabel.setStyle("-fx-font-size: 24px; -fx-text-fill: white; -fx-font-weight: bold;");
         nicknameLabel.setStyle("-fx-font-size: 18px; -fx-text-fill: white;");
-
-        emailLabel.setText(ResourceBundleManager.get("profile.email") + ": " + email);
         emailLabel.setStyle("-fx-font-size: 18px; -fx-text-fill: white;");
-
-        backButton.setText(ResourceBundleManager.get("menu.back"));
-        backButton.setOnAction(e -> onBackAction.run());
+        backButton.setStyle("-fx-font-size: 16px;");
         backButton.setPrefWidth(180);
         backButton.setPrefHeight(40);
-        backButton.setStyle("-fx-font-size: 16px;");
+        backButton.setOnAction(e -> onBackAction.run());
 
-        VBox content = new VBox(15, nicknameLabel, emailLabel, backButton);
+        updateTexts();
+
+        VBox content = new VBox(15, titleLabel, nicknameLabel, emailLabel, backButton);
         content.setAlignment(Pos.CENTER);
 
         ImageView background = new ImageView(ImageConstants.MAIN_MENU);
@@ -54,12 +51,17 @@ public class ProfileScene implements LanguageObserver {
 
     @Override
     public void onLanguageChanged() {
+        updateTexts();
+    }
+
+    private void updateTexts() {
         String nickname = Game.getPlayer().getNickname();
         String email = Game.getPlayer().getEmail();
 
+        titleLabel.setText(ResourceBundleManager.get("menu.profile"));
         nicknameLabel.setText(ResourceBundleManager.get("profile.nickname") + ": " + nickname);
         emailLabel.setText(ResourceBundleManager.get("profile.email") + ": " + email);
-        backButton.setText(ResourceBundleManager.get("button.back"));
+        backButton.setText(ResourceBundleManager.get("menu.back"));
     }
 
     public Scene getScene() {

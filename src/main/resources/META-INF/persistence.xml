@@ -11,8 +11,6 @@
             <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/stratego"/>
             <property name="jakarta.persistence.jdbc.user" value="root"/>
             <property name="jakarta.persistence.jdbc.password" value="admin"/>
-            <property name="jakarta.persistence.jdbc.password" value="password"/>
-
             
             <!-- Hibernate config -->
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect"/>
