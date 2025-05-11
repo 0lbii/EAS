@@ -1,53 +1,27 @@
-package edu.asu.stratego.game;
+package edu.asu.stratego.game.gameRules;
 
-import java.awt.Point;
 import java.util.ArrayList;
+import java.awt.Point;
 
+import edu.asu.stratego.game.BattleOutcome;
+import edu.asu.stratego.game.Piece;
+import edu.asu.stratego.game.Move;
+import edu.asu.stratego.game.PieceColor;
+import edu.asu.stratego.game.PieceType;
+import edu.asu.stratego.game.ServerGameManager;
 import edu.asu.stratego.game.board.ServerBoard;
 
-public class GameRules {
-
-    private ServerBoard board;
-
-    private ServerGameManager gameManager;
+public class OriginalRules extends BaseRules {
 
     /**
-     * GameRules constructor.
+     * OriginalRules constructor.
      * 
      * @param board       The game board.
      * @param gameManager The game manager.
      */
-    public GameRules(ServerBoard board, ServerGameManager gameManager) {
+    protected OriginalRules(ServerBoard board, ServerGameManager manager) {
         this.board = board;
-        this.gameManager = gameManager;
-    }
-
-    /**
-     * Processes a move made by a player.
-     * Determines whether it is a normal move or an attack and acts accordingly.
-     * 
-     * @param move            The player's original move.
-     * @param moveToPlayerOne The transformed move for player 1.
-     * @param moveToPlayerTwo The transformed move for player 2.
-     */
-    public void processMove(Move move, Move moveToPlayerOne, Move moveToPlayerTwo) {
-        Piece destinationPiece = getPieceAt(move.getEnd());
-        Piece movingPiece = getPieceAt(move.getStart());
-
-        // If it's a normal move (no attack)
-        if (destinationPiece == null) {
-            setPieceAt(move.getStart(), null);
-            setPieceAt(move.getEnd(), movingPiece);
-            // Rotate the move 180 degrees before sending
-            gameManager.rotateMove(move, moveToPlayerOne, moveToPlayerTwo, null, movingPiece, false, false);
-        }
-        // If it's an attack move
-        else {
-            BattleOutcome outcome = movingPiece.getPieceType().attack(destinationPiece.getPieceType());
-            moveToPlayerOne.setAttackMove(true);
-            moveToPlayerTwo.setAttackMove(true);
-            handleAttackMove(move, movingPiece, destinationPiece, outcome, moveToPlayerOne, moveToPlayerTwo);
-        }
+        this.gameManager = manager;
     }
 
     /**
@@ -60,7 +34,7 @@ public class GameRules {
      * @param moveToPlayerOne The adapted move for player 1.
      * @param moveToPlayerTwo The adapted move for player 2.
      */
-    private void handleAttackMove(Move move, Piece attacker, Piece defender, BattleOutcome outcome,
+    protected void handleAttackMove(Move move, Piece attacker, Piece defender, BattleOutcome outcome,
             Move moveToPlayerOne, Move moveToPlayerTwo) {
         switch (outcome) {
             case WIN -> {
@@ -127,55 +101,6 @@ public class GameRules {
         }
 
         return validMoves;
-    }
-
-    /**
-     * Indicates whether the box corresponds to a lake (non-trafficable area).
-     */
-    private static boolean isLake(int row, int col) {
-        return (col == 2 || col == 3 || col == 6 || col == 7) && (row == 4 || row == 5);
-    }
-
-    /**
-     * Indicates whether the coordinates are within the board.
-     */
-    private static boolean isInBounds(int row, int col) {
-        return row >= 0 && row <= 9 && col >= 0 && col <= 9;
-    }
-
-    /**
-     * Checks if there is an enemy piece on the specified square.
-     */
-    private boolean isOpponentPiece(int row, int col, PieceColor inColor) {
-        Piece piece = board.getSquare(row, col).getPiece();
-        return piece != null && piece.getPieceColor() != inColor;
-    }
-
-    /**
-     * Checks if the specified checkbox is empty.
-     */
-    private boolean isNullPiece(int row, int col) {
-        return board.getSquare(row, col).getPiece() == null;
-    }
-
-    /**
-     * Retrieves the piece located at the given point on the board.
-     *
-     * @param point the coordinates (row, column) on the board.
-     * @return the piece at the specified location, or null if the square is empty.
-     */
-    private Piece getPieceAt(Point point) {
-        return board.getSquare(point.x, point.y).getPiece();
-    }
-
-    /**
-     * Places a piece at the specified point on the board.
-     *
-     * @param point the coordinates (row, column) where the piece will be placed.
-     * @param piece the piece to place at the given location.
-     */
-    private void setPieceAt(Point point, Piece piece) {
-        board.getSquare(point.x, point.y).setPiece(piece);
     }
 
 }

@@ -8,6 +8,9 @@ import java.net.Socket;
 import java.util.logging.*;
 
 import edu.asu.stratego.game.board.ServerBoard;
+import edu.asu.stratego.game.gameRules.OriginalRulesFactory;
+import edu.asu.stratego.game.gameRules.RulesFactory;
+import edu.asu.stratego.game.gameRules.GameRules;
 import edu.asu.stratego.util.CoordinateUtils;
 
 /**
@@ -18,8 +21,6 @@ public class ServerGameManager implements Runnable {
     private static final Logger logger = Logger.getLogger(ServerGameManager.class.getName());
 
     private final String session;
-
-    private final GameRules gameRules;
 
     private ServerBoard board = new ServerBoard();
 
@@ -40,6 +41,9 @@ public class ServerGameManager implements Runnable {
     private Socket socketOne;
     private Socket socketTwo;
 
+    RulesFactory rulesFactory = new OriginalRulesFactory();
+    GameRules gameRules;
+
     /**
      * Creates a new instance of ServerGameManager.
      * 
@@ -59,7 +63,7 @@ public class ServerGameManager implements Runnable {
         else
             this.turn = PieceColor.BLUE;
 
-        this.gameRules = new GameRules(board, this);
+        this.gameRules = rulesFactory.createOriginalRules(board, this);
     }
 
     /**
