@@ -5,9 +5,10 @@ import java.util.ResourceBundle;
 
 import edu.asu.stratego.languages.LanguageObservable;
 
-
 public class ResourceBundleManager {
-    private static Locale currentLocale = new Locale("en");
+
+    private static Locale currentLocale = Locale.of("en");
+
     private static ResourceBundle bundle = ResourceBundle.getBundle("messages", currentLocale);
 
     public static void setLocale(Locale locale) {
@@ -23,4 +24,5 @@ public class ResourceBundleManager {
     public static Locale getLocale() {
         return currentLocale;
     }
+
 }
