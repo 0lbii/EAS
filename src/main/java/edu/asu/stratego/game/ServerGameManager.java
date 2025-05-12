@@ -14,6 +14,7 @@ import edu.asu.stratego.game.pieces.PieceColor;
 import edu.asu.stratego.game.pieces.PieceType;
 import edu.asu.stratego.game.gameRules.GameRules;
 import edu.asu.stratego.util.CoordinateUtils;
+import services.PlayerService;
 import edu.asu.stratego.game.pieces.Piece;
 
 /**
@@ -222,6 +223,22 @@ public class ServerGameManager implements Runnable {
                 // Check if someone has won the game
                 GameStatus winCondition = checkWinCondition();
 
+                // Determine winner and award points accordingly
+                PlayerService service = new PlayerService();
+                try {
+                    if (winCondition == GameStatus.RED_NO_MOVES || winCondition == GameStatus.RED_CAPTURED) {
+                        models.Player p = service.findByEmail(playerTwo.getEmail());
+                        p.setPoints(p.getPoints() + 100);
+                        service.savePlayer(p);
+                    } else if (winCondition == GameStatus.BLUE_NO_MOVES || winCondition == GameStatus.BLUE_CAPTURED) {
+                        models.Player p = service.findByEmail(playerOne.getEmail());
+                        p.setPoints(p.getPoints() + 100);
+                        service.savePlayer(p);
+                    }
+                } catch (Exception e) {
+                    logger.log(Level.SEVERE, "Error updating player points", e);
+                }
+
                 // Send updated moves and game status to both players
                 sendMoveToPlayers(moveToPlayerOne, moveToPlayerTwo, winCondition);
 
@@ -235,6 +252,7 @@ public class ServerGameManager implements Runnable {
                 return;
             }
         }
+
     }
 
     /**

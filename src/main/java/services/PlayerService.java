@@ -18,7 +18,11 @@ public class PlayerService {
         EntityTransaction tx = em.getTransaction();
         try {
             tx.begin();
-            em.persist(player);
+            if (player.getId() == null) {
+                em.persist(player);
+            } else {
+                em.merge(player);
+            }
             tx.commit();
         } catch (Exception e) {
             if (tx.isActive())

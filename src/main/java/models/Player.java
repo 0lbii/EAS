@@ -18,7 +18,7 @@ public class Player {
 
     private String password;
 
-    private Integer points;
+    private Integer points = 0;
 
     @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GamePlayer> gamePlayers = new ArrayList<>();
