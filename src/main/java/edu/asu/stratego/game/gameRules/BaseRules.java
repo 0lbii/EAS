@@ -4,10 +4,10 @@ import java.awt.Point;
 
 import edu.asu.stratego.game.BattleOutcome;
 import edu.asu.stratego.game.Move;
-import edu.asu.stratego.game.Piece;
-import edu.asu.stratego.game.PieceColor;
+import edu.asu.stratego.game.pieces.Piece;
 import edu.asu.stratego.game.ServerGameManager;
 import edu.asu.stratego.game.board.ServerBoard;
+import edu.asu.stratego.game.pieces.PieceColor;
 
 public abstract class BaseRules implements GameRules {
 

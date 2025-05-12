@@ -1,6 +1,6 @@
 package edu.asu.stratego.game.board;
 
-import edu.asu.stratego.game.Piece;
+import edu.asu.stratego.game.pieces.Piece;
 import edu.asu.stratego.gui.board.BoardSquareEventPane;
 import edu.asu.stratego.gui.board.BoardSquarePane;
 import edu.asu.stratego.gui.board.BoardSquareType;
@@ -51,4 +51,5 @@ public class ClientSquare {
     public BoardSquareEventPane getEventPane() {
         return eventPane;
     }
+
 }

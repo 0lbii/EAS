@@ -1,6 +1,7 @@
 package edu.asu.stratego.game;
 
 import edu.asu.stratego.game.board.ClientBoard;
+import edu.asu.stratego.game.pieces.PieceColor;
 
 /**
  * Contains information about the Stratego game, which is shared between the
@@ -10,6 +11,7 @@ import edu.asu.stratego.game.board.ClientBoard;
  * @see edu.asu.stratego.game.ClientGameManager
  */
 public class Game {
+
     private static Player player;
     private static Player opponent;
 
@@ -72,21 +74,21 @@ public class Game {
     }
 
     /**
-     * @param status the status of the game
+     * @param status the status of the game.
      */
     public static void setStatus(GameStatus status) {
         Game.status = status;
     }
 
     /**
-     * @return value the color of the current player's turn
+     * @return value the color of the current player's turn.
      */
     public static PieceColor getTurn() {
         return turn;
     }
 
     /**
-     * @param turn the color of the current player's turn
+     * @param turn the color of the current player's turn.
      */
     public static void setTurn(PieceColor turn) {
         Game.turn = turn;
@@ -100,25 +102,38 @@ public class Game {
     }
 
     /**
-     * @param board the game board
+     * @param board the game board.
      */
     public static void setBoard(ClientBoard board) {
         Game.board = board;
     }
 
+    /**
+     * @return the Move object.
+     */
     public static Move getMove() {
         return move;
     }
 
+    /**
+     * @param move the Move object.
+     */
     public static void setMove(Move move) {
         Game.move = move;
     }
 
+    /**
+     * @return the MoveStatus.
+     */
     public static MoveStatus getMoveStatus() {
         return moveStatus;
     }
 
+    /**
+     * @param moveStatus the MoveStatus.
+     */
     public static void setMoveStatus(MoveStatus moveStatus) {
         Game.moveStatus = moveStatus;
     }
+
 }

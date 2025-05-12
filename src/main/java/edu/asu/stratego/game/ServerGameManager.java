@@ -10,8 +10,11 @@ import java.util.logging.*;
 import edu.asu.stratego.game.board.ServerBoard;
 import edu.asu.stratego.game.gameRules.OriginalRulesFactory;
 import edu.asu.stratego.game.gameRules.RulesFactory;
+import edu.asu.stratego.game.pieces.PieceColor;
+import edu.asu.stratego.game.pieces.PieceType;
 import edu.asu.stratego.game.gameRules.GameRules;
 import edu.asu.stratego.util.CoordinateUtils;
+import edu.asu.stratego.game.pieces.Piece;
 
 /**
  * Task to manage a Stratego game between two clients.

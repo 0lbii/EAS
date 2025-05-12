@@ -3,6 +3,7 @@ package edu.asu.stratego.game;
 import java.io.Serializable;
 
 import edu.asu.stratego.game.board.ClientBoard;
+import edu.asu.stratego.game.pieces.Piece;
 
 public class SetupBoard implements Serializable {
 
@@ -41,4 +42,5 @@ public class SetupBoard implements Serializable {
     public void setPiece(Piece piece, int row, int col) {
         pieces[row][col] = piece;
     }
+
 }

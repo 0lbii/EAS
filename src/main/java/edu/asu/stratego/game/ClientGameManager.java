@@ -5,8 +5,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import edu.asu.stratego.game.pieces.Piece;
 
 import edu.asu.stratego.game.board.ClientSquare;
+import edu.asu.stratego.game.pieces.PieceColor;
+import edu.asu.stratego.game.pieces.PieceType;
 import edu.asu.stratego.gui.BoardScene;
 import edu.asu.stratego.gui.ClientStage;
 import edu.asu.stratego.gui.ConfigurationScene;
@@ -174,7 +177,7 @@ public class ClientGameManager implements Runnable {
                 mainMenuScene.setProfileAction(this::showProfileScreen);
 
                 mainMenuScene.setHistoryAction(this::showHistoryScreen);
-                
+
                 mainMenuScene.setExitAction(this::showExitScreen);
 
             }

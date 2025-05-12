@@ -1,6 +1,6 @@
 package edu.asu.stratego.game.board;
 
-import edu.asu.stratego.game.Piece;
+import edu.asu.stratego.game.pieces.Piece;
 
 /**
  * Represents an individual square of a Stratego board.
@@ -22,4 +22,5 @@ public class ServerSquare {
     public void setPiece(Piece piece) {
         this.piece = piece;
     }
+
 }

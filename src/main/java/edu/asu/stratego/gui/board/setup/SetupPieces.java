@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.EnumMap;
 
 import edu.asu.stratego.game.Game;
-import edu.asu.stratego.game.PieceType;
+import edu.asu.stratego.game.pieces.PieceType;
 import edu.asu.stratego.gui.ClientStage;
 import edu.asu.stratego.util.HashTables;
 import edu.asu.stratego.util.MutableBoolean;
@@ -31,7 +31,6 @@ public class SetupPieces {
     private PieceType selectedPieceType;
     private final ColorAdjust zeroPieces = new ColorAdjust();
     private boolean allPiecesPlaced;
-
 
     private final SetupPanel setupPanel;
 
@@ -163,4 +162,5 @@ public class SetupPieces {
                 .map(pieceCount::get)
                 .toArray(Label[]::new);
     }
+
 }

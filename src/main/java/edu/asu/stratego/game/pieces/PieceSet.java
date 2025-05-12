@@ -1,6 +1,8 @@
-package edu.asu.stratego.game;
+package edu.asu.stratego.game.pieces;
 
 import java.util.ArrayList;
+
+import edu.asu.stratego.game.Game;
 
 /**
  * Represents the set of pieces for a player in the Stratego game.
@@ -8,6 +10,7 @@ import java.util.ArrayList;
  * pieces per type.
  */
 public class PieceSet {
+
     private ArrayList<Piece> pieces = new ArrayList<>();
 
     /**
@@ -22,7 +25,7 @@ public class PieceSet {
         // Initialize the pieces according to each PieceType
         for (PieceType type : PieceType.values()) {
             for (int i = 0; i < type.getCount(); ++i) {
-                pieces.add(new Piece(type, color, isOpponentPiece));
+                pieces.add(new OriginalPiece(type, color, isOpponentPiece)); // Usando OriginalPiece
             }
         }
     }
@@ -51,4 +54,5 @@ public class PieceSet {
     public void removePiece(Piece piece) {
         pieces.remove(piece);
     }
+
 }

@@ -1,8 +1,7 @@
-package edu.asu.stratego.game;
+package edu.asu.stratego.game.pieces;
 
-/**
- * Represents the different Stratego pieces.
- */
+import edu.asu.stratego.game.BattleOutcome;
+
 public enum PieceType {
 
     SCOUT(2, 8),
@@ -17,10 +16,10 @@ public enum PieceType {
     BOMB(-1, 6),
     SPY(-1, 1),
     FLAG(-1, 1);
-    
+
     private int value;
     private int count;
-    
+
     /**
      * Creates a new instance of PieceType.
      * 
@@ -31,14 +30,14 @@ public enum PieceType {
         this.value = value;
         this.count = count;
     }
-    
+
     /**
      * @return initial count of piece type
      */
     public int getCount() {
         return count;
     }
-    
+
     /**
      * Returns the result of a battle when one piece type attacks another
      * piece type.
@@ -50,24 +49,25 @@ public enum PieceType {
         // Defender is a flag.
         if (defender == FLAG)
             return BattleOutcome.WIN;
-        
+
         // Defender is a spy.
         else if (defender == SPY)
             return BattleOutcome.WIN;
 
         // Defender is Marshal (10) and Attacker is Spy.
-        else if(defender == MARSHAL && this == SPY) 
-        	return BattleOutcome.WIN;
-        
+        else if (defender == MARSHAL && this == SPY)
+            return BattleOutcome.WIN;
+
         // Defender is a bomb.
-        else if (defender == BOMB) 
+        else if (defender == BOMB)
             return (this == MINER) ? BattleOutcome.WIN : BattleOutcome.LOSE;
 
         // Attacking piece and defending piece are the same piece type.
         else if (this.value == defender.value)
-            return BattleOutcome.DRAW;    
-        
+            return BattleOutcome.DRAW;
+
         // Otherwise, compare piece values.
         return (this.value > defender.value) ? BattleOutcome.WIN : BattleOutcome.LOSE;
     }
+
 }

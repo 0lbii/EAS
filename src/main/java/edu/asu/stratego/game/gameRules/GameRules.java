@@ -4,7 +4,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 
 import edu.asu.stratego.game.Move;
-import edu.asu.stratego.game.PieceColor;
+import edu.asu.stratego.game.pieces.PieceColor;
 
 public interface GameRules {
 
