@@ -32,18 +32,18 @@ public class ClientGameManager implements Runnable {
 
     private static final Logger logger = Logger.getLogger(ClientGameManager.class.getName());
 
-    private static Object setupPieces = new Object();
-    private static Object sendMove = new Object();
-    private static Object receiveMove = new Object();
-    private static Object waitFade = new Object();
-    private static Object waitVisible = new Object();
+    private static final Object setupPieces = new Object();
+    private static final Object sendMove = new Object();
+    private static final Object receiveMove = new Object();
+    private static final Object waitFade = new Object();
+    private static final Object waitVisible = new Object();
 
     private ObjectOutputStream toServer;
     private ObjectInputStream fromServer;
 
     private final ClientStage stage;
 
-    private SceneController sceneController;
+    private final SceneController sceneController;
 
     /**
      * Creates a new instance of ClientGameManager.

@@ -18,13 +18,13 @@ import javafx.scene.layout.VBox;
 
 public class ConfigurationScene implements LanguageObserver {
 
-    private Scene scene;
-    private Button backButton = new Button();
-    private Button editProfileBtn = new Button();
+    private final Scene scene;
+    private final Button backButton = new Button();
+    private final Button editProfileBtn = new Button();
     private ComboBox<String> languageComboBox = new ComboBox<>();
 
-    private Label titleLabel = new Label();
-    private Label languageLabel = new Label();
+    private final Label titleLabel = new Label();
+    private final Label languageLabel = new Label();
 
     private static final int SIDE = ClientStage.getSide();
 
@@ -74,6 +74,10 @@ public class ConfigurationScene implements LanguageObserver {
         backButton.setOnAction(e -> onBack.run());
 
         updateTexts();
+    }
+
+    public void setEditProfileAction(Runnable action) {
+        editProfileBtn.setOnAction(e -> action.run());
     }
 
     @Override

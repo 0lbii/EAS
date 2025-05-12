@@ -15,11 +15,11 @@ import javafx.scene.layout.VBox;
 
 public class HistoryScene implements LanguageObserver {
 
-    private Scene scene;
-    private Button backButton = new Button();
+    private final Scene scene;
+    private final Button backButton = new Button();
 
-    private Label titleLabel = new Label();
-    private Label messageLabel = new Label();
+    private final Label titleLabel = new Label();
+    private final Label messageLabel = new Label();
 
     private static final int SIDE = ClientStage.getSide();
 

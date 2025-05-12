@@ -29,14 +29,14 @@ public class ConnectionScene {
 
     private static final Object playerLogin = new Object();
 
-    private static StackPane root = new StackPane();
-    private static GridPane loginPanel = new GridPane();
+    private static final StackPane root = new StackPane();
+    private static final GridPane loginPanel = new GridPane();
 
     private Button loginButton = new Button("Login");
-    private Button registerButton = new Button("Register if you don't have an account");
-    private TextField emailField = new TextField();
-    private TextField passwordField = new TextField();
-    private TextField serverIPField = new TextField();
+    private final Button registerButton = new Button("Register if you don't have an account");
+    private final TextField emailField = new TextField();
+    private final TextField passwordField = new TextField();
+    private final TextField serverIPField = new TextField();
     static Label statusLabel = new Label();
 
     private static String email, password, serverIP;

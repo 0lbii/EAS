@@ -16,7 +16,7 @@ import javafx.scene.layout.VBox;
 
 public class ExitScene implements LanguageObserver {
 
-    private Scene scene;
+    private final Scene scene;
     private final Label goodbyeLabel = new Label();
     private final Label userLabel = new Label();
     private final Button exitButton = new Button();

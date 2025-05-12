@@ -14,12 +14,12 @@ import javafx.scene.layout.VBox;
 
 public class MainMenuScene implements LanguageObserver {
 
-    private Scene scene;
-    private Button newGameButton = new Button();
-    private Button historyButton = new Button();
-    private Button profileButton = new Button();
-    private Button settingsButton = new Button();
-    private Button exitButton = new Button();
+    private final Scene scene;
+    private final Button newGameButton = new Button();
+    private final Button historyButton = new Button();
+    private final Button profileButton = new Button();
+    private final Button settingsButton = new Button();
+    private final Button exitButton = new Button();
 
     private static final int SIDE = ClientStage.getSide();
 

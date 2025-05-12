@@ -31,7 +31,7 @@ import edu.asu.stratego.game.pieces.PieceFactory;
 public class BoardSquareEventPane extends GridPane {
 
     private static ArrayList<Point> validMoves;
-    private ImageView hover;
+    private final ImageView hover;
 
     // Constants for board size and move limits
     private static final int BOARD_SIZE = 10;
@@ -69,21 +69,19 @@ public class BoardSquareEventPane extends GridPane {
             GameStatus gameStatus = Game.getStatus();
             MoveStatus moveStatus = Game.getMoveStatus();
 
-            // Setting up
-            if (gameStatus == GameStatus.SETTING_UP) {
-                checkMove(row, col, hover);
-            }
-            // Waiting for opponent
-            else if (gameStatus == GameStatus.WAITING_OPP) {
-                invalidMove(hover);
-            }
-            // In progress
-            else if (gameStatus == GameStatus.IN_PROGRESS) {
-                if (moveStatus == MoveStatus.OPP_TURN)
-                    invalidMove(hover);
-                else if (moveStatus == MoveStatus.NONE_SELECTED)
-                    checkMove(row, col, hover);
-                // START_SELECTED case is handled elsewhere
+            if (null != gameStatus)
+            switch (gameStatus) {
+                case SETTING_UP -> checkMove(row, col, hover);
+                case WAITING_OPP -> invalidMove(hover);
+                case IN_PROGRESS -> {
+                    if (moveStatus == MoveStatus.OPP_TURN) {
+                        invalidMove(hover);
+                    } else if (moveStatus == MoveStatus.NONE_SELECTED)
+                        checkMove(row, col, hover);
+                    // START_SELECTED case is handled elsewhere
+                }
+                default -> {
+                }
             }
         }
     }
@@ -373,10 +371,7 @@ public class BoardSquareEventPane extends GridPane {
      * Returns true if the given square is a lake
      */
     private static boolean isLake(int row, int col) {
-        if ((col == 2 || col == 3 || col == 6 || col == 7) && (row == 4 || row == 5)) {
-            return true;
-        }
-        return false;
+        return (col == 2 || col == 3 || col == 6 || col == 7) && (row == 4 || row == 5);
     }
 
     /**

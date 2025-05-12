@@ -1,27 +1,25 @@
 package edu.asu.stratego.game;
 
 import edu.asu.stratego.gui.ConfigurationScene;
+import edu.asu.stratego.gui.EditProfileScene;
 import edu.asu.stratego.gui.ExitScene;
 import edu.asu.stratego.gui.HistoryScene;
 import edu.asu.stratego.gui.MainMenuScene;
 import edu.asu.stratego.gui.ProfileScene;
 import javafx.application.Platform;
 import javafx.stage.Stage;
+import services.PlayerService;
 
 public class SceneController {
     
     private final Stage stage;
-
     private final ClientGameManager gameManager;
 
     private MainMenuScene mainMenuScene;
 
-    // private final models.Player player;
-
-    public SceneController(Stage stage, ClientGameManager gameManager) { // , models.Player player
+    public SceneController(Stage stage, ClientGameManager gameManager) {
         this.stage = stage;
         this.gameManager = gameManager;
-        // this.player = player;
     }
 
     /**
@@ -63,8 +61,12 @@ public class SceneController {
         Platform.runLater(() -> {
             ConfigurationScene configScene = new ConfigurationScene(this::showMainMenu);
             configScene.setEditProfileAction(() -> {
-                //EditProfileScene editScene = new EditProfileScene(this::showSettingsScreen);
-                //stage.setScene(editScene.getScene());
+                PlayerService service = new PlayerService();
+                String email = Game.getPlayer().getEmail();
+                models.Player dbPlayer = service.findByEmail(email);
+
+                EditProfileScene editScene = new EditProfileScene(dbPlayer, this::showSettingsScreen);
+                stage.setScene(editScene.getScene());
             });
             stage.setScene(configScene.getScene());
         });
@@ -85,7 +87,8 @@ public class SceneController {
      */
     private void showProfileScreen() {
         Platform.runLater(() -> {
-            ProfileScene profileScene = new ProfileScene(this::showMainMenu);
+            models.Player player = new services.PlayerService().findByEmail(Game.getPlayer().getEmail());
+            ProfileScene profileScene = new ProfileScene(this::showMainMenu, player);
             stage.setScene(profileScene.getScene());
         });
     }

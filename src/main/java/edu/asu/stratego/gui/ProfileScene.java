@@ -1,6 +1,5 @@
 package edu.asu.stratego.gui;
 
-import edu.asu.stratego.game.Game;
 import edu.asu.stratego.game.ResourceBundleManager;
 import edu.asu.stratego.languages.LanguageObservable;
 import edu.asu.stratego.languages.LanguageObserver;
@@ -24,8 +23,11 @@ public class ProfileScene implements LanguageObserver {
 
     private static final int SIDE = ClientStage.getSide();
 
-    public ProfileScene(Runnable onBackAction) {
+    private final models.Player player;
+
+    public ProfileScene(Runnable onBackAction, models.Player player) {
         LanguageObservable.addObserver(this);
+        this.player = player;
 
         // Styles
         titleLabel.setStyle("-fx-font-size: 24px; -fx-text-fill: white; -fx-font-weight: bold;");
@@ -57,9 +59,9 @@ public class ProfileScene implements LanguageObserver {
     }
 
     private void updateTexts() {
-        String nickname = Game.getPlayer().getNickname();
-        String email = Game.getPlayer().getEmail();
-        Integer points = Game.getPlayer().getPoints();
+        String nickname = player.getNickname();
+        String email = player.getEmail();
+        Integer points = player.getPoints();
 
         titleLabel.setText(ResourceBundleManager.get("menu.profile"));
         nicknameLabel.setText(ResourceBundleManager.get("profile.nickname") + ": " + nickname);

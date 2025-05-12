@@ -31,7 +31,7 @@ public class SetupPanel implements LanguageObserver{
     private final Label instructions = new Label();
     private final Label readyLabel = new Label();
     private final ImageView readyButton = new ImageView();
-    private SetupPieces setupPieces;
+    private final SetupPieces setupPieces;
     private final BoardSquareEventPane boardPane;
 
     /**
@@ -71,7 +71,15 @@ public class SetupPanel implements LanguageObserver{
         headerText.getRowConstraints().add(new RowConstraints(UNIT * 0.6));
         GridPane.setMargin(headerText, new Insets(UNIT * 0.2, 0, 0, UNIT * 0.2));
 
-        String titleContent = Game.getPlayer().getNickname() + " vs. " + Game.getOpponent().getNickname();
+        services.PlayerService service = new services.PlayerService();
+        models.Player localPlayer = service.findByEmail(Game.getPlayer().getEmail());
+        models.Player remotePlayer = service.findByEmail(Game.getOpponent().getEmail());
+
+        String localName = (localPlayer != null) ? localPlayer.getNickname() : Game.getPlayer().getNickname();
+        String remoteName = (remotePlayer != null) ? remotePlayer.getNickname() : Game.getOpponent().getNickname();
+
+        String titleContent = localName + " vs. " + remoteName;
+        
         double fontScale = 1.0 / ((titleContent.length() - 7) / 8 + 2);
 
         Label nameDisplay = new Label(titleContent);
