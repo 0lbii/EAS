@@ -39,6 +39,26 @@ public enum PieceType {
     }
 
     /**
+     * Returns the current value (rank) of the piece type.
+     *
+     * @return the value of the piece
+     */
+    public int getValue() {
+        return value;
+    }
+
+    /**
+     * Sets a new value (rank) for the piece type.
+     * This can be used to customize the strength of the piece in alternative game
+     * modes.
+     *
+     * @param newValue the new value to assign to the piece
+     */
+    public void setValue(int newValue) {
+        this.value = newValue;
+    }
+
+    /**
      * Returns the result of a battle when one piece type attacks another
      * piece type.
      * 

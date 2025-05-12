@@ -14,15 +14,15 @@ public abstract class Piece implements Serializable {
     /**
      * Creates a new instance of Piece.
      * 
-     * @param type            PieceType of the piece
-     * @param color           color of the piece
-     * @param isOpponentPiece whether or not the piece belongs to the opponent
+     * @param type            PieceType of the piece.
+     * @param color           color of the piece.
+     * @param isOpponentPiece whether or not the piece belongs to the opponent.
      */
     public Piece(PieceType type, PieceColor color, boolean isOpponentPiece) {
         this.type = type;
         this.color = color;
         this.isOpponentPiece = isOpponentPiece;
-        setPieceImage(); // puede ser abstracto si cada variante lo implementa distinto
+        setPieceImage();
     }
 
     /**

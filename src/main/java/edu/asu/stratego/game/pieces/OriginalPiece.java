@@ -66,4 +66,29 @@ public class OriginalPiece extends Piece {
         }
     }
 
+    /*
+     * Static block executed once when the class is first loaded.
+     */
+    /* static {
+        applyCustomValues();
+    } */
+
+    /**
+     * Applies custom values to PieceType entries.
+     */
+    /* private static void applyCustomValues() {
+        PieceType.SCOUT.setValue(11);
+        PieceType.MINER.setValue(11);
+        PieceType.SERGEANT.setValue(11);
+        PieceType.LIEUTENANT.setValue(11);
+        PieceType.CAPTAIN.setValue(11);
+        PieceType.MAJOR.setValue(11);
+        PieceType.COLONEL.setValue(11);
+        PieceType.GENERAL.setValue(11);
+        PieceType.MARSHAL.setValue(11);
+        PieceType.BOMB.setValue(11);
+        PieceType.SPY.setValue(11);
+        PieceType.FLAG.setValue(11);
+    } */
+   
 }
