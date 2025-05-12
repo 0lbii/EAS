@@ -5,19 +5,14 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import edu.asu.stratego.game.pieces.Piece;
 
 import edu.asu.stratego.game.board.ClientSquare;
+import edu.asu.stratego.game.pieces.Piece;
 import edu.asu.stratego.game.pieces.PieceColor;
 import edu.asu.stratego.game.pieces.PieceType;
 import edu.asu.stratego.gui.BoardScene;
 import edu.asu.stratego.gui.ClientStage;
-import edu.asu.stratego.gui.ConfigurationScene;
 import edu.asu.stratego.gui.ConnectionScene;
-import edu.asu.stratego.gui.ExitScene;
-import edu.asu.stratego.gui.HistoryScene;
-import edu.asu.stratego.gui.MainMenuScene;
-import edu.asu.stratego.gui.ProfileScene;
 import edu.asu.stratego.gui.board.BoardTurnIndicator;
 import edu.asu.stratego.media.ImageConstants;
 import edu.asu.stratego.media.PlaySound;
@@ -46,9 +41,9 @@ public class ClientGameManager implements Runnable {
     private ObjectOutputStream toServer;
     private ObjectInputStream fromServer;
 
-    private ClientStage stage;
+    private final ClientStage stage;
 
-    private MainMenuScene mainMenuScene;
+    private SceneController sceneController;
 
     /**
      * Creates a new instance of ClientGameManager.
@@ -57,6 +52,7 @@ public class ClientGameManager implements Runnable {
      */
     public ClientGameManager(ClientStage stage) {
         this.stage = stage;
+        this.sceneController = new SceneController(stage, this);
     }
 
     /**
@@ -68,7 +64,7 @@ public class ClientGameManager implements Runnable {
     @Override
     public void run() {
         connectToServer();
-        showMainMenu();
+        sceneController.showMainMenu();
     }
 
     /**
@@ -121,7 +117,7 @@ public class ClientGameManager implements Runnable {
      * the game.
      * </p>
      */
-    private void waitForOpponent() {
+    public void waitForOpponent() {
         Platform.runLater(() -> {
             stage.setWaitingScene();
         });
@@ -155,78 +151,6 @@ public class ClientGameManager implements Runnable {
     }
 
     /**
-     * Displays the main menu scene on the JavaFX application thread.
-     * The menu provides options for starting a new game, viewing match
-     * history, accessing the user profile, and adjusting settings.
-     * When "Nueva partida" or "New Game" is selected, the setup and gameplay
-     * sequence begins.
-     */
-    private void showMainMenu() {
-        Platform.runLater(() -> {
-            if (mainMenuScene == null) {
-                mainMenuScene = new MainMenuScene();
-                mainMenuScene.setNewGameAction(() -> {
-                    new Thread(() -> {
-                        waitForOpponent();
-                        setupBoard();
-                        playGame();
-                    }).start();
-                });
-                mainMenuScene.setSettingsAction(this::showSettingsScreen);
-
-                mainMenuScene.setProfileAction(this::showProfileScreen);
-
-                mainMenuScene.setHistoryAction(this::showHistoryScreen);
-
-                mainMenuScene.setExitAction(this::showExitScreen);
-
-            }
-            stage.setScene(mainMenuScene.getScene());
-        });
-    }
-
-    /**
-     * Displays the settings scene, allowing the user to change application language
-     * and navigate to the profile editing screen.
-     */
-    private void showSettingsScreen() {
-        Platform.runLater(() -> {
-            ConfigurationScene configScene = new ConfigurationScene(this::showMainMenu);
-            stage.setScene(configScene.getScene());
-        });
-    }
-
-    /**
-     * Displays the history scene, allowing the user to replay un unfinished game
-     */
-    private void showHistoryScreen() {
-        Platform.runLater(() -> {
-            HistoryScene historyScene = new HistoryScene(this::showMainMenu);
-            stage.setScene(historyScene.getScene());
-        });
-    }
-
-    /**
-     * Displays the exit scene, allowing the user to exit the application
-     */
-    private void showExitScreen() {
-        Platform.runLater(() -> {
-            ExitScene exitScene = new ExitScene();
-            stage.setScene(exitScene.getScene());
-        });
-    }
-
-    /**
-     * Displays the profile scene, allowing the user to see their own profile
-     */
-    private void showProfileScreen() {
-        Platform.runLater(() -> {
-            ProfileScene profileScene = new ProfileScene(this::showMainMenu);
-            stage.setScene(profileScene.getScene());
-        });
-    }
-
-    /**
      * Switches to the game setup scene. Players will place their pieces to
      * their initial starting positions. Once the pieces are placed, their
      * =======
@@ -235,7 +159,7 @@ public class ClientGameManager implements Runnable {
      * >>>>>>> 905380814e461334e371dc85a26d0c2a01e12ebd
      * positions are sent to the server.
      */
-    private void setupBoard() {
+    public void setupBoard() {
         Platform.runLater(() -> {
             stage.setBoardScene();
         });
@@ -282,7 +206,7 @@ public class ClientGameManager implements Runnable {
         }
     }
 
-    private void playGame() {
+    public void playGame() {
         initializeGameBoard();
 
         // Main loop (when playing)
