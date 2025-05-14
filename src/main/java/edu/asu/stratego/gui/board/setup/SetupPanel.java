@@ -1,5 +1,9 @@
 package edu.asu.stratego.gui.board.setup;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import edu.asu.stratego.game.ClientGameManager;
 import edu.asu.stratego.game.Game;
 import edu.asu.stratego.game.ResourceBundleManager;
@@ -28,10 +32,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 public class SetupPanel implements LanguageObserver{
 
     private final GridPane setupPanel = new GridPane();
@@ -41,7 +41,7 @@ public class SetupPanel implements LanguageObserver{
     private final Label instructions = new Label();
     private final Label readyLabel = new Label();
     private final ImageView readyButton = new ImageView();
-    private final Button randomButton = new Button("Aleatorio");
+    private final Button randomButton = new Button();
     private final SetupPieces setupPieces;
     private final BoardSquareEventPane boardPane;
 
@@ -153,16 +153,16 @@ public class SetupPanel implements LanguageObserver{
         instructions.setText(ResourceBundleManager.get("setup.instructions"));
 
         // Ready button + event handlers.
-        readyButton.setImage(ImageConstants.READY_IDLE);
+        readyButton.setImage(ImageConstants.getReadyIdle());
         readyButton.setFitHeight(UNIT * 0.75);
         readyButton.setFitWidth(UNIT * 2.25);
 
         readyButton.addEventHandler(MouseEvent.MOUSE_ENTERED_TARGET, e -> {
-            readyButton.setImage(ImageConstants.READY_HOVER);
+            readyButton.setImage(ImageConstants.getReadyHover());
         });
 
         readyButton.addEventHandler(MouseEvent.MOUSE_EXITED_TARGET, e -> {
-            readyButton.setImage(ImageConstants.READY_IDLE);
+            readyButton.setImage(ImageConstants.getReadyIdle());
         });
 
         readyButton.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
@@ -170,6 +170,7 @@ public class SetupPanel implements LanguageObserver{
         });
 
         // Configuración del botón aleatorio estándar
+        randomButton.setText(ResourceBundleManager.get("random.button"));
         randomButton.setPrefSize(UNIT * 2.25, UNIT * 0.75);
         randomButton.setFont(Font.font("Century Gothic", UNIT * 0.3));
         randomButton.setStyle(

@@ -1,5 +1,6 @@
 package edu.asu.stratego.media;
 
+import edu.asu.stratego.game.ResourceBundleManager;
 import javafx.scene.image.Image;
 
 public class ImageConstants {
@@ -16,8 +17,6 @@ public class ImageConstants {
     
     // Board Images.
     public final static Image SETUP_PANEL = load("/images/board/setup_panel.png");
-    public final static Image READY_HOVER = load("/images/board/ready_hover.png");
-    public final static Image READY_IDLE = load("/images/board/ready_idle.png");
     public final static Image BORDER = load("/images/board/border.png");
     public final static Image DARK_GRASS = load("/images/board/grass1.png");
     public final static Image LIGHT_GRASS = load("/images/board/grass2.png");
@@ -69,4 +68,25 @@ public class ImageConstants {
     public final static Image BLUE_BOMB = load("/images/pieces/blue/blue_bomb.png");
     public final static Image BLUE_FLAG = load("/images/pieces/blue/blue_flag.png");
 
+
+    public static Image getReadyIdle() {
+        String lang = ResourceBundleManager.getLocale().getLanguage();
+        String path = "/images/board/ready_idle_" + lang + ".png";
+        return loadImageLanguage(path);
+    }
+
+    public static Image getReadyHover() {
+        String lang = ResourceBundleManager.getLocale().getLanguage();
+        String path = "/images/board/ready_hover_" + lang + ".png";
+        return loadImageLanguage(path);
+    }
+
+    private static Image loadImageLanguage(String path) {
+        var url = ImageConstants.class.getResource(path);
+        if (url == null) {
+            System.err.println("ERROR: No se encontró la imagen: " + path);
+            throw new IllegalArgumentException("Image not found at path: " + path);
+        }
+        return new Image(url.toString());
+    }
 }
