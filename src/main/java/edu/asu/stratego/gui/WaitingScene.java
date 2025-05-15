@@ -1,8 +1,10 @@
 package edu.asu.stratego.gui;
 
 import edu.asu.stratego.game.ResourceBundleManager;
+import edu.asu.stratego.languages.LanguageObservable;
 import edu.asu.stratego.languages.LanguageObserver;
 import edu.asu.stratego.media.ImageConstants;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -20,16 +22,19 @@ import javafx.scene.layout.VBox;
 public class WaitingScene implements LanguageObserver{
 
     private static final int SIDE = ClientStage.getSide();
-    private Scene scene;
+    private final Scene scene;
     private final Label waitingLabel = new Label();
 
     /**
      * Creates a new instance of WaitingScene.
      */
     public WaitingScene() {
+        Platform.runLater(() -> LanguageObservable.addObserver(this));
+
         // Create message label
         waitingLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: white;");
-        onLanguageChanged();
+        
+        updateTexts();
 
         // Create logo image
         ImageView logoImage = new ImageView(ImageConstants.stratego_logo);
@@ -60,6 +65,10 @@ public class WaitingScene implements LanguageObserver{
 
     @Override
     public void onLanguageChanged() {
+        updateTexts();
+    }
+
+    private void updateTexts() {
         waitingLabel.setText(ResourceBundleManager.get("waiting.message"));
     }
 }

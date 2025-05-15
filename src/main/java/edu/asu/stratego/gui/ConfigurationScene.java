@@ -6,6 +6,7 @@ import edu.asu.stratego.game.ResourceBundleManager;
 import edu.asu.stratego.languages.LanguageObservable;
 import edu.asu.stratego.languages.LanguageObserver;
 import edu.asu.stratego.media.ImageConstants;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -29,7 +30,7 @@ public class ConfigurationScene implements LanguageObserver {
     private static final int SIDE = ClientStage.getSide();
 
     public ConfigurationScene(Runnable onBack) {
-        LanguageObservable.addObserver(this);
+        Platform.runLater(() -> LanguageObservable.addObserver(this));
 
         // Style
         String buttonStyle = "-fx-font-size: 18px; -fx-pref-width: 220px; -fx-pref-height: 45px;";
@@ -67,7 +68,7 @@ public class ConfigurationScene implements LanguageObserver {
         // Buttons
         languageComboBox.setOnAction(e -> {
             String selected = languageComboBox.getValue();
-            Locale selectedLocale = selected.equals("Español") ? new Locale("es") : new Locale("en");
+            Locale selectedLocale = selected.equals("Español") ? Locale.of("es") : Locale.of("en");
             ResourceBundleManager.setLocale(selectedLocale);
         });
 

@@ -4,6 +4,7 @@ import edu.asu.stratego.game.ResourceBundleManager;
 import edu.asu.stratego.languages.LanguageObservable;
 import edu.asu.stratego.languages.LanguageObserver;
 import edu.asu.stratego.media.ImageConstants;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -26,7 +27,7 @@ public class ProfileScene implements LanguageObserver {
     private final models.Player player;
 
     public ProfileScene(Runnable onBackAction, models.Player player) {
-        LanguageObservable.addObserver(this);
+        Platform.runLater(() -> LanguageObservable.addObserver(this));
         this.player = player;
 
         // Styles

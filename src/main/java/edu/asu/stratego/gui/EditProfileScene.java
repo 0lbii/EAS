@@ -4,6 +4,7 @@ import edu.asu.stratego.game.ResourceBundleManager;
 import edu.asu.stratego.languages.LanguageObservable;
 import edu.asu.stratego.languages.LanguageObserver;
 import edu.asu.stratego.media.ImageConstants;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -25,7 +26,7 @@ public class EditProfileScene implements LanguageObserver {
     private static final int SIDE = ClientStage.getSide();
 
     public EditProfileScene(models.Player player, Runnable onBackAction) {
-        LanguageObservable.addObserver(this);
+        Platform.runLater(() -> LanguageObservable.addObserver(this));
 
         titleLabel.setStyle("-fx-font-size: 24px; -fx-text-fill: white; -fx-font-weight: bold;");
         nicknameField.setStyle("-fx-font-size: 16px; -fx-pref-height: 40px;");
@@ -64,17 +65,17 @@ public class EditProfileScene implements LanguageObserver {
         scene = new Scene(root, SIDE, SIDE);
     }
 
+    @Override
+    public void onLanguageChanged() {
+        updateTexts();
+    }
+
     private void updateTexts() {
         titleLabel.setText(ResourceBundleManager.get("menu.editprofile"));
         nicknameField.setPromptText(ResourceBundleManager.get("profile.nickname"));
         passwordField.setPromptText(ResourceBundleManager.get("profile.password"));
         saveButton.setText(ResourceBundleManager.get("menu.save"));
         backButton.setText(ResourceBundleManager.get("menu.back"));
-    }
-
-    @Override
-    public void onLanguageChanged() {
-        updateTexts();
     }
 
     public Scene getScene() {

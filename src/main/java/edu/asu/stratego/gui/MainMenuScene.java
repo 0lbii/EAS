@@ -4,6 +4,7 @@ import edu.asu.stratego.game.ResourceBundleManager;
 import edu.asu.stratego.languages.LanguageObservable;
 import edu.asu.stratego.languages.LanguageObserver;
 import edu.asu.stratego.media.ImageConstants;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -25,7 +26,7 @@ public class MainMenuScene implements LanguageObserver {
     private static final int SIDE = ClientStage.getSide();
 
     public MainMenuScene() {
-        LanguageObservable.addObserver(this); // Observer
+        Platform.runLater(() -> LanguageObservable.addObserver(this));
 
         VBox menuBox = new VBox(15, newGameButton, historyButton, profileButton, rankingButton, settingsButton, exitButton);
         menuBox.setAlignment(Pos.CENTER);
@@ -63,7 +64,7 @@ public class MainMenuScene implements LanguageObserver {
         updateTexts();
     }
 
-    public void updateTexts() {
+    private void updateTexts() {
         newGameButton.setText(ResourceBundleManager.get("menu.newgame"));
         historyButton.setText(ResourceBundleManager.get("menu.history"));
         profileButton.setText(ResourceBundleManager.get("menu.profile"));

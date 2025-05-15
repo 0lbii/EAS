@@ -4,6 +4,7 @@ import edu.asu.stratego.game.ResourceBundleManager;
 import edu.asu.stratego.languages.LanguageObservable;
 import edu.asu.stratego.languages.LanguageObserver;
 import edu.asu.stratego.media.ImageConstants;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -24,7 +25,7 @@ public class HistoryScene implements LanguageObserver {
     private static final int SIDE = ClientStage.getSide();
 
     public HistoryScene(Runnable onBack) {
-        LanguageObservable.addObserver(this);
+        Platform.runLater(() -> LanguageObservable.addObserver(this));
 
         // Styles
         titleLabel.setStyle("-fx-font-size: 24px; -fx-text-fill: white; -fx-font-weight: bold;");

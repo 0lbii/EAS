@@ -6,6 +6,7 @@ import edu.asu.stratego.gui.rankingIterator.RankingCollection;
 import edu.asu.stratego.languages.LanguageObservable;
 import edu.asu.stratego.languages.LanguageObserver;
 import edu.asu.stratego.media.ImageConstants;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -22,12 +23,10 @@ public class RankingScene implements LanguageObserver {
     private final Scene scene;
     private final Button backButton = new Button();
     private final VBox rankingBox = new VBox(10);
-    private final Runnable onBackAction;
     private final Label titleLabel = new Label();
 
     public RankingScene(Runnable onBackAction) {
-        this.onBackAction = onBackAction;
-        LanguageObservable.addObserver(this);
+        Platform.runLater(() -> LanguageObservable.addObserver(this));
 
         titleLabel.setStyle("-fx-font-size: 24px; -fx-text-fill: white; -fx-font-weight: bold;");
 
@@ -84,14 +83,14 @@ public class RankingScene implements LanguageObserver {
         }
     }
 
-    private void updateTexts() {
-        backButton.setText(ResourceBundleManager.get("menu.back"));
-        titleLabel.setText(ResourceBundleManager.get("menu.ranking"));
-    }
-
     @Override
     public void onLanguageChanged() {
         updateTexts();
+    }
+
+    private void updateTexts() {
+        backButton.setText(ResourceBundleManager.get("menu.back"));
+        titleLabel.setText(ResourceBundleManager.get("menu.ranking"));
     }
 
     public Scene getScene() {
