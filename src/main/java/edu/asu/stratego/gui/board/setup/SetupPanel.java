@@ -1,16 +1,9 @@
 package edu.asu.stratego.gui.board.setup;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import edu.asu.stratego.game.ClientGameManager;
 import edu.asu.stratego.game.Game;
 import edu.asu.stratego.game.ResourceBundleManager;
-import edu.asu.stratego.game.pieces.OriginalPiece;
 import edu.asu.stratego.game.pieces.Piece;
-import edu.asu.stratego.game.pieces.PieceColor;
-import edu.asu.stratego.game.pieces.PieceType;
 import edu.asu.stratego.gui.ClientStage;
 import edu.asu.stratego.gui.board.BoardSquareEventPane;
 import edu.asu.stratego.languages.LanguageObserver;
@@ -44,7 +37,8 @@ public class SetupPanel implements LanguageObserver{
     private final Button randomButton = new Button();
     private final SetupPieces setupPieces;
     private final BoardSquareEventPane boardPane;
-
+    private PlacementStrategy placementStrategy = new RandomPlacementStrategy();
+    
     /**
      * Creates a new instance of SetupPanel.
      */
@@ -284,90 +278,13 @@ public class SetupPanel implements LanguageObserver{
      * Coloca aleatoriamente todas las piezas disponibles en el tablero.
      */
     private void randomizeSetup() {
-        // Primero, limpiamos el tablero (quitamos todas las piezas ya colocadas)
-        clearBoard();
-
-        // Crear lista de todas las piezas disponibles
-        List<PieceType> availablePieces = new ArrayList<>();
-        
-        // Añadir cada tipo de pieza según su disponibilidad
-        for (PieceType type : PieceType.values()) {
-            int pieceCount = setupPieces.getPieceCount(type);
-            for (int i = 0; i < pieceCount; i++) {
-                availablePieces.add(type);
-            }
-        }
-
-        // Crear lista de todas las posiciones válidas (filas 6-9)
-        List<int[]> availablePositions = new ArrayList<>();
-        for (int row = 6; row < 10; row++) {
-            for (int col = 0; col < 10; col++) {
-                availablePositions.add(new int[]{row, col});
-            }
-        }
-
-        // Mezclar ambas listas para aleatorizar
-        Collections.shuffle(availablePieces);
-        Collections.shuffle(availablePositions);
-
-        // Colocar cada pieza en una posición aleatoria
-        PieceColor color = Game.getPlayer().getColor();
-        for (int i = 0; i < availablePieces.size(); i++) {
-            PieceType pieceType = availablePieces.get(i);
-            int[] position = availablePositions.get(i);
-            int row = position[0];
-            int col = position[1];
-
-            // Verificar si hay piezas disponibles de este tipo
-            if (setupPieces.getPieceCount(pieceType) > 0) {
-                try {
-                    // Crear una pieza usando OriginalPiece en lugar de Piece
-                    OriginalPiece piece = new OriginalPiece(pieceType, color, false);
-                    
-                    // Actualizar el modelo lógico del tablero
-                    Game.getBoard().getSquare(row, col).setPiece(piece);
-                    
-                    // Obtener la clave para la imagen de la pieza
-                    String pieceKey = color.toString() + "_";
-                    switch (pieceType) {
-                        case SCOUT: pieceKey += "02"; break;
-                        case MINER: pieceKey += "03"; break;
-                        case SERGEANT: pieceKey += "04"; break;
-                        case LIEUTENANT: pieceKey += "05"; break;
-                        case CAPTAIN: pieceKey += "06"; break;
-                        case MAJOR: pieceKey += "07"; break;
-                        case COLONEL: pieceKey += "08"; break;
-                        case GENERAL: pieceKey += "09"; break;
-                        case MARSHAL: pieceKey += "10"; break;
-                        case BOMB: pieceKey += "BOMB"; break;
-                        case SPY: pieceKey += "SPY"; break;
-                        case FLAG: pieceKey += "FLAG"; break;
-                    }
-                    
-                    // Actualizar la representación visual de la pieza en el tablero
-                    Game.getBoard().getSquare(row, col).getPiecePane().setPiece(
-                        edu.asu.stratego.util.HashTables.PIECE_MAP.get(pieceKey)
-                    );
-                    
-                    // Decrementar el contador de piezas disponibles
-                    setupPieces.decrementPieceCount(pieceType);
-                } catch (Exception e) {
-                    System.err.println("Error al colocar pieza: " + e.getMessage());
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        // Notificar que todas las piezas han sido colocadas
-        synchronized (updateReadyStatus) {
-            updateReadyStatus.notify();
-        }
+        placementStrategy.placePieces(this);
     }
 
     /**
      * Limpia el tablero removiendo todas las piezas colocadas.
      */
-    private void clearBoard() {
+    public  void clearBoard() {
         // Recorrer el área del jugador (filas 6-9)
         for (int row = 6; row < 10; row++) {
             for (int col = 0; col < 10; col++) {
@@ -385,6 +302,10 @@ public class SetupPanel implements LanguageObserver{
                 }
             }
         }
+    }
+
+    public void setPlacementStrategy(PlacementStrategy strategy) {
+    this.placementStrategy = strategy;
     }
 
     /**
