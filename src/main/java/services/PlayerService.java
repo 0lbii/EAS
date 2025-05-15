@@ -1,14 +1,14 @@
 package services;
 
-import models.Player;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import edu.asu.stratego.util.JpaUtil;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.NoResultException;
+import models.Player;
 
 @Service
 public class PlayerService {
@@ -74,6 +74,16 @@ public class PlayerService {
                     .getSingleResult();
         } catch (NoResultException e) {
             return null;
+        }
+    }
+
+    public List<Player> findAllOrderByPointsDesc() {
+        EntityManager em = JpaUtil.getEntityManager();
+        try {
+            return em.createQuery("SELECT p FROM Player p ORDER BY p.points DESC", Player.class)
+                    .getResultList();
+        } finally {
+            em.close();
         }
     }
 

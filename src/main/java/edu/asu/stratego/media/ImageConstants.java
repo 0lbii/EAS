@@ -18,8 +18,6 @@ public class ImageConstants {
     // Board Images.
     public final static Image SETUP_PANEL = load("/images/board/setup_panel.png");
     public final static Image BORDER = load("/images/board/border.png");
-    public final static Image DARK_GRASS = load("/images/board/grass1.png");
-    public final static Image LIGHT_GRASS = load("/images/board/grass2.png");
 
     public final static Image HIGHLIGHT_NONE = load("/images/board/highlight_none.png");
     public final static Image HIGHLIGHT_VALID = load("/images/board/highlight_valid.png");

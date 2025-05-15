@@ -44,14 +44,13 @@ public class HashTables{
     }
 
     public enum SoundType {
-        MOVE, ATTACK, WIN, SELECT, CORNFIELD
+        MOVE, ATTACK, WIN, CORNFIELD
     }
     
     public static final Map<SoundType, AudioClip> SOUND_MAP = Map.of(
         SoundType.MOVE, SoundConstants.MOVE_SOUND,
         SoundType.ATTACK, SoundConstants.ATTACK_SOUND,
         SoundType.WIN, SoundConstants.WIN_SOUND,
-        SoundType.SELECT, SoundConstants.SELECT_SOUND,
         SoundType.CORNFIELD, SoundConstants.CORNFIELD
     );    
 }

@@ -18,6 +18,7 @@ public class MainMenuScene implements LanguageObserver {
     private final Button newGameButton = new Button();
     private final Button historyButton = new Button();
     private final Button profileButton = new Button();
+    private final Button rankingButton = new Button();
     private final Button settingsButton = new Button();
     private final Button exitButton = new Button();
 
@@ -26,9 +27,7 @@ public class MainMenuScene implements LanguageObserver {
     public MainMenuScene() {
         LanguageObservable.addObserver(this); // Observer
 
-        updateTexts(); // Initial translations
-
-        VBox menuBox = new VBox(15, newGameButton, historyButton, profileButton, settingsButton, exitButton);
+        VBox menuBox = new VBox(15, newGameButton, historyButton, profileButton, rankingButton, settingsButton, exitButton);
         menuBox.setAlignment(Pos.CENTER);
 
         ImageView logoImage = new ImageView(ImageConstants.stratego_logo);
@@ -52,8 +51,11 @@ public class MainMenuScene implements LanguageObserver {
         newGameButton.setStyle(buttonStyle);
         historyButton.setStyle(buttonStyle);
         profileButton.setStyle(buttonStyle);
+        rankingButton.setStyle(buttonStyle);
         settingsButton.setStyle(buttonStyle);
         exitButton.setStyle(buttonStyle);
+
+        updateTexts();
     }
 
     @Override
@@ -65,6 +67,7 @@ public class MainMenuScene implements LanguageObserver {
         newGameButton.setText(ResourceBundleManager.get("menu.newgame"));
         historyButton.setText(ResourceBundleManager.get("menu.history"));
         profileButton.setText(ResourceBundleManager.get("menu.profile"));
+        rankingButton.setText(ResourceBundleManager.get("menu.ranking"));
         settingsButton.setText(ResourceBundleManager.get("menu.settings"));
         exitButton.setText(ResourceBundleManager.get("menu.exit"));
 
@@ -80,6 +83,10 @@ public class MainMenuScene implements LanguageObserver {
 
     public void setProfileAction(Runnable action) {
         profileButton.setOnAction(e -> action.run());
+    }
+
+    public void setRankingAction(Runnable action) {
+        rankingButton.setOnAction(e -> action.run());
     }
 
     public void setHistoryAction(Runnable action) {

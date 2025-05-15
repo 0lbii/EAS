@@ -6,6 +6,7 @@ import edu.asu.stratego.gui.ExitScene;
 import edu.asu.stratego.gui.HistoryScene;
 import edu.asu.stratego.gui.MainMenuScene;
 import edu.asu.stratego.gui.ProfileScene;
+import edu.asu.stratego.gui.RankingScene;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 import services.PlayerService;
@@ -43,6 +44,8 @@ public class SceneController {
                 mainMenuScene.setSettingsAction(this::showSettingsScreen);
 
                 mainMenuScene.setProfileAction(this::showProfileScreen);
+
+                mainMenuScene.setRankingAction(this::showRankingScreen);
 
                 mainMenuScene.setHistoryAction(this::showHistoryScreen);
 
@@ -90,6 +93,16 @@ public class SceneController {
             models.Player player = new services.PlayerService().findByEmail(Game.getPlayer().getEmail());
             ProfileScene profileScene = new ProfileScene(this::showMainMenu, player);
             stage.setScene(profileScene.getScene());
+        });
+    }
+
+    /**
+     * Displays the ranking scene, allowing the user to compare their own ranking
+     */
+    private void showRankingScreen() {
+        Platform.runLater(() -> {
+            RankingScene rankingScene = new RankingScene(this::showMainMenu);
+            stage.setScene(rankingScene.getScene());
         });
     }
 
