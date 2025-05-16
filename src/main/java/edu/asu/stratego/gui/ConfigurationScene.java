@@ -82,11 +82,7 @@ public class ConfigurationScene implements LanguageObserver {
     }
 
     @Override
-    public void onLanguageChanged() {
-        updateTexts();
-    }
-
-    private void updateTexts() {
+    public void updateTexts() {
         titleLabel.setText(ResourceBundleManager.get("menu.settings"));
         titleLabel.setStyle("-fx-font-size: 24px; -fx-text-fill: white; -fx-font-weight: bold;");
 

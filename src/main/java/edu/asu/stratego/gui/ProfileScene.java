@@ -55,11 +55,7 @@ public class ProfileScene implements LanguageObserver {
     }
 
     @Override
-    public void onLanguageChanged() {
-        updateTexts();
-    }
-
-    private void updateTexts() {
+    public void updateTexts() {
         String nickname = player.getNickname();
         String email = player.getEmail();
         Integer points = player.getPoints();

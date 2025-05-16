@@ -66,11 +66,7 @@ public class EditProfileScene implements LanguageObserver {
     }
 
     @Override
-    public void onLanguageChanged() {
-        updateTexts();
-    }
-
-    private void updateTexts() {
+    public void updateTexts() {
         titleLabel.setText(ResourceBundleManager.get("menu.editprofile"));
         nicknameField.setPromptText(ResourceBundleManager.get("profile.nickname"));
         passwordField.setPromptText(ResourceBundleManager.get("profile.password"));

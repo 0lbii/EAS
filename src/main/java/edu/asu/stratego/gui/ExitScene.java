@@ -22,7 +22,7 @@ public class ExitScene implements LanguageObserver {
     private final Button exitButton = new Button();
 
     public ExitScene() {
-        LanguageObservable.addObserver(this);
+        Platform.runLater(() -> LanguageObservable.addObserver(this));
 
         // Style
         goodbyeLabel.setStyle("-fx-font-size: 24px; -fx-text-fill: white; -fx-font-weight: bold;");
@@ -47,15 +47,11 @@ public class ExitScene implements LanguageObserver {
         this.scene = new Scene(root, ClientStage.getSide(), ClientStage.getSide());
     }
 
-    private void updateTexts() {
+    @Override
+    public void updateTexts() {
         goodbyeLabel.setText(ResourceBundleManager.get("exit.goodbye"));
         userLabel.setText(Game.getPlayer().getNickname());
         exitButton.setText(ResourceBundleManager.get("exit.exitnow"));
-    }
-
-    @Override
-    public void onLanguageChanged() {
-        updateTexts();
     }
 
     public Scene getScene() {

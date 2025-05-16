@@ -59,11 +59,7 @@ public class HistoryScene implements LanguageObserver {
     }
 
     @Override
-    public void onLanguageChanged() {
-        updateTexts();
-    }
-
-    private void updateTexts() {
+    public void updateTexts() {
         titleLabel.setText(ResourceBundleManager.get("menu.history"));
         messageLabel.setText(ResourceBundleManager.get("history.notimplemented"));
         backButton.setText(ResourceBundleManager.get("menu.back"));

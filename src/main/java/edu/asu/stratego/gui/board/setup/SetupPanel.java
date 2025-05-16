@@ -372,7 +372,7 @@ public class SetupPanel implements LanguageObserver{
     }
 
     @Override
-    public void onLanguageChanged() {
+    public void updateTexts() {
         instructions.setText(ResourceBundleManager.get("setup.instructions"));
         readyLabel.setText(ResourceBundleManager.get("waiting.message"));
     }

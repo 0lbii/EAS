@@ -16,7 +16,7 @@ public class LanguageObservable {
 
     public static void notifyObservers() {
         for (LanguageObserver observer : observers) {
-            observer.onLanguageChanged();
+            observer.updateTexts();
         }
     }
 }

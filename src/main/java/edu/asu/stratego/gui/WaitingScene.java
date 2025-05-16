@@ -64,11 +64,7 @@ public class WaitingScene implements LanguageObserver{
     }
 
     @Override
-    public void onLanguageChanged() {
-        updateTexts();
-    }
-
-    private void updateTexts() {
+    public void updateTexts() {
         waitingLabel.setText(ResourceBundleManager.get("waiting.message"));
     }
 }

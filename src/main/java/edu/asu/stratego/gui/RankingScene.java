@@ -84,11 +84,7 @@ public class RankingScene implements LanguageObserver {
     }
 
     @Override
-    public void onLanguageChanged() {
-        updateTexts();
-    }
-
-    private void updateTexts() {
+    public void updateTexts() {
         backButton.setText(ResourceBundleManager.get("menu.back"));
         titleLabel.setText(ResourceBundleManager.get("menu.ranking"));
     }

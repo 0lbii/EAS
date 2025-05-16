@@ -60,18 +60,13 @@ public class MainMenuScene implements LanguageObserver {
     }
 
     @Override
-    public void onLanguageChanged() {
-        updateTexts();
-    }
-
-    private void updateTexts() {
+    public void updateTexts() {
         newGameButton.setText(ResourceBundleManager.get("menu.newgame"));
         historyButton.setText(ResourceBundleManager.get("menu.history"));
         profileButton.setText(ResourceBundleManager.get("menu.profile"));
         rankingButton.setText(ResourceBundleManager.get("menu.ranking"));
         settingsButton.setText(ResourceBundleManager.get("menu.settings"));
         exitButton.setText(ResourceBundleManager.get("menu.exit"));
-
     }
 
     public void setNewGameAction(Runnable action) {
