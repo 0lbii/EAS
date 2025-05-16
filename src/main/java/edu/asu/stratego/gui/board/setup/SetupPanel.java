@@ -99,7 +99,7 @@ public class SetupPanel implements LanguageObserver{
         setupTimer.setTextFill(new Color(0.9, 0.5, 0.0, 1.0));
         setupTimer.setAlignment(Pos.TOP_LEFT);
 
-        SetupTimer timer = new SetupTimer(boardPane);
+        SetupTimer timer = new SetupTimer(this.boardPane);
         timer.startTimer();
 
         GridPane timerPane = new GridPane();
@@ -264,13 +264,13 @@ public class SetupPanel implements LanguageObserver{
      * opponent's initial piece positions.
      */
     public void finishSetup() {
-        Object setupPieces = ClientGameManager.getSetupPieces();
+        Object setupPiecesSync  = ClientGameManager.getSetupPieces();
 
-        synchronized (setupPieces) {
+        synchronized (setupPiecesSync ) {
             setupPanel.getChildren().remove(instructionPane);
             setupPanel.getChildren().remove(piecePane);
             setupPanel.add(readyLabel, 0, 1);
-            setupPieces.notify();
+            setupPiecesSync.notify();
         }
     }
 

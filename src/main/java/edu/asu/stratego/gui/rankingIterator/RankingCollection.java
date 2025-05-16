@@ -1,6 +1,7 @@
 package edu.asu.stratego.gui.rankingIterator;
 
 import java.util.List;
+
 import models.Player;
 import services.PlayerService;
 

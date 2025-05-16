@@ -62,7 +62,7 @@ public class ClientStage extends Stage {
      */
     public void setRegisterScene() {
         registerScene = new RegisterScene();
-        this.setScene(getConnection().scene);
+        this.setScene(registerScene.getScene());
     }
 
     /**

@@ -65,7 +65,9 @@ public class BoardScene {
          */
         
         // Set the background color (turn indicator).
-        BoardTurnIndicator indicator = new BoardTurnIndicator(); // do not eliminate, it makes background not null
+        // Instantiating this class is necessary to initialize the static background.
+        // Do not remove, even if IDE says it's unused, because it is used
+        BoardTurnIndicator indicator = new BoardTurnIndicator();
         Rectangle background = BoardTurnIndicator.getTurnIndicator();
         
         
