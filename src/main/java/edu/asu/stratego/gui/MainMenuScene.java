@@ -56,7 +56,7 @@ public class MainMenuScene implements LanguageObserver {
         settingsButton.setStyle(buttonStyle);
         exitButton.setStyle(buttonStyle);
 
-        updateTexts();
+        Platform.runLater(this::updateTexts);
     }
 
     @Override

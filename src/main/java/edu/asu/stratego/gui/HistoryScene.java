@@ -32,7 +32,7 @@ public class HistoryScene implements LanguageObserver {
         messageLabel.setStyle("-fx-font-size: 18px; -fx-text-fill: white;");
         backButton.setStyle("-fx-font-size: 18px; -fx-pref-width: 220px; -fx-pref-height: 45px;");
 
-        updateTexts();
+        Platform.runLater(this::updateTexts);
 
         // Layout
         VBox historyBox = new VBox(20, titleLabel, messageLabel, backButton);

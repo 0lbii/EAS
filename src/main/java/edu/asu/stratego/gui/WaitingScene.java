@@ -34,7 +34,7 @@ public class WaitingScene implements LanguageObserver{
         // Create message label
         waitingLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: white;");
         
-        updateTexts();
+        Platform.runLater(this::updateTexts);
 
         // Create logo image
         ImageView logoImage = new ImageView(ImageConstants.stratego_logo);

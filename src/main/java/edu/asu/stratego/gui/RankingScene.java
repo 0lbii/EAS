@@ -65,7 +65,7 @@ public class RankingScene implements LanguageObserver {
 
         scene = new Scene(root, ClientStage.getSide(), ClientStage.getSide());
 
-        updateTexts();
+        Platform.runLater(this::updateTexts);
         loadRanking();
     }
 

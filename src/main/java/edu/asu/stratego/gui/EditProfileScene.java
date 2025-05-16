@@ -51,7 +51,7 @@ public class EditProfileScene implements LanguageObserver {
 
         backButton.setOnAction(e -> onBackAction.run());
 
-        updateTexts();
+        Platform.runLater(this::updateTexts);
 
         VBox content = new VBox(15, titleLabel, nicknameField, passwordField, saveButton, backButton);
         content.setAlignment(Pos.CENTER);

@@ -31,7 +31,7 @@ public class ExitScene implements LanguageObserver {
 
         exitButton.setOnAction(e -> Platform.exit());
 
-        updateTexts();
+        Platform.runLater(this::updateTexts);
 
         // Layout
         VBox exitBox = new VBox(20, goodbyeLabel, userLabel, exitButton);

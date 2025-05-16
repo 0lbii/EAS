@@ -74,7 +74,7 @@ public class ConfigurationScene implements LanguageObserver {
 
         backButton.setOnAction(e -> onBack.run());
 
-        updateTexts();
+        Platform.runLater(this::updateTexts);
     }
 
     public void setEditProfileAction(Runnable action) {

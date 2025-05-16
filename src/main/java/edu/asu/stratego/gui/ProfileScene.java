@@ -40,7 +40,7 @@ public class ProfileScene implements LanguageObserver {
         backButton.setPrefHeight(40);
         backButton.setOnAction(e -> onBackAction.run());
 
-        updateTexts();
+        Platform.runLater(this::updateTexts);
 
         VBox content = new VBox(15, titleLabel, nicknameLabel, emailLabel, pointsLabel, backButton);
         content.setAlignment(Pos.CENTER);
