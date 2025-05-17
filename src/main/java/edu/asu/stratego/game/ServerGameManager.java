@@ -263,19 +263,27 @@ public class ServerGameManager implements Runnable {
         }
     }
 
-    public synchronized void abandonGame() {
-        if (gameAbandoned)
+    /**
+     * Handles game abandonment with different status options
+     * 
+     * @param status the abandonment reason (RED_DISCONNECTED, BLUE_DISCONNECTED, or
+     *               DISCONNECTED)
+     */
+    public synchronized void abandonGame(GameStatus status) {
+        if (gameAbandoned) {
             return;
+        }
 
-        logger.info(session + "Game abandoned by players");
+        logger.info(session + "Game abandoned with status: " + status);
         gameAbandoned = true;
 
         try {
-            GameStatus abandonStatus = (playerOne.getColor() == PieceColor.RED) ? GameStatus.RED_DISCONNECTED
-                    : GameStatus.BLUE_DISCONNECTED;
+            // Update points based on abandonment reason
+            updatePlayerPoints(status);
 
-            toPlayerOne.writeObject(abandonStatus);
-            toPlayerTwo.writeObject(abandonStatus);
+            // Send abandonment status to both players
+            toPlayerOne.writeObject(status);
+            toPlayerTwo.writeObject(status);
 
             toPlayerOne.flush();
             toPlayerTwo.flush();
@@ -283,17 +291,102 @@ public class ServerGameManager implements Runnable {
         } catch (IOException e) {
             logger.log(Level.SEVERE, session + "Error sending abandon status", e);
         } finally {
-            // 🔄 Limpiar el tablero y cerrar conexiones
             resetServerBoard();
             closeConnections();
         }
     }
 
     /**
+     * Handles game abandonment when called without specific status (defaults to
+     * DISCONNECTED)
+     */
+    // public synchronized void abandonGame() {
+    // abandonGame(GameStatus.DISCONNECTED);
+    // }
+
+    /**
+     * Updates player points based on game outcome
+     * 
+     * @param winCondition the game status that determines the winner
+     */
+    private void updatePlayerPoints(GameStatus winCondition) {
+        PlayerService service = new PlayerService();
+        try {
+            // Determinar el color ganador y perdedor primero
+            PieceColor winnerColor;
+            PieceColor loserColor;
+
+            switch (winCondition) {
+                case RED_NO_MOVES:
+                case RED_CAPTURED:
+                    winnerColor = PieceColor.BLUE;
+                    loserColor = PieceColor.RED;
+                    break;
+
+                case BLUE_NO_MOVES:
+                case BLUE_CAPTURED:
+                    winnerColor = PieceColor.RED;
+                    loserColor = PieceColor.BLUE;
+                    break;
+
+                case RED_DISCONNECTED:
+                    winnerColor = PieceColor.BLUE;
+                    loserColor = PieceColor.RED;
+                    break;
+
+                case BLUE_DISCONNECTED:
+                    winnerColor = PieceColor.RED;
+                    loserColor = PieceColor.BLUE;
+                    break;
+
+                default:
+                    logger.warning(session + "Unknown win condition: " + winCondition);
+                    return;
+            }
+
+            // Ahora encontrar qué jugador tiene el color ganador
+            models.Player winner = (playerOne.getColor() == winnerColor) ? service.findByEmail(playerOne.getEmail())
+                    : service.findByEmail(playerTwo.getEmail());
+
+            models.Player loser = (playerOne.getColor() == loserColor) ? service.findByEmail(playerOne.getEmail())
+                    : service.findByEmail(playerTwo.getEmail());
+
+            // Asignar puntos
+            int pointsToAdd = (winCondition == GameStatus.RED_DISCONNECTED ||
+                    winCondition == GameStatus.BLUE_DISCONNECTED) ? 50 : 100;
+
+            winner.setPoints(winner.getPoints() + pointsToAdd);
+            service.savePlayer(winner);
+
+            logger.info(session + String.format(
+                    "Awarded %d points to %s winner: %s (Color: %s)",
+                    pointsToAdd,
+                    winnerColor,
+                    winner.getEmail(),
+                    winnerColor));
+
+            logger.info(session + String.format(
+                    "Loser: %s (Color: %s)",
+                    loser.getEmail(),
+                    loserColor));
+
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, session + "Error updating player points", e);
+        }
+    }
+
+    /**
+     * Handles game abandonment when called without specific status (defaults to
+     * DISCONNECTED)
+     */
+    public synchronized void abandonGame() {
+        abandonGame(GameStatus.DISCONNECTED);
+    }
+
+    /**
      * Main game loop.
      * Receives moves from players in turn, processes them, checks for a win
-     * condition,
-     * and sends the result back to both players.
+     * condition, and sends the result back to both players.
      */
     private void playGame() {
         while (!gameAbandoned) {
@@ -301,55 +394,42 @@ public class ServerGameManager implements Runnable {
                 // Get the move from the player based on the current turn
                 move = getMoveFromPlayer(turn);
 
-                // Add this check after getting the move
-                if (move == null || gameAbandoned) {
+                // Check if game was abandoned during move reception
+                if (gameAbandoned || move == null) {
                     break;
                 }
 
                 // Initialize the moves that will be sent to each player
-                Move moveToPlayerOne = new Move(), moveToPlayerTwo = new Move();
+                Move moveToPlayerOne = new Move();
+                Move moveToPlayerTwo = new Move();
 
                 // Register move on the board
                 gameRules.processMove(move, moveToPlayerOne, moveToPlayerTwo);
 
                 // Check if someone has won the game
                 GameStatus winCondition = checkWinCondition();
-                if (winCondition != GameStatus.IN_PROGRESS || gameAbandoned) {
+
+                // If game is over, update points and send final status
+                if (winCondition != GameStatus.IN_PROGRESS) {
+                    updatePlayerPoints(winCondition);
                     sendMoveToPlayers(moveToPlayerOne, moveToPlayerTwo, winCondition);
                     break;
-                }
-
-                // Determine winner and award points accordingly
-                PlayerService service = new PlayerService();
-                try {
-                    if (winCondition == GameStatus.RED_NO_MOVES || winCondition == GameStatus.RED_CAPTURED) {
-                        models.Player p = service.findByEmail(playerTwo.getEmail());
-                        p.setPoints(p.getPoints() + 100);
-                        service.savePlayer(p);
-                    } else if (winCondition == GameStatus.BLUE_NO_MOVES || winCondition == GameStatus.BLUE_CAPTURED) {
-                        models.Player p = service.findByEmail(playerOne.getEmail());
-                        p.setPoints(p.getPoints() + 100);
-                        service.savePlayer(p);
-                    }
-                } catch (Exception e) {
-                    logger.log(Level.SEVERE, "Error updating player points", e);
                 }
 
                 // Send updated moves and game status to both players
                 sendMoveToPlayers(moveToPlayerOne, moveToPlayerTwo, winCondition);
 
                 // Change turn color
-                if (turn == PieceColor.RED)
-                    turn = PieceColor.BLUE;
-                else
-                    turn = PieceColor.RED;
+                turn = (turn == PieceColor.RED) ? PieceColor.BLUE : PieceColor.RED;
+
             } catch (IOException | ClassNotFoundException e) {
-                logger.log(Level.SEVERE, session + " Error occurred during network I/O", e);
+                logger.log(Level.SEVERE, session + "Error occurred during network I/O", e);
+                // If there's an IO error, treat it as abandonment
+                abandonGame(GameStatus.DISCONNECTED);
                 return;
             }
         }
         closeConnections();
-
     }
 
     /**
@@ -468,7 +548,14 @@ public class ServerGameManager implements Runnable {
 
         // Check if it's an abandon signal
         if (received instanceof String && ((String) received).equals("ABANDON")) {
-            abandonGame();
+            // Determine which player is abandoning
+            GameStatus abandonStatus = (playerOne.getColor() == turn)
+                    ? (playerOne.getColor() == PieceColor.RED ? GameStatus.RED_DISCONNECTED
+                            : GameStatus.BLUE_DISCONNECTED)
+                    : (playerTwo.getColor() == PieceColor.RED ? GameStatus.RED_DISCONNECTED
+                            : GameStatus.BLUE_DISCONNECTED);
+
+            abandonGame(abandonStatus);
             return null;
         }
 
