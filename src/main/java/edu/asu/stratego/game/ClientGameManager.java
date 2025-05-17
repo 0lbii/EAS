@@ -30,6 +30,11 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import java.awt.Point;
 import javafx.scene.control.Button;
+import java.time.LocalDateTime;
+import models.GamePlayer;
+import services.GamePlayerService;
+import services.GameService;
+import services.PlayerService;
 
 /**
  * Task to handle the Stratego game on the client-side.
@@ -247,6 +252,7 @@ public class ClientGameManager implements Runnable {
     public void playGame() {
         initializeGameBoard();
         addAbandonButton();
+        Game.setStartTime(LocalDateTime.now());
 
         // Main loop (when playing)
         while (Game.getStatus() == GameStatus.IN_PROGRESS) {
@@ -283,32 +289,85 @@ public class ClientGameManager implements Runnable {
     private void handleGameEnd() {
         Platform.runLater(() -> {
             String message = "";
+            boolean isWinner = false;
+
             if (Game.getStatus() == GameStatus.RED_CAPTURED ||
                     Game.getStatus() == GameStatus.RED_NO_MOVES) {
                 message = (Game.getPlayer().getColor() == PieceColor.BLUE) ? "¡Has ganado!" : "Has perdido";
+                isWinner = Game.getPlayer().getColor() == PieceColor.BLUE;
             } else if (Game.getStatus() == GameStatus.BLUE_CAPTURED ||
                     Game.getStatus() == GameStatus.BLUE_NO_MOVES) {
                 message = (Game.getPlayer().getColor() == PieceColor.RED) ? "¡Has ganado!" : "Has perdido";
+                isWinner = Game.getPlayer().getColor() == PieceColor.RED;
             } else if (Game.getStatus() == GameStatus.RED_DISCONNECTED ||
                     Game.getStatus() == GameStatus.BLUE_DISCONNECTED) {
                 message = "El oponente ha abandonado la partida";
                 clearLocalBoard();
             }
 
+            // Guardar la partida en la base de datos
+            saveGameToDatabase(isWinner, Game.getStatus() == GameStatus.RED_DISCONNECTED
+                    || Game.getStatus() == GameStatus.BLUE_DISCONNECTED);
+
             AlertUtils.showGameEndAlert(
                     "Fin de la partida",
                     message,
                     "¿Quieres jugar otra partida?",
                     () -> {
-                        closeExistingConnection(); // 🔥 Matamos el socket
-                        Game.resetGame(); // 🔄 Reiniciamos el estado del juegoo
-                        Platform.runLater(sceneController::showMainMenu); // Volvemos al menú
+                        closeExistingConnection();
+                        Game.resetGame();
+                        Platform.runLater(sceneController::showMainMenu);
                     },
                     Platform::exit);
 
             // Limpiar la escena del juego
             BoardScene.getRootPane().getChildren().clear();
         });
+    }
+
+    private void saveGameToDatabase(boolean isWinner, boolean wasAbandoned) {
+        try {
+            GameService gameService = new GameService();
+            PlayerService playerService = new PlayerService();
+            GamePlayerService gamePlayerService = new GamePlayerService();
+
+            // 1. Buscar a los jugadores en la base de datos por su nickname
+            models.Player currentPlayer = playerService.findByNickname(Game.getPlayer().getNickname());
+            models.Player opponentPlayer = playerService.findByNickname(Game.getOpponent().getNickname());
+
+            if (currentPlayer == null || opponentPlayer == null) {
+                logger.warning("No se pudo encontrar uno o ambos jugadores en la BD");
+                return;
+            }
+
+            // 2. Crear y configurar la nueva partida
+            models.Game game = new models.Game();
+            game.setFinished(true);
+            game.setStartTime(Game.getStartTime());
+            game.setEndTime(LocalDateTime.now());
+            game.setWinner(isWinner ? currentPlayer : opponentPlayer);
+            game.setWasAbandoned(wasAbandoned);
+
+            // 3. Guardar la partida
+            gameService.saveGame(game);
+
+            // 4. Crear relaciones entre jugadores y partida
+            GamePlayer currentGP = new GamePlayer();
+            currentGP.setGame(game);
+            currentGP.setPlayer(currentPlayer);
+            currentGP.setRedTeam(Game.getPlayer().getColor() == PieceColor.RED);
+
+            GamePlayer opponentGP = new GamePlayer();
+            opponentGP.setGame(game);
+            opponentGP.setPlayer(opponentPlayer);
+            opponentGP.setRedTeam(Game.getOpponent().getColor() == PieceColor.RED);
+
+            gamePlayerService.saveGamePlayer(currentGP);
+            gamePlayerService.saveGamePlayer(opponentGP);
+
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error al guardar partida en BD", e);
+        }
     }
 
     /**

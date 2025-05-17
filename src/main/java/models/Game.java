@@ -18,6 +18,9 @@ public class Game {
 
     private boolean isFinished;
 
+    @Column(nullable = false)
+    private boolean wasAbandoned = false;
+
     private LocalDateTime startTime = LocalDateTime.now();
     private LocalDateTime endTime = LocalDateTime.now();
 
@@ -87,6 +90,14 @@ public class Game {
 
     public void setPieces(List<Piece> pieces) {
         this.pieces = pieces;
+    }
+
+    public boolean isWasAbandoned() {
+        return wasAbandoned;
+    }
+
+    public void setWasAbandoned(boolean wasAbandoned) {
+        this.wasAbandoned = wasAbandoned;
     }
 
 }

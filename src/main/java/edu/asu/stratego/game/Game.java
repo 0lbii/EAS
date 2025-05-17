@@ -2,6 +2,8 @@ package edu.asu.stratego.game;
 
 import edu.asu.stratego.game.board.ClientBoard;
 import edu.asu.stratego.game.pieces.PieceColor;
+import jakarta.persistence.ManyToOne;
+import java.time.LocalDateTime;
 
 /**
  * Contains information about the Stratego game, which is shared between the
@@ -21,6 +23,10 @@ public class Game {
     private static GameStatus status;
     private static PieceColor turn;
     private static ClientBoard board;
+    private static LocalDateTime startTime;
+
+    @ManyToOne
+    private Player currentPlayer;
 
     /**
      * Initializes data fields for a new game.
@@ -136,6 +142,14 @@ public class Game {
         Game.moveStatus = moveStatus;
     }
 
+    public static void setStartTime(LocalDateTime start) {
+        startTime = start;
+    }
+
+    public static LocalDateTime getStartTime() {
+        return startTime;
+    }
+
     /**
      * Resets the game state to prepare for a new game
      */
@@ -154,6 +168,14 @@ public class Game {
         turn = PieceColor.RED;
         move = new Move();
         moveStatus = MoveStatus.OPP_TURN;
+    }
+
+    public Player getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public void setCurrentPlayer(Player player) {
+        this.currentPlayer = player;
     }
 
 }
