@@ -12,7 +12,7 @@ import javafx.stage.Stage;
 import services.PlayerService;
 
 public class SceneController {
-    
+
     private final Stage stage;
     private final ClientGameManager gameManager;
 
@@ -36,6 +36,7 @@ public class SceneController {
                 mainMenuScene = new MainMenuScene();
                 mainMenuScene.setNewGameAction(() -> {
                     new Thread(() -> {
+                        Game.resetGame();
                         gameManager.waitForOpponent();
                         gameManager.setupBoard();
                         gameManager.playGame();

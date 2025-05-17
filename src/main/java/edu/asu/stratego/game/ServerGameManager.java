@@ -45,6 +45,8 @@ public class ServerGameManager implements Runnable {
     private Socket socketOne;
     private Socket socketTwo;
 
+    private volatile boolean gameAbandoned = false;
+
     RulesFactory rulesFactory = new OriginalRulesFactory();
     GameRules gameRules;
 
@@ -85,23 +87,68 @@ public class ServerGameManager implements Runnable {
         playGame();
     }
 
+    private void resetServerBoard() {
+        this.board = new ServerBoard(); // 🔄 Crear un nuevo tablero vacío
+        this.playerOneFlag = null;
+        this.playerTwoFlag = null;
+        this.turn = (Math.random() < 0.5) ? PieceColor.RED : PieceColor.BLUE;
+        this.move = null;
+        logger.info(session + "Server board has been reset.");
+    }
+
     /**
      * Establish IO object streams to facilitate communication between the
      * client and server.
      */
     private void createIOStreams() {
         try {
-            // NOTE: ObjectOutputStreams must be constructed before the
-            // ObjectInputStreams so as to prevent a remote deadlock
-            toPlayerOne = new ObjectOutputStream(socketOne.getOutputStream());
-            fromPlayerOne = new ObjectInputStream(socketOne.getInputStream());
-            toPlayerTwo = new ObjectOutputStream(socketTwo.getOutputStream());
-            fromPlayerTwo = new ObjectInputStream(socketTwo.getInputStream());
+            logger.info(session + "Attempting to create IO Streams...");
+
+            if (socketOne == null || socketTwo == null) {
+                logger.severe(session + "One or both sockets are null. Cannot create streams.");
+                return;
+            }
+
+            if (socketOne.isClosed() || socketTwo.isClosed()) {
+                logger.severe(session + "One or both sockets are already closed. Cannot create streams.");
+                return;
+            }
+
+            if (toPlayerOne == null) {
+                logger.info(session + "Creating ObjectOutputStream for Player One...");
+                toPlayerOne = new ObjectOutputStream(socketOne.getOutputStream());
+                toPlayerOne.flush();
+            } else {
+                logger.warning(session + "ObjectOutputStream for Player One already exists.");
+            }
+
+            if (fromPlayerOne == null) {
+                logger.info(session + "Creating ObjectInputStream for Player One...");
+                fromPlayerOne = new ObjectInputStream(socketOne.getInputStream());
+            } else {
+                logger.warning(session + "ObjectInputStream for Player One already exists.");
+            }
+
+            if (toPlayerTwo == null) {
+                logger.info(session + "Creating ObjectOutputStream for Player Two...");
+                toPlayerTwo = new ObjectOutputStream(socketTwo.getOutputStream());
+                toPlayerTwo.flush();
+            } else {
+                logger.warning(session + "ObjectOutputStream for Player Two already exists.");
+            }
+
+            if (fromPlayerTwo == null) {
+                logger.info(session + "Creating ObjectInputStream for Player Two...");
+                fromPlayerTwo = new ObjectInputStream(socketTwo.getInputStream());
+            } else {
+                logger.warning(session + "ObjectInputStream for Player Two already exists.");
+            }
+
+            logger.info(session + "Streams successfully created.");
+
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "Error establishing communication streams.", e);
-            // Clean up resources if streams or sockets were created before the exception
+            logger.log(Level.SEVERE, session + "Error establishing communication streams.", e);
             closeConnections();
-            // Finish the thread execution
             Thread.currentThread().interrupt();
         }
     }
@@ -135,6 +182,11 @@ public class ServerGameManager implements Runnable {
      */
     private void exchangePlayers() {
         try {
+            if (fromPlayerOne == null || fromPlayerTwo == null) {
+                logger.log(Level.SEVERE, "Input streams are null. Cannot exchange players.");
+                return;
+            }
+
             playerOne = (Player) fromPlayerOne.readObject();
             playerTwo = (Player) fromPlayerTwo.readObject();
 
@@ -162,8 +214,17 @@ public class ServerGameManager implements Runnable {
      */
     private void exchangeSetup() {
         try {
+            if (fromPlayerOne == null || fromPlayerTwo == null) {
+                logger.log(Level.SEVERE, session + "Error during setup exchange: Streams are null.");
+                return;
+            }
             SetupBoard setupBoardOne = (SetupBoard) fromPlayerOne.readObject();
             SetupBoard setupBoardTwo = (SetupBoard) fromPlayerTwo.readObject();
+
+            if (setupBoardOne == null || setupBoardTwo == null) {
+                logger.log(Level.SEVERE, session + "Error during setup exchange: Setup boards are null.");
+                return;
+            }
 
             // Register pieces on the server board
             for (int row = 0; row < 4; ++row) {
@@ -202,6 +263,32 @@ public class ServerGameManager implements Runnable {
         }
     }
 
+    public synchronized void abandonGame() {
+        if (gameAbandoned)
+            return;
+
+        logger.info(session + "Game abandoned by players");
+        gameAbandoned = true;
+
+        try {
+            GameStatus abandonStatus = (playerOne.getColor() == PieceColor.RED) ? GameStatus.RED_DISCONNECTED
+                    : GameStatus.BLUE_DISCONNECTED;
+
+            toPlayerOne.writeObject(abandonStatus);
+            toPlayerTwo.writeObject(abandonStatus);
+
+            toPlayerOne.flush();
+            toPlayerTwo.flush();
+
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, session + "Error sending abandon status", e);
+        } finally {
+            // 🔄 Limpiar el tablero y cerrar conexiones
+            resetServerBoard();
+            closeConnections();
+        }
+    }
+
     /**
      * Main game loop.
      * Receives moves from players in turn, processes them, checks for a win
@@ -209,10 +296,15 @@ public class ServerGameManager implements Runnable {
      * and sends the result back to both players.
      */
     private void playGame() {
-        while (true) {
+        while (!gameAbandoned) {
             try {
                 // Get the move from the player based on the current turn
                 move = getMoveFromPlayer(turn);
+
+                // Add this check after getting the move
+                if (move == null || gameAbandoned) {
+                    break;
+                }
 
                 // Initialize the moves that will be sent to each player
                 Move moveToPlayerOne = new Move(), moveToPlayerTwo = new Move();
@@ -222,6 +314,10 @@ public class ServerGameManager implements Runnable {
 
                 // Check if someone has won the game
                 GameStatus winCondition = checkWinCondition();
+                if (winCondition != GameStatus.IN_PROGRESS || gameAbandoned) {
+                    sendMoveToPlayers(moveToPlayerOne, moveToPlayerTwo, winCondition);
+                    break;
+                }
 
                 // Determine winner and award points accordingly
                 PlayerService service = new PlayerService();
@@ -252,6 +348,7 @@ public class ServerGameManager implements Runnable {
                 return;
             }
         }
+        closeConnections();
 
     }
 
@@ -366,15 +463,21 @@ public class ServerGameManager implements Runnable {
         toPlayerOne.writeObject(turn);
         toPlayerTwo.writeObject(turn);
 
-        // Get turn from client
-        if (playerOne.getColor() == turn) {
-            move = (Move) fromPlayerOne.readObject();
-            move.setStart(CoordinateUtils.rotate180(move.getStart()));
-            move.setEnd(CoordinateUtils.rotate180(move.getEnd()));
-        } else {
-            move = (Move) fromPlayerTwo.readObject();
+        // Get move from client
+        Object received = (playerOne.getColor() == turn) ? fromPlayerOne.readObject() : fromPlayerTwo.readObject();
+
+        // Check if it's an abandon signal
+        if (received instanceof String && ((String) received).equals("ABANDON")) {
+            abandonGame();
+            return null;
         }
 
+        // Process normal move
+        move = (Move) received;
+        if (playerOne.getColor() == turn) {
+            move.setStart(CoordinateUtils.rotate180(move.getStart()));
+            move.setEnd(CoordinateUtils.rotate180(move.getEnd()));
+        }
         return move;
     }
 

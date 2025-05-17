@@ -13,6 +13,8 @@ public class Player implements Serializable {
     private String nickname;
     private PieceColor color;
     private String email;
+    private Integer points = 0;
+    private String serverIP;
 
     /**
      * Creates a new instance of Player
@@ -61,4 +63,27 @@ public class Player implements Serializable {
     public String getEmail() {
         return email;
     }
+
+    /**
+     * @return the player's points
+     */
+    public Integer getPoints() {
+        return points;
+    }
+
+    /**
+     * @param points the player's points
+     */
+    public void setPoints(Integer points) {
+        this.points = points;
+    }
+
+    public void setServerIP(String serverIP) {
+        this.serverIP = serverIP;
+    }
+
+    public String getServerIP() {
+        return serverIP;
+    }
+
 }

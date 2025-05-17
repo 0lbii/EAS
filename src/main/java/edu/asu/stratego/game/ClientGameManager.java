@@ -24,6 +24,12 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.util.Duration;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.layout.StackPane;
+import java.awt.Point;
+import javafx.scene.control.Button;
 
 /**
  * Task to handle the Stratego game on the client-side.
@@ -106,6 +112,22 @@ public class ClientGameManager implements Runnable {
         }
     }
 
+    private void closeExistingConnection() {
+        try {
+            if (fromServer != null) {
+                fromServer.close();
+                fromServer = null;
+            }
+            if (toServer != null) {
+                toServer.close();
+                toServer = null;
+            }
+            ClientSocket.getInstance().close();
+        } catch (IOException e) {
+            logger.log(Level.WARNING, "Error closing existing connection", e);
+        }
+    }
+
     /**
      * Establish I/O streams between the client and the server. Send player
      * information to the server. Then, wait until an object containing player
@@ -123,29 +145,45 @@ public class ClientGameManager implements Runnable {
         });
 
         try {
-            // I/O Streams.
+            if (ClientSocket.getInstance() != null && !ClientSocket.getInstance().isClosed()) {
+                ClientSocket.getInstance().close();
+                ClientSocket.setInstance(null);
+            }
+            ClientSocket.connect(Game.getPlayer().getServerIP(), 4212);
+
+            // I/O Streams
             toServer = new ObjectOutputStream(ClientSocket.getInstance().getOutputStream());
             fromServer = new ObjectInputStream(ClientSocket.getInstance().getInputStream());
 
-            // Exchange player information.
+            Game.getPlayer().setColor(null);
+            Game.setOpponent(null);
+            Game.setStatus(GameStatus.SETTING_UP);
+            Game.setTurn(PieceColor.RED);
+            Game.setMove(new Move());
+            Game.setMoveStatus(MoveStatus.OPP_TURN);
+
+            // Intercambio de información con el servidor
             toServer.writeObject(Game.getPlayer());
             Game.setOpponent((Player) fromServer.readObject());
 
-            // Infer player color from opponent color.
+            // Inferir el color del jugador
             if (Game.getOpponent().getColor() == PieceColor.RED)
                 Game.getPlayer().setColor(PieceColor.BLUE);
             else
                 Game.getPlayer().setColor(PieceColor.RED);
+
         } catch (IOException | ClassNotFoundException e) {
             logger.log(Level.SEVERE, "Error occurred during opponent communication", e);
-            // Show the error message in the interface
             Platform.runLater(() -> {
                 AlertUtils.showRetryAlert(
                         "Communication problem",
                         "Communication problem with the opponent",
                         "The opponent's information could not be received. Do you want to try again?",
                         this::connectToServer,
-                        Platform::exit);
+                        () -> {
+                            closeExistingConnection();
+                            sceneController.showMainMenu();
+                        });
             });
         }
     }
@@ -208,12 +246,20 @@ public class ClientGameManager implements Runnable {
 
     public void playGame() {
         initializeGameBoard();
+        addAbandonButton();
 
         // Main loop (when playing)
         while (Game.getStatus() == GameStatus.IN_PROGRESS) {
 
             try {
                 handleTurn();
+                if (Game.getStatus() == GameStatus.RED_DISCONNECTED ||
+                        Game.getStatus() == GameStatus.BLUE_DISCONNECTED ||
+                        Game.getMove() == null) {
+                    logger.info("Game was abandoned, returning to main menu");
+                    handleGameEnd();
+                    return;
+                }
                 processAttackMove();
                 updateBoardAndGUI();
             } catch (ClassNotFoundException | IOException | InterruptedException e) {
@@ -231,6 +277,101 @@ public class ClientGameManager implements Runnable {
         }
 
         revealAll();
+        handleGameEnd();
+    }
+
+    private void handleGameEnd() {
+        Platform.runLater(() -> {
+            String message = "";
+            if (Game.getStatus() == GameStatus.RED_CAPTURED ||
+                    Game.getStatus() == GameStatus.RED_NO_MOVES) {
+                message = (Game.getPlayer().getColor() == PieceColor.BLUE) ? "¡Has ganado!" : "Has perdido";
+            } else if (Game.getStatus() == GameStatus.BLUE_CAPTURED ||
+                    Game.getStatus() == GameStatus.BLUE_NO_MOVES) {
+                message = (Game.getPlayer().getColor() == PieceColor.RED) ? "¡Has ganado!" : "Has perdido";
+            } else if (Game.getStatus() == GameStatus.RED_DISCONNECTED ||
+                    Game.getStatus() == GameStatus.BLUE_DISCONNECTED) {
+                message = "El oponente ha abandonado la partida";
+                clearLocalBoard();
+            }
+
+            AlertUtils.showGameEndAlert(
+                    "Fin de la partida",
+                    message,
+                    "¿Quieres jugar otra partida?",
+                    () -> {
+                        closeExistingConnection(); // 🔥 Matamos el socket
+                        Game.resetGame(); // 🔄 Reiniciamos el estado del juegoo
+                        Platform.runLater(sceneController::showMainMenu); // Volvemos al menú
+                    },
+                    Platform::exit);
+
+            // Limpiar la escena del juego
+            BoardScene.getRootPane().getChildren().clear();
+        });
+    }
+
+    /**
+     * Limpia visualmente y en memoria el tablero del jugador local.
+     */
+    private void clearLocalBoard() {
+        Platform.runLater(() -> {
+            for (int row = 0; row < 10; row++) {
+                for (int col = 0; col < 10; col++) {
+                    ClientSquare square = Game.getBoard().getSquare(row, col);
+
+                    // 🔄 Quitar piezas visuales
+                    square.getPiecePane().setPiece(null);
+
+                    // 🔄 Quitar piezas en el modelo
+                    square.setPiece(null);
+                }
+            }
+        });
+    }
+
+    private void addAbandonButton() {
+        Platform.runLater(() -> {
+            try {
+                // Posicionar el botón en la esquina superior derecha
+                StackPane root = BoardScene.getRootPane();
+
+                // Verificar si el botón ya existe
+                if (root.getChildren().stream().anyMatch(node -> node instanceof Button &&
+                        ((Button) node).getText().equals("Abandon Game"))) {
+                    return;
+                }
+
+                // Crear botón de abandono
+                javafx.scene.control.Button abandonButton = new javafx.scene.control.Button("Abandon Game");
+                abandonButton.setStyle(
+                        "-fx-font-size: 14px; -fx-padding: 5 10; -fx-background-color: #ff4444; -fx-text-fill: white;");
+                abandonButton.setOnAction(e -> {
+                    logger.info("Abandon button clicked");
+                    // Enviar señal de abandono al servidor
+                    try {
+                        if (toServer != null) {
+                            // Enviamos un movimiento especial que indica abandono
+                            toServer.writeObject("ABANDON"); // Señal clara de abandono
+                            toServer.flush();
+
+                        }
+                    } catch (IOException ex) {
+                        logger.log(Level.SEVERE, "Error sending abandon signal", ex);
+                    }
+                    Platform.runLater(() -> sceneController.showMainMenu());
+
+                });
+
+                StackPane.setAlignment(abandonButton, Pos.TOP_RIGHT);
+                StackPane.setMargin(abandonButton, new Insets(10, 10, 0, 0));
+                root.getChildren().add(abandonButton);
+
+                logger.info("Abandon button added to UI");
+            } catch (Exception e) {
+                logger.log(Level.SEVERE, "Error adding abandon button", e);
+            }
+        });
     }
 
     private void initializeGameBoard() {
@@ -257,21 +398,34 @@ public class ClientGameManager implements Runnable {
     }
 
     private void handleTurn() throws InterruptedException, ClassNotFoundException, IOException {
-        // Get turn color from server.
-        Game.setTurn((PieceColor) fromServer.readObject());
+        // Get message from server
+        Object received = fromServer.readObject();
 
-        // If the turn is the client's, set move status to none selected.
-        if (Game.getPlayer().getColor() == Game.getTurn())
+        // Check if it's a game status (like abandon)
+        if (received instanceof GameStatus) {
+            GameStatus status = (GameStatus) received;
+            if (status == GameStatus.RED_DISCONNECTED || status == GameStatus.BLUE_DISCONNECTED) {
+                Game.setStatus(status);
+                return;
+            }
+        }
+
+        // Otherwise it should be the turn color
+        Game.setTurn((PieceColor) received);
+
+        // If the turn is the client's, set move status to none selected
+        if (Game.getPlayer().getColor() == Game.getTurn()) {
             Game.setMoveStatus(MoveStatus.NONE_SELECTED);
-        else
+        } else {
             Game.setMoveStatus(MoveStatus.OPP_TURN);
+        }
 
-        // Notify turn indicator.
+        // Notify turn indicator
         synchronized (BoardTurnIndicator.getTurnIndicatorTrigger()) {
             BoardTurnIndicator.getTurnIndicatorTrigger().notify();
         }
 
-        // Send move to the server.
+        // Send move to the server if it's our turn
         if (Game.getPlayer().getColor() == Game.getTurn() && Game.getMoveStatus() != MoveStatus.SERVER_VALIDATION) {
             synchronized (sendMove) {
                 sendMove.wait();
@@ -280,8 +434,13 @@ public class ClientGameManager implements Runnable {
             }
         }
 
-        // Receive move from the server.
-        Game.setMove((Move) fromServer.readObject());
+        // Receive move from the server
+        received = fromServer.readObject();
+        if (received instanceof Move) {
+            Game.setMove((Move) received);
+        } else if (received instanceof GameStatus) {
+            Game.setStatus((GameStatus) received);
+        }
     }
 
     private void processAttackMove() throws InterruptedException, ClassNotFoundException, IOException {

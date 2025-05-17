@@ -136,4 +136,24 @@ public class Game {
         Game.moveStatus = moveStatus;
     }
 
+    /**
+     * Resets the game state to prepare for a new game
+     */
+    public static void resetGame() {
+        // Reset game board
+        board = new ClientBoard();
+
+        // Reset players
+        if (player != null) {
+            player.setColor(null);
+        }
+        opponent = null;
+
+        // Reset game status
+        status = GameStatus.SETTING_UP;
+        turn = PieceColor.RED;
+        move = new Move();
+        moveStatus = MoveStatus.OPP_TURN;
+    }
+
 }
