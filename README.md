@@ -22,14 +22,15 @@
 
 1.  **Download the repository:**
     
-    Clone or download this repository to your local machine
-        ```
-        $ git clone git://github.com/Sw-Evolution/Stratego.git
-        $ cd Stratego
-        $ git remote remove origin
-        $ git remote add origin https://github.com/Sw-Evolution/25EXX.git
-        $ git push -u origin master
-        ```
+    -   Clone or download this repository to your local machine
+      
+            ```
+            $ git clone git://github.com/Sw-Evolution/Stratego.git
+            $ cd Stratego
+            $ git remote remove origin
+            $ git remote add origin https://github.com/Sw-Evolution/25EXX.git
+            $ git push -u origin master
+            ```
       
 2.  **Install Java 21:**
     
@@ -39,8 +40,9 @@
 3.  **Set up the database:**
     
     -   We are using XAMPP for the database, but you can use any SQL editor you prefer
-    1)   Create a database named `stratego` and set the password `admin` for the `root` user
-    2)   In the SQL Shell, run the following commands:
+    1.   Create a database named `stratego` and set the password `admin` for the `root` user
+    2.   In the SQL Shell, run the following commands:
+       
             ```
             CREATE DATABASE stratego;
             ALTER USER 'root'@'localhost' IDENTIFIED BY 'admin';
@@ -48,14 +50,16 @@
     
 4.  **Run the project:**
    
-    1)   Use Visual Studio Code and install the Spring Boot Extension Pack and Maven for Java extensions
-    2)   Click the "Run" button in Visual Studio Code to start the server
-    3)   Open a terminal and run the following command to launch the game:
+    1.   Use Visual Studio Code and install the Spring Boot Extension Pack and Maven for Java extensions
+    2.   Click the "Run" button in Visual Studio Code to start the server
+    3.   Open a terminal and run the following command to launch the game:
+       
             ```
             mvn clean javafx:run
             ```
-    4)   Repeat step 3 on another terminal to launch the game for the second player
-    5)   To access the game, each player must create an account and log in using the credentials they registered, along with the server IP address that appears in the terminal after executing step 2
+            
+    5.   Repeat step 3 on another terminal to launch the game for the second player
+    6.   To access the game, each player must create an account and log in using the credentials they registered, along with the server IP address that appears in the terminal after executing step 2
 
 
 ## 📺 SCREENS
