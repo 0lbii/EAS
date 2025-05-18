@@ -1,6 +1,8 @@
+<div align="center">
 # <img width="400" alt="stratego" src="https://user-images.githubusercontent.com/26120940/32502146-37fad856-c397-11e7-80e1-a2edf3336774.png" />
+</div>
 
-> **Stratego** [/strəˈtiːɡoʊ/](https://en.wikipedia.org/wiki/Help:IPA/English) is a strategy board game for two players on a board of 10×10 squares. Each player controls 40 pieces representing individual officer ranks in an army. The objective of the game is to find and capture the opponent's *Flag*, or to capture so many enemy pieces that the opponent cannot make any further moves. *Stratego* has simple enough rules for young children to play, but a depth of strategy that is also appealing to adults.
+> **Stratego** is a strategy board game for two players on a board of 10×10 squares. Each player controls 40 pieces representing individual officer ranks in an army. The objective of the game is to find and capture the opponent's *Flag*, or to capture so many enemy pieces that the opponent cannot make any further moves. *Stratego* has simple enough rules for young children to play, but a depth of strategy that is also appealing to adults.
 
 [@nuttywhal](https://github.com/nuttywhal) and [@david-henderson](https://github.com/david-henderson) implemented this board game as a final project for SER 215 (Software Enterprise II) in Fall 2014 during our third semester at Arizona State University. It was written as a distributed application using a client–server model. The server awaits socket connections from two different clients and then dispatches a thread to handle a game session between those clients. The server is responsible for information security and enforcing the game rules so that players may not modify the game client in order to cheat.
 
@@ -56,12 +58,12 @@ java -jar bin/server.jar
 3.  **Set up the database:**
     
     -   We are using XAMPP for the database, but you can use any SQL editor you prefer
-    -   Create a database named `shop` and set the password `admin` for the `root` user
+    -   Create a database named `stratego` and set the password `admin` for the `root` user
     
     In the **SQL Shell**, run the following commands:
     
     ```
-    CREATE DATABASE shop;
+    CREATE DATABASE stratego;
     ALTER USER 'root'@'localhost' IDENTIFIED BY 'admin';
     ```
     
@@ -70,13 +72,14 @@ java -jar bin/server.jar
 ## 📺 SCREENS
 | Screen image | Screen name | Screen description |
 |:------------:|:-----------:|:------------------:|
-| <img src="https://github.com/user-attachments/assets/61731811-330f-40fa-b2f7-836c1ccbb7fe" width="100"/> | Login | This screen is used by users to login using their credentials |
-| <img src="https://github.com/user-attachments/assets/140962c2-d3ec-4e57-9fbe-13be0f4cc2b9" width="100"/> | Register | This screen allows users to create a new account |
-| <img src="https://github.com/user-attachments/assets/b0cfbe2e-6459-475d-bad6-265b72132861" width="100"/> | Menu | Main navigation screen to access all game options |
-| <img src="https://github.com/user-attachments/assets/6bf8d387-598d-46dd-b6b5-175e4ed5dbc1" width="100"/> | Set Up Game | Screen to configure and start a new game |
-| <img src="https://github.com/user-attachments/assets/ecc3d227-98b4-4da5-95bc-2b79a7815dec" width="100"/> | Game | Main gameplay screen where the match takes place |
-| <img src="https://github.com/user-attachments/assets/259f23b9-d458-4f7c-85dd-19e8fea72839" width="100"/> | Game History | Displays a list of previously played games |
-| <img src="https://github.com/user-attachments/assets/90e15061-6c36-435c-bfd8-1330234c36ce" width="100"/> | Profile | Shows user profile information and statistics |
-| <img src="https://github.com/user-attachments/assets/f71e4476-1914-4cc6-ba62-ec2082e9cc38" width="100"/> | Ranking | Shows the leaderboard with player scores and positions |
-| <img src="https://github.com/user-attachments/assets/15c92215-eaa6-4e3c-9018-82eb1f90eb45" width="100"/> | Settings | Screen to change game settings and preferences |
-| <img src="https://github.com/user-attachments/assets/4ec62961-0b90-409a-aed2-7a85fa12ee33" width="100"/> | Log out | Allows users to securely log out of the app |
+| <img src="https://github.com/user-attachments/assets/61731811-330f-40fa-b2f7-836c1ccbb7fe" width="1000"/> | Login | This screen is used by users to login using their credentials |
+| <img src="https://github.com/user-attachments/assets/140962c2-d3ec-4e57-9fbe-13be0f4cc2b9" width="1000"/> | Register | This screen allows users to create a new account |
+| <img src="https://github.com/user-attachments/assets/b0cfbe2e-6459-475d-bad6-265b72132861" width="1000"/> | Menu | Main navigation screen to access all game options |
+| <img src="https://github.com/user-attachments/assets/6bf8d387-598d-46dd-b6b5-175e4ed5dbc1" width="1000"/> | Set Up Game | Screen to configure and start a new game |
+| <img src="https://github.com/user-attachments/assets/ecc3d227-98b4-4da5-95bc-2b79a7815dec" width="1000"/> | Game | Main gameplay screen where the match takes place |
+| <img src="https://github.com/user-attachments/assets/259f23b9-d458-4f7c-85dd-19e8fea72839" width="1000"/> | Game History | Displays a list of previously played games |
+| <img src="https://github.com/user-attachments/assets/90e15061-6c36-435c-bfd8-1330234c36ce" width="1000"/> | Profile | Shows user profile information |
+| <img src="https://github.com/user-attachments/assets/f71e4476-1914-4cc6-ba62-ec2082e9cc38" width="1000"/> | Ranking | Shows the leaderboard with player scores and positions |
+| <img src="https://github.com/user-attachments/assets/15c92215-eaa6-4e3c-9018-82eb1f90eb45" width="1000"/> | Settings | Screen to change game settings and preferences |
+| <img src="https://github.com/user-attachments/assets/b170ab39-af92-4d22-ba4d-b975625a3517" width="1000"/> | Edit profile | Screen where users can edit their personal data |
+| <img src="https://github.com/user-attachments/assets/4ec62961-0b90-409a-aed2-7a85fa12ee33" width="1000"/> | Log out | Allows users to securely log out of the app |
