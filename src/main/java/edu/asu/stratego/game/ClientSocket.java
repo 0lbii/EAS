@@ -16,7 +16,7 @@ public final class ClientSocket {
      * Prevents an instance of this class from being instantiated.
      */
     private ClientSocket() {
-        /* Intentionally Empty */ }
+    }
 
     /**
      * Attempts a connection to the server.
@@ -43,6 +43,12 @@ public final class ClientSocket {
         return socket;
     }
 
+    /**
+     * Replaces the current socket instance with a new one
+     * If an existing socket is open, it will be closed before assigning the new one
+     *
+     * @param newSocket the new socket instance to be set
+     */
     public static void setInstance(Socket newSocket) {
         if (socket != null && !socket.isClosed()) {
             try {

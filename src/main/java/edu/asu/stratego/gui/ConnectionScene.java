@@ -33,7 +33,7 @@ public class ConnectionScene {
     private static final GridPane loginPanel = new GridPane();
 
     private Button loginButton = new Button("Login");
-    private final Button registerButton = new Button("Register if you don't have an account");
+    private final Button registerButton = new Button("Register");
     private final TextField emailField = new TextField();
     private final TextField passwordField = new TextField();
     private final TextField serverIPField = new TextField();

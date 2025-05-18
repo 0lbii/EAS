@@ -16,6 +16,9 @@ public class ServerBoard {
         initializeSquares();
     }
 
+    /**
+     * Initializes the squares of the board.
+     */
     private void initializeSquares() {
         for (int row = 0; row < SIZE; row++) {
             for (int col = 0; col < SIZE; col++) {

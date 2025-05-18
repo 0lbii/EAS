@@ -26,6 +26,9 @@ public class ClientBoard {
         this.eventPane = new BoardEventPane(this);
     }
 
+    /**
+     * Initializes the squares of the board.
+     */
     private void initializeSquares() {
         for (int row = 0; row < size; row++) {
             for (int col = 0; col < size; col++) {
@@ -59,4 +62,5 @@ public class ClientBoard {
     public BoardEventPane getEventPane() {
         return eventPane;
     }
+
 }

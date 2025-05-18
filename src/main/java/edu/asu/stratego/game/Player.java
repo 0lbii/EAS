@@ -78,10 +78,16 @@ public class Player implements Serializable {
         this.points = points;
     }
 
+    /**
+     * @param serverIP the server IP address
+     */
     public void setServerIP(String serverIP) {
         this.serverIP = serverIP;
     }
 
+    /**
+     * @return the server IP address
+     */
     public String getServerIP() {
         return serverIP;
     }

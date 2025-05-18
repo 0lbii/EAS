@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.time.LocalDateTime;
 
 import edu.asu.stratego.game.board.ClientSquare;
 import edu.asu.stratego.game.pieces.Piece;
@@ -19,6 +20,7 @@ import edu.asu.stratego.media.PlaySound;
 import edu.asu.stratego.util.AlertUtils;
 import edu.asu.stratego.util.HashTables;
 import edu.asu.stratego.util.HashTables.SoundType;
+
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -28,8 +30,9 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
-import java.time.LocalDateTime;
+
 import models.GamePlayer;
+
 import services.GamePlayerService;
 import services.GameService;
 import services.PlayerService;
@@ -55,7 +58,7 @@ public class ClientGameManager implements Runnable {
     private final SceneController sceneController;
 
     /**
-     * Creates a new instance of ClientGameManager.
+     * Creates a new instance of ClientGameManager
      * 
      * @param stage the stage that the client is set in
      */
@@ -66,7 +69,7 @@ public class ClientGameManager implements Runnable {
 
     /**
      * See ServerGameManager's run() method to understand how the client
-     * interacts with the server.
+     * interacts with the server
      * 
      * @see edu.asu.stratego.Game.ServerGameManager
      */
@@ -80,7 +83,7 @@ public class ClientGameManager implements Runnable {
      * @return Object used for communication between the Setup Board GUI and
      *         the ClientGameManager to indicate when the player has finished
      *         setting
-     *         up their pieces.
+     *         up their pieces
      */
     public static Object getSetupPieces() {
         return setupPieces;
@@ -88,7 +91,7 @@ public class ClientGameManager implements Runnable {
 
     /**
      * Executes the ConnectToServer thread. Blocks the current thread until
-     * the ConnectToServer thread terminates.
+     * the ConnectToServer thread terminates
      * 
      * @see edu.asu.stratego.gui.ConnectionScene.ConnectToServer
      */
@@ -114,6 +117,10 @@ public class ClientGameManager implements Runnable {
         }
     }
 
+    /**
+     * Closes any existing connection streams and sockets to the server
+     * Ensures that resources are properly released
+     */
     private void closeExistingConnection() {
         try {
             if (fromServer != null) {
@@ -133,7 +140,7 @@ public class ClientGameManager implements Runnable {
     /**
      * Establish I/O streams between the client and the server. Send player
      * information to the server. Then, wait until an object containing player
-     * information about the opponent is received from the server.
+     * information about the opponent is received from the server
      * 
      * <p>
      * After the player information has been sent and opponent information has
@@ -196,7 +203,7 @@ public class ClientGameManager implements Runnable {
      * Switches to the game setup scene. Players will place their pieces to
      * their initial starting positions. Once the pieces are placed, their
      * >>>>>>> 905380814e461334e371dc85a26d0c2a01e12ebd
-     * positions are sent to the server.
+     * positions are sent to the server
      */
     public void setupBoard() {
         Platform.runLater(() -> {
@@ -245,6 +252,10 @@ public class ClientGameManager implements Runnable {
         }
     }
 
+    /**
+     * Starts the game loop. The game loop handles the main game logic,
+     * including player turns, moves, and game status updates
+     */
     public void playGame() {
         initializeGameBoard();
         addAbandonButton();
@@ -281,6 +292,10 @@ public class ClientGameManager implements Runnable {
         handleGameEnd();
     }
 
+    /**
+     * Handles the end of the game, including displaying the result and
+     * saving the game to the database
+     */
     private void handleGameEnd() {
         Platform.runLater(() -> {
             String message = "";
@@ -320,6 +335,12 @@ public class ClientGameManager implements Runnable {
         });
     }
 
+    /**
+     * Saves the game to the database, including player information and game status
+     * 
+     * @param isWinner     Indicates if the current player is the winner
+     * @param wasAbandoned Indicates if the game was abandoned
+     */
     private void saveGameToDatabase(boolean isWinner, boolean wasAbandoned) {
         try {
             GameService gameService = new GameService();
@@ -381,6 +402,10 @@ public class ClientGameManager implements Runnable {
         });
     }
 
+    /**
+     * Adds an "Abandon Game" button to the game scene. When clicked, it sends an
+     * abandon signal to the server and returns to the main menu
+     */
     private void addAbandonButton() {
         Platform.runLater(() -> {
             try {
@@ -417,6 +442,11 @@ public class ClientGameManager implements Runnable {
         });
     }
 
+    /**
+     * Initializes the game board by setting up the UI components,
+     * loading any necessary resources, and preparing the initial game state
+     * for the start of a new match
+     */
     private void initializeGameBoard() {
         // Remove setup panel
         Platform.runLater(() -> {
@@ -439,6 +469,17 @@ public class ClientGameManager implements Runnable {
         }
     }
 
+    /**
+     * Handles the logic for a player's turn during the game
+     * This includes receiving moves, processing game state updates,
+     * and managing turn synchronization between client and server
+     * 
+     * @throws InterruptedException   if the thread is interrupted while waiting
+     * @throws ClassNotFoundException if the received object from the stream is of
+     *                                an unknown class
+     * @throws IOException            if an I/O error occurs during communication
+     *                                with the server
+     */
     private void handleTurn() throws InterruptedException, ClassNotFoundException, IOException {
         // Get message from server
         Object received = fromServer.readObject();
@@ -485,6 +526,16 @@ public class ClientGameManager implements Runnable {
         }
     }
 
+    /**
+     * Processes an attack move during the game, handling the logic
+     * for resolving combat between pieces, updating the game state,
+     * and communicating the result to the server
+     *
+     * @throws InterruptedException   if the thread is interrupted while waiting
+     * @throws ClassNotFoundException if a received object is of an unknown class
+     * @throws IOException            if an I/O error occurs during server
+     *                                communication
+     */
     private void processAttackMove() throws InterruptedException, ClassNotFoundException, IOException {
         Piece startPiece = Game.getMove().getStartPiece();
         Piece endPiece = Game.getMove().getEndPiece();
@@ -505,7 +556,6 @@ public class ClientGameManager implements Runnable {
                             Game.getMove().getEnd().y + getShift(moveY));
                 }
             }
-
             showAttackResult();
         }
 
@@ -514,10 +564,24 @@ public class ClientGameManager implements Runnable {
         Game.getBoard().getSquare(Game.getMove().getEnd().x, Game.getMove().getEnd().y).setPiece(endPiece);
     }
 
+    /**
+     * Calculates the direction shift based on the given delta
+     * Returns -1 if delta is positive, 1 if delta is negative, or 0 if delta is
+     * zero
+     * 
+     * @param delta the difference value to evaluate
+     * @return an integer indicating the direction shift (-1, 0, or 1)
+     */
     private int getShift(int delta) {
         return Integer.compare(0, delta); // Returns 1 if delta > 0, -1 if delta < 0, 0 if 0
     }
 
+    /**
+     * Moves the scout piece ahead of an attack based on the given move offsets
+     * 
+     * @param moveX the movement in the X direction (rows)
+     * @param moveY the movement in the Y direction (columns)
+     */
     private void moveScoutAheadOfAttack(int moveX, int moveY) {
         Platform.runLater(() -> {
             try {
@@ -547,6 +611,13 @@ public class ClientGameManager implements Runnable {
         });
     }
 
+    /**
+     * Updates the scout piece position on the server side by calculating
+     * the direction of movement using the given offsets
+     * 
+     * @param moveX the movement offset in the X direction (rows)
+     * @param moveY the movement offset in the Y direction (columns)
+     */
     private void updateScoutServerSide(int moveX, int moveY) {
         int shiftX = getShift(moveX);
         int shiftY = getShift(moveY);
@@ -560,6 +631,13 @@ public class ClientGameManager implements Runnable {
         Game.getBoard().getSquare(Game.getMove().getStart().x, Game.getMove().getStart().y).setPiece(null);
     }
 
+    /**
+     * Displays the result of an attack to the player
+     * This method may pause the execution temporarily to allow the player to view
+     * the outcome
+     * 
+     * @throws InterruptedException if the thread is interrupted while waiting
+     */
     private void showAttackResult() throws InterruptedException {
         Platform.runLater(() -> {
             try {
@@ -622,6 +700,11 @@ public class ClientGameManager implements Runnable {
         Thread.sleep(1500);
     }
 
+    /**
+     * Applies a fade-out animation effect to the given game piece
+     * 
+     * @param pieceNode the visual representation of the game piece to fade out
+     */
     private void fadeOutPiece(ClientSquare pieceNode) {
         FadeTransition fade = new FadeTransition(Duration.millis(1500), pieceNode.getPiecePane().getPiece());
         fade.setFromValue(1.0);
@@ -630,6 +713,19 @@ public class ClientGameManager implements Runnable {
         fade.setOnFinished(new ResetImageVisibility());
     }
 
+    /**
+     * Updates the game board state and refreshes the graphical user interface
+     * accordingly
+     * This method may involve communication with the server and can throw
+     * exceptions related to thread interruption, class deserialization, and I/O
+     * errors
+     * 
+     * @throws InterruptedException   if the thread is interrupted during execution
+     * @throws ClassNotFoundException if a class required during deserialization is
+     *                                not found
+     * @throws IOException            if an input/output error occurs during
+     *                                communication
+     */
     private void updateBoardAndGUI() throws InterruptedException, ClassNotFoundException, IOException {
         // Update GUI.
         Platform.runLater(() -> {
@@ -695,11 +791,23 @@ public class ClientGameManager implements Runnable {
         Game.setStatus((GameStatus) fromServer.readObject());
     }
 
+    /**
+     * Returns the object used to synchronize when a move is sent to the server
+     * Also plays the move sound effect when called
+     * 
+     * @return the synchronization object for sending moves
+     */
     public static Object getSendMove() {
         PlaySound.playEffect(SoundType.MOVE, 100);
         return sendMove;
     }
 
+    /**
+     * Returns the object used to synchronize when a move is received from the
+     * server
+     * 
+     * @return the synchronization object for receiving moves
+     */
     public static Object getReceiveMove() {
         return receiveMove;
     }
@@ -722,7 +830,7 @@ public class ClientGameManager implements Runnable {
 
     // Finicky, ill-advised to edit. Resets the opacity, rotation, and piece to null
     // Duplicate "ResetImageVisibility" class was intended to not set piece to null,
-    // untested though.
+    // untested though
     private class ResetSquareImage implements EventHandler<ActionEvent> {
         @Override
         public void handle(ActionEvent event) {
@@ -742,7 +850,7 @@ public class ClientGameManager implements Runnable {
         }
     }
 
-    // read above comments
+    // Finicky, ill-advised to edit. Resets the opacity, rotation, and piece to null
     private class ResetImageVisibility implements EventHandler<ActionEvent> {
         @Override
         public void handle(ActionEvent event) {
@@ -761,4 +869,5 @@ public class ClientGameManager implements Runnable {
             }
         }
     }
+
 }
