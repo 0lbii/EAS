@@ -59,6 +59,15 @@ public class AlertUtils {
         });
     }
 
+    /**
+     * Shows a game end alert dialog on the JavaFX thread.
+     *
+     * @param title       the title of the alert window
+     * @param header      the header text of the alert
+     * @param content     the content text of the alert
+     * @param onPlayAgain code to run if the user clicks "Play Again"
+     * @param onExit      code to run if the user clicks "Exit"
+     */
     public static void showGameEndAlert(String title, String header, String content,
             Runnable onPlayAgain, Runnable onExit) {
         Platform.runLater(() -> {

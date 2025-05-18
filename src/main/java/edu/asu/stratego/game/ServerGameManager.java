@@ -88,7 +88,7 @@ public class ServerGameManager implements Runnable {
     }
 
     private void resetServerBoard() {
-        this.board = new ServerBoard(); // 🔄 Crear un nuevo tablero vacío
+        this.board = new ServerBoard(); // Create a new empty board
         this.playerOneFlag = null;
         this.playerTwoFlag = null;
         this.turn = (Math.random() < 0.5) ? PieceColor.RED : PieceColor.BLUE;
@@ -297,14 +297,6 @@ public class ServerGameManager implements Runnable {
     }
 
     /**
-     * Handles game abandonment when called without specific status (defaults to
-     * DISCONNECTED)
-     */
-    // public synchronized void abandonGame() {
-    // abandonGame(GameStatus.DISCONNECTED);
-    // }
-
-    /**
      * Updates player points based on game outcome
      * 
      * @param winCondition the game status that determines the winner
@@ -312,7 +304,7 @@ public class ServerGameManager implements Runnable {
     private void updatePlayerPoints(GameStatus winCondition) {
         PlayerService service = new PlayerService();
         try {
-            // Determinar el color ganador y perdedor primero
+            // Determine the winning and losing color first
             PieceColor winnerColor;
             PieceColor loserColor;
 
@@ -344,14 +336,14 @@ public class ServerGameManager implements Runnable {
                     return;
             }
 
-            // Ahora encontrar qué jugador tiene el color ganador
+            // Now find out which player has the winning color
             models.Player winner = (playerOne.getColor() == winnerColor) ? service.findByEmail(playerOne.getEmail())
                     : service.findByEmail(playerTwo.getEmail());
 
             models.Player loser = (playerOne.getColor() == loserColor) ? service.findByEmail(playerOne.getEmail())
                     : service.findByEmail(playerTwo.getEmail());
 
-            // Asignar puntos
+            // Assign points
             int pointsToAdd = (winCondition == GameStatus.RED_DISCONNECTED ||
                     winCondition == GameStatus.BLUE_DISCONNECTED) ? 50 : 100;
 

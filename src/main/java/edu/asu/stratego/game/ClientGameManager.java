@@ -28,8 +28,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
-import java.awt.Point;
-import javafx.scene.control.Button;
 import java.time.LocalDateTime;
 import models.GamePlayer;
 import services.GamePlayerService;
@@ -167,11 +165,11 @@ public class ClientGameManager implements Runnable {
             Game.setMove(new Move());
             Game.setMoveStatus(MoveStatus.OPP_TURN);
 
-            // Intercambio de información con el servidor
+            // Exchange of information with the server
             toServer.writeObject(Game.getPlayer());
             Game.setOpponent((Player) fromServer.readObject());
 
-            // Inferir el color del jugador
+            // Infer the player's color
             if (Game.getOpponent().getColor() == PieceColor.RED)
                 Game.getPlayer().setColor(PieceColor.BLUE);
             else
@@ -305,7 +303,7 @@ public class ClientGameManager implements Runnable {
                 clearLocalBoard();
             }
 
-            // Guardar la partida en la base de datos
+            // Save the game to the database
             saveGameToDatabase(isWinner, Game.getStatus() == GameStatus.RED_DISCONNECTED
                     || Game.getStatus() == GameStatus.BLUE_DISCONNECTED);
 
@@ -320,7 +318,7 @@ public class ClientGameManager implements Runnable {
                     },
                     Platform::exit);
 
-            // Limpiar la escena del juego
+            // Clean up the game scene
             BoardScene.getRootPane().getChildren().clear();
         });
     }
@@ -331,7 +329,7 @@ public class ClientGameManager implements Runnable {
             PlayerService playerService = new PlayerService();
             GamePlayerService gamePlayerService = new GamePlayerService();
 
-            // 1. Buscar a los jugadores en la base de datos por su nickname
+            // 1. Search for players in the database by their nickname
             models.Player currentPlayer = playerService.findByNickname(Game.getPlayer().getNickname());
             models.Player opponentPlayer = playerService.findByNickname(Game.getOpponent().getNickname());
 
@@ -340,7 +338,7 @@ public class ClientGameManager implements Runnable {
                 return;
             }
 
-            // 2. Crear y configurar la nueva partida
+            // 2. Create and configure the new game
             models.Game game = new models.Game();
             game.setFinished(true);
             game.setStartTime(Game.getStartTime());
@@ -348,10 +346,10 @@ public class ClientGameManager implements Runnable {
             game.setWinner(isWinner ? currentPlayer : opponentPlayer);
             game.setWasAbandoned(wasAbandoned);
 
-            // 3. Guardar la partida
+            // 3. Save the game to the database
             gameService.saveGame(game);
 
-            // 4. Crear relaciones entre jugadores y partida
+            // 4.Creating relationships between players and the game
             GamePlayer currentGP = new GamePlayer();
             currentGP.setGame(game);
             currentGP.setPlayer(currentPlayer);
@@ -371,7 +369,7 @@ public class ClientGameManager implements Runnable {
     }
 
     /**
-     * Limpia visualmente y en memoria el tablero del jugador local.
+     * Visually and memory clears the home player's board.
      */
     private void clearLocalBoard() {
         Platform.runLater(() -> {
@@ -379,10 +377,7 @@ public class ClientGameManager implements Runnable {
                 for (int col = 0; col < 10; col++) {
                     ClientSquare square = Game.getBoard().getSquare(row, col);
 
-                    // 🔄 Quitar piezas visuales
                     square.getPiecePane().setPiece(null);
-
-                    // 🔄 Quitar piezas en el modelo
                     square.setPiece(null);
                 }
             }
@@ -392,26 +387,21 @@ public class ClientGameManager implements Runnable {
     private void addAbandonButton() {
         Platform.runLater(() -> {
             try {
-                // Posicionar el botón en la esquina superior derecha
                 StackPane root = BoardScene.getRootPane();
-
-                // Verificar si el botón ya existe
                 if (root.getChildren().stream().anyMatch(node -> node instanceof Button &&
                         ((Button) node).getText().equals("Abandon Game"))) {
                     return;
                 }
 
-                // Crear botón de abandono
                 javafx.scene.control.Button abandonButton = new javafx.scene.control.Button("Abandon Game");
                 abandonButton.setStyle(
                         "-fx-font-size: 14px; -fx-padding: 5 10; -fx-background-color: #ff4444; -fx-text-fill: white;");
                 abandonButton.setOnAction(e -> {
                     logger.info("Abandon button clicked");
-                    // Enviar señal de abandono al servidor
+                    // Send abandon signal to the server
                     try {
                         if (toServer != null) {
-                            // Enviamos un movimiento especial que indica abandono
-                            toServer.writeObject("ABANDON"); // Señal clara de abandono
+                            toServer.writeObject("ABANDON");
                             toServer.flush();
 
                         }
@@ -653,9 +643,6 @@ public class ClientGameManager implements Runnable {
     private void updateBoardAndGUI() throws InterruptedException, ClassNotFoundException, IOException {
         // Update GUI.
         Platform.runLater(() -> {
-            // obselete: ClientSquare startSquare =
-            // Game.getBoard().getSquare(Game.getMove().getStart().x,
-            // Game.getMove().getStart().y);
             ClientSquare endSquare = Game.getBoard().getSquare(Game.getMove().getEnd().x, Game.getMove().getEnd().y);
             // Get the piece at the end square
             Piece endPiece = endSquare.getPiece();

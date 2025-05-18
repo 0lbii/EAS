@@ -58,8 +58,7 @@ public class ProfileScene implements LanguageObserver {
 
     @Override
     public void updateTexts() {
-        // 🔄 Recargar los datos desde la base de datos para asegurar que están
-        // actualizados
+        // Reload the data from the database to ensure it is up to date
         PlayerService service = new PlayerService();
         models.Player updatedPlayer = service.findByEmail(Game.getPlayer().getEmail());
         if (updatedPlayer != null) {
@@ -68,7 +67,7 @@ public class ProfileScene implements LanguageObserver {
             convertedPlayer.setNickname(updatedPlayer.getNickname());
             convertedPlayer.setEmail(updatedPlayer.getEmail());
             convertedPlayer.setPoints(updatedPlayer.getPoints());
-            Game.setPlayer(convertedPlayer); // 👈 Actualizamos el objeto en memoria
+            Game.setPlayer(convertedPlayer); // We update the object in memory
         }
         String nickname = Game.getPlayer().getNickname();
         String email = Game.getPlayer().getEmail();

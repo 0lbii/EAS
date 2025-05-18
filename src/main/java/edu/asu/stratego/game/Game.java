@@ -142,10 +142,16 @@ public class Game {
         Game.moveStatus = moveStatus;
     }
 
+    /**
+     * @return the start time of the game.
+     */
     public static void setStartTime(LocalDateTime start) {
         startTime = start;
     }
 
+    /**
+     * @return the start time of the game.
+     */
     public static LocalDateTime getStartTime() {
         return startTime;
     }
@@ -170,10 +176,18 @@ public class Game {
         moveStatus = MoveStatus.OPP_TURN;
     }
 
+    /**
+     * Resets the game state to prepare for a new game
+     */
     public Player getCurrentPlayer() {
         return currentPlayer;
     }
 
+    /**
+     * Sets the current player.
+     *
+     * @param player the current player
+     */
     public void setCurrentPlayer(Player player) {
         this.currentPlayer = player;
     }
