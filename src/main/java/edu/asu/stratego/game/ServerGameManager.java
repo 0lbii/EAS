@@ -102,20 +102,15 @@ public class ServerGameManager implements Runnable {
      */
     private void createIOStreams() {
         try {
-            logger.info(session + "Attempting to create IO Streams...");
-
             if (socketOne == null || socketTwo == null) {
-                logger.severe(session + "One or both sockets are null. Cannot create streams.");
                 return;
             }
 
             if (socketOne.isClosed() || socketTwo.isClosed()) {
-                logger.severe(session + "One or both sockets are already closed. Cannot create streams.");
                 return;
             }
 
             if (toPlayerOne == null) {
-                logger.info(session + "Creating ObjectOutputStream for Player One...");
                 toPlayerOne = new ObjectOutputStream(socketOne.getOutputStream());
                 toPlayerOne.flush();
             } else {
@@ -123,14 +118,11 @@ public class ServerGameManager implements Runnable {
             }
 
             if (fromPlayerOne == null) {
-                logger.info(session + "Creating ObjectInputStream for Player One...");
                 fromPlayerOne = new ObjectInputStream(socketOne.getInputStream());
             } else {
-                logger.warning(session + "ObjectInputStream for Player One already exists.");
             }
 
             if (toPlayerTwo == null) {
-                logger.info(session + "Creating ObjectOutputStream for Player Two...");
                 toPlayerTwo = new ObjectOutputStream(socketTwo.getOutputStream());
                 toPlayerTwo.flush();
             } else {
@@ -138,7 +130,6 @@ public class ServerGameManager implements Runnable {
             }
 
             if (fromPlayerTwo == null) {
-                logger.info(session + "Creating ObjectInputStream for Player Two...");
                 fromPlayerTwo = new ObjectInputStream(socketTwo.getInputStream());
             } else {
                 logger.warning(session + "ObjectInputStream for Player Two already exists.");
@@ -273,8 +264,6 @@ public class ServerGameManager implements Runnable {
         if (gameAbandoned) {
             return;
         }
-
-        logger.info(session + "Game abandoned with status: " + status);
         gameAbandoned = true;
 
         try {

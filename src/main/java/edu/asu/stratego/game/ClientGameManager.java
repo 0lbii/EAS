@@ -102,7 +102,6 @@ public class ClientGameManager implements Runnable {
             serverConnectThread.join();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            logger.log(Level.SEVERE, "Error occurred while trying to connect to the server", e);
             // Show the error message in the interface
             Platform.runLater(() -> {
                 AlertUtils.showRetryAlert(
@@ -176,7 +175,6 @@ public class ClientGameManager implements Runnable {
                 Game.getPlayer().setColor(PieceColor.RED);
 
         } catch (IOException | ClassNotFoundException e) {
-            logger.log(Level.SEVERE, "Error occurred during opponent communication", e);
             Platform.runLater(() -> {
                 AlertUtils.showRetryAlert(
                         "Communication problem",
@@ -267,7 +265,6 @@ public class ClientGameManager implements Runnable {
                 processAttackMove();
                 updateBoardAndGUI();
             } catch (ClassNotFoundException | IOException | InterruptedException e) {
-                logger.log(Level.SEVERE, "Error occurred during the game", e);
                 // Show the error message in the interface
                 Platform.runLater(() -> {
                     AlertUtils.showRetryAlert(
@@ -397,7 +394,6 @@ public class ClientGameManager implements Runnable {
                 abandonButton.setStyle(
                         "-fx-font-size: 14px; -fx-padding: 5 10; -fx-background-color: #ff4444; -fx-text-fill: white;");
                 abandonButton.setOnAction(e -> {
-                    logger.info("Abandon button clicked");
                     // Send abandon signal to the server
                     try {
                         if (toServer != null) {
@@ -415,8 +411,6 @@ public class ClientGameManager implements Runnable {
                 StackPane.setAlignment(abandonButton, Pos.TOP_RIGHT);
                 StackPane.setMargin(abandonButton, new Insets(10, 10, 0, 0));
                 root.getChildren().add(abandonButton);
-
-                logger.info("Abandon button added to UI");
             } catch (Exception e) {
                 logger.log(Level.SEVERE, "Error adding abandon button", e);
             }
@@ -433,7 +427,6 @@ public class ClientGameManager implements Runnable {
         try {
             Game.setStatus((GameStatus) fromServer.readObject());
         } catch (ClassNotFoundException | IOException e1) {
-            logger.log(Level.SEVERE, "Error retrieving game status", e1);
             // Show the error message in the interface
             Platform.runLater(() -> {
                 AlertUtils.showRetryAlert(
@@ -541,7 +534,6 @@ public class ClientGameManager implements Runnable {
                         .setPiece(HashTables.PIECE_MAP.get(startSquare.getPiece().getPieceSpriteKey()));
                 startSquare.getPiecePane().setPiece(null);
             } catch (Exception e) {
-                logger.log(Level.SEVERE, "Error moving the scout ahead of the attack", e);
                 // Show the error message in the interface
                 Platform.runLater(() -> {
                     AlertUtils.showRetryAlert(
@@ -582,7 +574,6 @@ public class ClientGameManager implements Runnable {
                 startSquare.getPiecePane().setPiece(HashTables.PIECE_MAP.get(animStartPiece.getPieceSpriteKey()));
                 endSquare.getPiecePane().setPiece(HashTables.PIECE_MAP.get(animEndPiece.getPieceSpriteKey()));
             } catch (Exception e) {
-                logger.log(Level.SEVERE, "Error revealing the pieces involved in the attack", e);
                 // Show the error message in the interface
                 Platform.runLater(() -> {
                     AlertUtils.showRetryAlert(
@@ -615,7 +606,6 @@ public class ClientGameManager implements Runnable {
                     fadeOutPiece(endSquare);
                 }
             } catch (Exception e) {
-                logger.log(Level.SEVERE, "Error removing defeated pieces from the board", e);
                 // Show the error message in the interface
                 Platform.runLater(() -> {
                     AlertUtils.showRetryAlert(
