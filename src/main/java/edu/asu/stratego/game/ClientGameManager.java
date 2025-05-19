@@ -16,8 +16,10 @@ import edu.asu.stratego.gui.ClientStage;
 import edu.asu.stratego.gui.ConnectionScene;
 import edu.asu.stratego.gui.board.BoardTurnIndicator;
 import edu.asu.stratego.media.ImageConstants;
+import edu.asu.stratego.media.PlaySound;
 import edu.asu.stratego.util.AlertUtils;
 import edu.asu.stratego.util.HashTables;
+import edu.asu.stratego.util.HashTables.SoundType;
 
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
@@ -29,6 +31,15 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 
+import models.GamePlayer;
+
+import services.GamePlayerService;
+import services.GameService;
+import services.PlayerService;
+
+/**
+ * Task to handle the Stratego game on the client-side.
+ */
 public class ClientGameManager implements Runnable {
 
     private static final Logger logger = Logger.getLogger(ClientGameManager.class.getName());
@@ -39,15 +50,14 @@ public class ClientGameManager implements Runnable {
     private static final Object waitFade = new Object();
     private static final Object waitVisible = new Object();
 
-    private ObjectOutputStream toServer;
-    private ObjectInputStream fromServer;
-
+    private final GameConnectionManager connectionManager;
     private final ClientStage stage;
     private final SceneController sceneController;
 
     public ClientGameManager(ClientStage stage) {
         this.stage = stage;
         this.sceneController = new SceneController(stage, this);
+        this.connectionManager = new GameConnectionManager();
     }
 
     @Override
@@ -81,40 +91,15 @@ public class ClientGameManager implements Runnable {
         }
     }
 
-    private void closeExistingConnection() {
-        try {
-            if (fromServer != null) {
-                fromServer.close();
-                fromServer = null;
-            }
-            if (toServer != null) {
-                toServer.close();
-                toServer = null;
-            }
-            ClientSocket.getInstance().close();
-        } catch (IOException e) {
-            logger.log(Level.WARNING, "Error closing existing connection", e);
-        }
-    }
-
     public void waitForOpponent() {
         Platform.runLater(() -> {
             stage.setWaitingScene();
         });
 
         try {
-            if (ClientSocket.getInstance() != null && !ClientSocket.getInstance().isClosed()) {
-                ClientSocket.getInstance().close();
-                ClientSocket.setInstance(null);
-            }
-            ClientSocket.connect(Game.getPlayer().getServerIP(), 4212);
-
-            // I/O Streams
-            toServer = new ObjectOutputStream(ClientSocket.getInstance().getOutputStream());
-            fromServer = new ObjectInputStream(ClientSocket.getInstance().getInputStream());
-
-            GameStateManager.initializeGameState(fromServer, toServer);
-
+            connectionManager.initializeConnection();
+            GameStateManager.initializeGameState(connectionManager.getInputStream(),
+                    connectionManager.getOutputStream());
         } catch (IOException | ClassNotFoundException e) {
             Platform.runLater(() -> {
                 AlertUtils.showRetryAlert(
@@ -123,7 +108,7 @@ public class ClientGameManager implements Runnable {
                         "The opponent's information could not be received. Do you want to try again?",
                         this::connectToServer,
                         () -> {
-                            closeExistingConnection();
+                            connectionManager.closeConnection();
                             sceneController.showMainMenu();
                         });
             });
@@ -144,10 +129,10 @@ public class ClientGameManager implements Runnable {
                 // Send initial piece positions to server.
                 SetupBoard initial = new SetupBoard();
                 initial.getPiecePositions();
-                toServer.writeObject(initial);
+                connectionManager.sendSetupBoard(initial);
 
                 // Receive opponent's initial piece positions from server.
-                final SetupBoard opponentInitial = (SetupBoard) fromServer.readObject();
+                final SetupBoard opponentInitial = (SetupBoard) connectionManager.receiveObject();
 
                 // Place the opponent's pieces on the board.
                 Platform.runLater(() -> {
@@ -225,7 +210,7 @@ public class ClientGameManager implements Runnable {
                     message,
                     "¿Quieres jugar otra partida?",
                     () -> {
-                        closeExistingConnection();
+                        connectionManager.closeConnection();
                         GameStateManager.resetGameState();
                         Platform.runLater(sceneController::showMainMenu);
                     },
@@ -262,10 +247,7 @@ public class ClientGameManager implements Runnable {
                         "-fx-font-size: 14px; -fx-padding: 5 10; -fx-background-color: #ff4444; -fx-text-fill: white;");
                 abandonButton.setOnAction(e -> {
                     try {
-                        if (toServer != null) {
-                            toServer.writeObject("ABANDON");
-                            toServer.flush();
-                        }
+                        connectionManager.sendAbandonSignal();
                     } catch (IOException ex) {
                         logger.log(Level.SEVERE, "Error sending abandon signal", ex);
                     }
@@ -287,7 +269,7 @@ public class ClientGameManager implements Runnable {
         });
 
         try {
-            Game.setStatus((GameStatus) fromServer.readObject());
+            Game.setStatus((GameStatus) connectionManager.receiveObject());
         } catch (ClassNotFoundException | IOException e1) {
             Platform.runLater(() -> {
                 AlertUtils.showRetryAlert(
@@ -301,7 +283,7 @@ public class ClientGameManager implements Runnable {
     }
 
     private void handleTurn() throws InterruptedException, ClassNotFoundException, IOException {
-        Object received = fromServer.readObject();
+        Object received = connectionManager.receiveObject();
         GameStateManager.updateGameStatus(received);
 
         if (received instanceof GameStatus) {
@@ -318,12 +300,12 @@ public class ClientGameManager implements Runnable {
         if (Game.getPlayer().getColor() == Game.getTurn() && Game.getMoveStatus() != MoveStatus.SERVER_VALIDATION) {
             synchronized (sendMove) {
                 sendMove.wait();
-                toServer.writeObject(Game.getMove());
+                connectionManager.sendMove();
                 Game.setMoveStatus(MoveStatus.SERVER_VALIDATION);
             }
         }
 
-        received = fromServer.readObject();
+        received = connectionManager.receiveObject();
         if (received instanceof Move) {
             Game.setMove((Move) received);
         } else if (received instanceof GameStatus) {
@@ -507,7 +489,7 @@ public class ClientGameManager implements Runnable {
             waitFade.wait();
         }
 
-        Game.setStatus((GameStatus) fromServer.readObject());
+        Game.setStatus((GameStatus) connectionManager.receiveObject());
     }
 
     public static Object getSendMove() {
