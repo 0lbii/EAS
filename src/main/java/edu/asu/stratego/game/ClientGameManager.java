@@ -66,11 +66,7 @@ public class ClientGameManager implements Runnable {
             Thread.currentThread().interrupt();
             Platform.runLater(() -> {
                 AlertUtils.showRetryAlert(
-                        "Connection problem",
-                        "Connection interrupted",
-                        "An error occurred while trying to connect to the server. Do you want to try again?",
-                        this::connectToServer,
-                        Platform::exit);
+                    "Connection problem", "Connection interrupted","An error occurred while trying to connect to the server. Do you want to try again?", this::connectToServer, Platform::exit);
             });
         }
     }
@@ -87,10 +83,7 @@ public class ClientGameManager implements Runnable {
         } catch (IOException | ClassNotFoundException e) {
             Platform.runLater(() -> {
                 AlertUtils.showRetryAlert(
-                        "Communication problem",
-                        "Communication problem with the opponent",
-                        "The opponent's information could not be received. Do you want to try again?",
-                        this::connectToServer,
+                        "Communication problem","Communication problem with the opponent","The opponent's information could not be received. Do you want to try again?",this::connectToServer,
                         () -> {
                             connectionManager.closeConnection();
                             sceneController.showMainMenu();
@@ -134,11 +127,7 @@ public class ClientGameManager implements Runnable {
             } catch (InterruptedException | IOException | ClassNotFoundException e) {
                 Platform.runLater(() -> {
                     AlertUtils.showRetryAlert(
-                            "Configuration problem",
-                            "Problem configuring the dashboard",
-                            "There was a problem configuring the pieces. Do you want to try again?",
-                            this::connectToServer,
-                            Platform::exit);
+                        "Configuration problem","Problem configuring the dashboard","There was a problem configuring the pieces. Do you want to try again?",this::connectToServer,Platform::exit);
                 });
             }
         }
@@ -162,11 +151,7 @@ public class ClientGameManager implements Runnable {
             } catch (ClassNotFoundException | IOException | InterruptedException e) {
                 Platform.runLater(() -> {
                     AlertUtils.showRetryAlert(
-                            "Game problem",
-                            "Problem in the game",
-                            "An error occurred during the game. Do you want to try again?",
-                            this::connectToServer,
-                            Platform::exit);
+                        "Game problem","Problem in the game","An error occurred during the game. Do you want to try again?",this::connectToServer,Platform::exit);
                 });
             }
         }
@@ -249,11 +234,7 @@ public class ClientGameManager implements Runnable {
         } catch (ClassNotFoundException | IOException e1) {
             Platform.runLater(() -> {
                 AlertUtils.showRetryAlert(
-                        "Connection problem",
-                        "Connection interrupted",
-                        "An error occurred while retrieving the game status. Do you want to try again?",
-                        this::connectToServer,
-                        Platform::exit);
+                    "Connection problem","Connection interrupted","An error occurred while retrieving the game status. Do you want to try again?",this::connectToServer,Platform::exit);
             });
         }
     }
@@ -335,11 +316,7 @@ public class ClientGameManager implements Runnable {
             } catch (Exception e) {
                 Platform.runLater(() -> {
                     AlertUtils.showRetryAlert(
-                            "Game problem",
-                            "Problem in the game",
-                            "An error occurred while trying to move the Scout ahead of the attack. Do you want to try again?",
-                            this::connectToServer,
-                            Platform::exit);
+                        "Game problem","Problem in the game","An error occurred while trying to move the Scout ahead of the attack. Do you want to try again?",this::connectToServer,Platform::exit);
                 });
             }
         });
@@ -370,11 +347,7 @@ public class ClientGameManager implements Runnable {
             } catch (Exception e) {
                 Platform.runLater(() -> {
                     AlertUtils.showRetryAlert(
-                            "Game problem",
-                            "Problem in the game",
-                            "An error occurred while revealing the pieces involved in the attack. Do you want to try again?",
-                            this::connectToServer,
-                            Platform::exit);
+                        "Game problem","Problem in the game","An error occurred while revealing the pieces involved in the attack. Do you want to try again?",this::connectToServer,Platform::exit);
                 });
             }
         });
@@ -397,11 +370,7 @@ public class ClientGameManager implements Runnable {
             } catch (Exception e) {
                 Platform.runLater(() -> {
                     AlertUtils.showRetryAlert(
-                            "Game problem",
-                            "Problem in the game",
-                            "An error occurred while removing defeated pieces from the board. Do you want to try again?",
-                            this::connectToServer,
-                            Platform::exit);
+                        "Game problem","Problem in the game","An error occurred while removing defeated pieces from the board. Do you want to try again?",this::connectToServer,Platform::exit);
                 });
             }
         });

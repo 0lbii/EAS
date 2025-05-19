@@ -71,14 +71,17 @@
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
+            <version>9.2.0</version>
         </dependency>
         <dependency>
             <groupId>jakarta.persistence</groupId>
             <artifactId>jakarta.persistence-api</artifactId>
+            <version>3.1.0</version>
         </dependency>
         <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
+            <version>3.0.2</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>

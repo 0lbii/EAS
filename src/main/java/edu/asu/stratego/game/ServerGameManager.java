@@ -55,7 +55,6 @@ public class ServerGameManager implements Runnable {
 
     /**
      * Creates a new instance of ServerGameManager.
-     * 
      * @param sockOne    socket connected to Player 1's client.
      * @param sockTwo    socket connected to Player 2's client.
      * @param sessionNum the nth game session created by Server.
@@ -78,7 +77,6 @@ public class ServerGameManager implements Runnable {
     /**
      * See ClientGameManager's run() method to understand how the server
      * interacts with the client.
-     * 
      * @see edu.asu.stratego.game.ClientGameManager
      */
     @Override
@@ -100,34 +98,23 @@ public class ServerGameManager implements Runnable {
     }
 
     /**
-     * Establish IO object streams to facilitate communication between the
-     * client and server.
+     * Establish IO object streams to facilitate communication between the client and server.
      */
     private void createIOStreams() {
         try {
             if (socketOne == null || socketTwo == null) {
                 return;
-            }
-
-            if (socketOne.isClosed() || socketTwo.isClosed()) {
+            } if (socketOne.isClosed() || socketTwo.isClosed()) {
                 return;
-            }
-
-            if (toPlayerOne == null) {
+            } if (toPlayerOne == null) {
                 toPlayerOne = new ObjectOutputStream(socketOne.getOutputStream());
                 toPlayerOne.flush();
-            }
-
-            if (fromPlayerOne == null) {
+            } if (fromPlayerOne == null) {
                 fromPlayerOne = new ObjectInputStream(socketOne.getInputStream());
-            }
-
-            if (toPlayerTwo == null) {
+            } if (toPlayerTwo == null) {
                 toPlayerTwo = new ObjectOutputStream(socketTwo.getOutputStream());
                 toPlayerTwo.flush();
-            }
-
-            if (fromPlayerTwo == null) {
+            } if (fromPlayerTwo == null) {
                 fromPlayerTwo = new ObjectInputStream(socketTwo.getInputStream());
             }
 
@@ -137,9 +124,7 @@ public class ServerGameManager implements Runnable {
         }
     }
 
-    /**
-     * Closes the socket connections and I/O streams safely.
-     */
+    /** Closes the socket connections and I/O streams safely.*/
     private void closeConnections() {
         try {
             if (toPlayerOne != null)
@@ -160,8 +145,7 @@ public class ServerGameManager implements Runnable {
 
     /**
      * Receive player information from the clients. Determines the players'
-     * colors, and sends the player information of the opponents back to the
-     * clients.
+     * colors, and sends the player information of the opponents back to the clients.
      */
     private void exchangePlayers() {
         try {
@@ -188,8 +172,7 @@ public class ServerGameManager implements Runnable {
 
     /**
      * Handles the initial exchange of the setup boards between the two players.
-     * Pieces are registered on the server board and rotated 180 degrees for correct
-     * orientation.
+     * Pieces are registered on the server board and rotated 180 degrees for correct orientation.
      */
     private void exchangeSetup() {
         try {
@@ -241,9 +224,7 @@ public class ServerGameManager implements Runnable {
 
     /**
      * Handles game abandonment with different status options
-     * 
-     * @param status the abandonment reason (RED_DISCONNECTED, BLUE_DISCONNECTED, or
-     *               DISCONNECTED)
+     * @param status the abandonment reason (RED_DISCONNECTED, BLUE_DISCONNECTED, or  DISCONNECTED)
      */
     public synchronized void abandonGame(GameStatus status) {
         if (gameAbandoned) {
@@ -272,7 +253,6 @@ public class ServerGameManager implements Runnable {
 
     /**
      * Updates player points based on game outcome
-     * 
      * @param winCondition the game status that determines the winner
      */
     private void updatePlayerPoints(GameStatus winCondition) {
@@ -328,16 +308,14 @@ public class ServerGameManager implements Runnable {
     }
 
     /**
-     * Handles game abandonment when called without specific status (defaults to
-     * DISCONNECTED)
+     * Handles game abandonment when called without specific status (defaults to DISCONNECTED)
      */
     public synchronized void abandonGame() {
         abandonGame(GameStatus.DISCONNECTED);
     }
 
     /**
-     * Main game loop.
-     * Receives moves from players in turn, processes them, checks for a win
+     * Main game loop. Receives moves from players in turn, processes them, checks for a win
      * condition, and sends the result back to both players.
      */
     private void playGame() {
@@ -388,7 +366,6 @@ public class ServerGameManager implements Runnable {
      * Evaluates the current game state to determine if there is a win condition.
      * Checks if either player has no available moves or if their flag has been
      * captured.
-     * 
      * @return GameStatus representing the current status of the game.
      */
     private GameStatus checkWinCondition() {
@@ -409,7 +386,6 @@ public class ServerGameManager implements Runnable {
 
     /**
      * Checks whether a player's flag has been captured.
-     *
      * @param inColor The color of the player to check.
      * @return true if the flag is no longer present, false otherwise.
      */
@@ -417,8 +393,7 @@ public class ServerGameManager implements Runnable {
         if (playerOne.getColor() == inColor) {
             if (board.getSquare(playerOneFlag.x, playerOneFlag.y).getPiece().getPieceType() != PieceType.FLAG)
                 return true;
-        }
-        if (playerTwo.getColor() == inColor) {
+        } if (playerTwo.getColor() == inColor) {
             if (board.getSquare(playerTwoFlag.x, playerTwoFlag.y).getPiece().getPieceType() != PieceType.FLAG)
                 return true;
         }
@@ -428,7 +403,6 @@ public class ServerGameManager implements Runnable {
 
     /**
      * Checks if the player has at least one valid move available.
-     *
      * @param inColor The color of the player to check.
      * @return true if at least one move exists, false otherwise.
      */
@@ -443,15 +417,12 @@ public class ServerGameManager implements Runnable {
                 }
             }
         }
-
         return false;
     }
 
     /**
      * Rotates the move coordinates by 180 degrees for Player One, while keeping
-     * Player Two’s perspective intact.
-     * Sets the move details for both players accordingly.
-     *
+     * Player Two’s perspective intact. Sets the move details for both players accordingly.
      * @param move            The original move received.
      * @param moveToPlayerOne Move object populated for Player One (rotated).
      * @param moveToPlayerTwo Move object populated for Player Two (original).
@@ -481,10 +452,7 @@ public class ServerGameManager implements Runnable {
 
     /**
      * Sends the turn color to both players and receives the move from the current
-     * player.
-     * Rotates the move coordinates for Player One to match the internal board
-     * representation.
-     *
+     * player. Rotates the move coordinates for Player One to match the internal board representation. 
      * @param turn The current player's color.
      * @return The move received from the appropriate player.
      * @throws IOException
@@ -522,7 +490,6 @@ public class ServerGameManager implements Runnable {
 
     /**
      * Sends the processed move and current game status to both players.
-     *
      * @param moveToPlayerOne Move object to send to Player One.
      * @param moveToPlayerTwo Move object to send to Player Two.
      * @param winCondition    Current game status to send to both players.
@@ -537,9 +504,7 @@ public class ServerGameManager implements Runnable {
         toPlayerTwo.writeObject(winCondition);
     }
 
-    /** 
-     * Save the game to the DB, for obtaining history information
-     */
+    /** Save the game to the DB, for obtaining history information */
     private void saveGameResult(GameStatus status) {
         if (gameSaved)
             return;
@@ -563,7 +528,6 @@ public class ServerGameManager implements Runnable {
                 case BLUE_NO_MOVES, BLUE_CAPTURED -> PieceColor.RED;
                 default -> null;
             };
-
             if (winnerColor != null) {
                 game.setWinner(playerOne.getColor() == winnerColor ? dbPlayerOne : dbPlayerTwo);
             }
@@ -584,5 +548,4 @@ public class ServerGameManager implements Runnable {
 
         gameService.saveGame(game);
     }
-
 }
