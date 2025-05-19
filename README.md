@@ -54,6 +54,11 @@
     2.   Click the "Run" button in Visual Studio Code to start the server
     3.   Open a terminal and run the following command to launch the game:
        
+            
+            ```
+            cd 25E07
+            ```
+            
             ```
             mvn clean javafx:run
             ```

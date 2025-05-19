@@ -41,8 +41,8 @@ public class ServerGameManager implements Runnable {
     private PieceColor turn;
     private Move move;
 
-    private Socket socketOne;
-    private Socket socketTwo;
+    private final Socket socketOne;
+    private final Socket socketTwo;
 
     private volatile boolean gameAbandoned = false;
 
@@ -537,6 +537,9 @@ public class ServerGameManager implements Runnable {
         toPlayerTwo.writeObject(winCondition);
     }
 
+    /** 
+     * Save the game to the DB, for obtaining history information
+     */
     private void saveGameResult(GameStatus status) {
         if (gameSaved)
             return;
