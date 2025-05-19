@@ -113,22 +113,7 @@ public class ClientGameManager implements Runnable {
             toServer = new ObjectOutputStream(ClientSocket.getInstance().getOutputStream());
             fromServer = new ObjectInputStream(ClientSocket.getInstance().getInputStream());
 
-            Game.getPlayer().setColor(null);
-            Game.setOpponent(null);
-            Game.setStatus(GameStatus.SETTING_UP);
-            Game.setTurn(PieceColor.RED);
-            Game.setMove(new Move());
-            Game.setMoveStatus(MoveStatus.OPP_TURN);
-
-            // Exchange of information with the server
-            toServer.writeObject(Game.getPlayer());
-            Game.setOpponent((Player) fromServer.readObject());
-
-            // Infer the player's color
-            if (Game.getOpponent().getColor() == PieceColor.RED)
-                Game.getPlayer().setColor(PieceColor.BLUE);
-            else
-                Game.getPlayer().setColor(PieceColor.RED);
+            GameStateManager.initializeGameState(fromServer, toServer);
 
         } catch (IOException | ClassNotFoundException e) {
             Platform.runLater(() -> {
@@ -194,15 +179,13 @@ public class ClientGameManager implements Runnable {
     public void playGame() {
         initializeGameBoard();
         addAbandonButton();
-        Game.setStartTime(LocalDateTime.now());
+        GameStateManager.startNewGame();
 
         // Main loop (when playing)
         while (Game.getStatus() == GameStatus.IN_PROGRESS) {
             try {
                 handleTurn();
-                if (Game.getStatus() == GameStatus.RED_DISCONNECTED ||
-                        Game.getStatus() == GameStatus.BLUE_DISCONNECTED ||
-                        Game.getMove() == null) {
+                if (GameStateManager.wasGameAbandoned() || Game.getMove() == null) {
                     logger.info("Game was abandoned, returning to main menu");
                     handleGameEnd();
                     return;
@@ -227,26 +210,15 @@ public class ClientGameManager implements Runnable {
 
     private void handleGameEnd() {
         Platform.runLater(() -> {
-            String message = "";
-            boolean isWinner = false;
+            String message = GameStateManager.getEndGameMessage();
 
-            if (Game.getStatus() == GameStatus.RED_CAPTURED ||
-                    Game.getStatus() == GameStatus.RED_NO_MOVES) {
-                message = (Game.getPlayer().getColor() == PieceColor.BLUE) ? "¡Has ganado!" : "Has perdido";
-                isWinner = Game.getPlayer().getColor() == PieceColor.BLUE;
-            } else if (Game.getStatus() == GameStatus.BLUE_CAPTURED ||
-                    Game.getStatus() == GameStatus.BLUE_NO_MOVES) {
-                message = (Game.getPlayer().getColor() == PieceColor.RED) ? "¡Has ganado!" : "Has perdido";
-                isWinner = Game.getPlayer().getColor() == PieceColor.RED;
-            } else if (Game.getStatus() == GameStatus.RED_DISCONNECTED ||
-                    Game.getStatus() == GameStatus.BLUE_DISCONNECTED) {
-                message = "El oponente ha abandonado la partida";
+            if (GameStateManager.wasGameAbandoned()) {
                 clearLocalBoard();
             }
 
-            GameDatabaseManager.saveGameToDatabase(isWinner,
-                    Game.getStatus() == GameStatus.RED_DISCONNECTED
-                            || Game.getStatus() == GameStatus.BLUE_DISCONNECTED);
+            GameDatabaseManager.saveGameToDatabase(
+                    GameStateManager.isCurrentPlayerWinner(),
+                    GameStateManager.wasGameAbandoned());
 
             AlertUtils.showGameEndAlert(
                     "Fin de la partida",
@@ -254,7 +226,7 @@ public class ClientGameManager implements Runnable {
                     "¿Quieres jugar otra partida?",
                     () -> {
                         closeExistingConnection();
-                        Game.resetGame();
+                        GameStateManager.resetGameState();
                         Platform.runLater(sceneController::showMainMenu);
                     },
                     Platform::exit);
@@ -330,21 +302,13 @@ public class ClientGameManager implements Runnable {
 
     private void handleTurn() throws InterruptedException, ClassNotFoundException, IOException {
         Object received = fromServer.readObject();
+        GameStateManager.updateGameStatus(received);
 
         if (received instanceof GameStatus) {
             GameStatus status = (GameStatus) received;
             if (status == GameStatus.RED_DISCONNECTED || status == GameStatus.BLUE_DISCONNECTED) {
-                Game.setStatus(status);
                 return;
             }
-        }
-
-        Game.setTurn((PieceColor) received);
-
-        if (Game.getPlayer().getColor() == Game.getTurn()) {
-            Game.setMoveStatus(MoveStatus.NONE_SELECTED);
-        } else {
-            Game.setMoveStatus(MoveStatus.OPP_TURN);
         }
 
         synchronized (BoardTurnIndicator.getTurnIndicatorTrigger()) {
