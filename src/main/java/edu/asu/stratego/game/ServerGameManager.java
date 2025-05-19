@@ -5,17 +5,20 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.logging.*;
+import java.time.LocalDateTime;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import edu.asu.stratego.game.board.ServerBoard;
+import edu.asu.stratego.game.gameRules.GameRules;
 import edu.asu.stratego.game.gameRules.OriginalRulesFactory;
 import edu.asu.stratego.game.gameRules.RulesFactory;
+import edu.asu.stratego.game.pieces.Piece;
 import edu.asu.stratego.game.pieces.PieceColor;
 import edu.asu.stratego.game.pieces.PieceType;
-import edu.asu.stratego.game.gameRules.GameRules;
 import edu.asu.stratego.util.CoordinateUtils;
+import services.GameService;
 import services.PlayerService;
-import edu.asu.stratego.game.pieces.Piece;
 
 /**
  * Task to manage a Stratego game between two clients.
@@ -46,6 +49,10 @@ public class ServerGameManager implements Runnable {
     private Socket socketTwo;
 
     private volatile boolean gameAbandoned = false;
+
+    private boolean gameSaved = false;
+
+    private LocalDateTime startTime;
 
     RulesFactory rulesFactory = new OriginalRulesFactory();
     GameRules gameRules;
@@ -84,6 +91,7 @@ public class ServerGameManager implements Runnable {
         exchangePlayers();
         exchangeSetup();
 
+        this.startTime = LocalDateTime.now();
         playGame();
     }
 
@@ -93,7 +101,6 @@ public class ServerGameManager implements Runnable {
         this.playerTwoFlag = null;
         this.turn = (Math.random() < 0.5) ? PieceColor.RED : PieceColor.BLUE;
         this.move = null;
-        logger.info(session + "Server board has been reset.");
     }
 
     /**
@@ -280,6 +287,7 @@ public class ServerGameManager implements Runnable {
         } catch (IOException e) {
             logger.log(Level.SEVERE, session + "Error sending abandon status", e);
         } finally {
+            saveGameResult(status);
             resetServerBoard();
             closeConnections();
         }
@@ -393,6 +401,7 @@ public class ServerGameManager implements Runnable {
                 // If game is over, update points and send final status
                 if (winCondition != GameStatus.IN_PROGRESS) {
                     updatePlayerPoints(winCondition);
+                    saveGameResult(winCondition);
                     sendMoveToPlayers(moveToPlayerOne, moveToPlayerTwo, winCondition);
                     break;
                 }
@@ -565,5 +574,53 @@ public class ServerGameManager implements Runnable {
         toPlayerOne.writeObject(winCondition);
         toPlayerTwo.writeObject(winCondition);
     }
+
+    private void saveGameResult(GameStatus status) {
+        if (gameSaved) return;
+        gameSaved = true;
+
+        System.out.println("[DEBUG] Guardando partida desde el servidor...");
+
+        GameService gameService = new GameService();
+        PlayerService playerService = new PlayerService();
+
+        models.Player dbPlayerOne = playerService.findByEmail(playerOne.getEmail());
+        models.Player dbPlayerTwo = playerService.findByEmail(playerTwo.getEmail());
+
+        models.Game game = new models.Game();
+        game.setStartTime(this.startTime);
+        game.setEndTime(java.time.LocalDateTime.now());
+        game.setFinished(true);
+        game.setWasAbandoned(status == GameStatus.RED_DISCONNECTED || status == GameStatus.BLUE_DISCONNECTED);
+
+        if (!game.isWasAbandoned()) {
+            PieceColor winnerColor = switch (status) {
+                case RED_NO_MOVES, RED_CAPTURED -> PieceColor.BLUE;
+                case BLUE_NO_MOVES, BLUE_CAPTURED -> PieceColor.RED;
+                default -> null;
+            };
+
+            if (winnerColor != null) {
+                game.setWinner(playerOne.getColor() == winnerColor ? dbPlayerOne : dbPlayerTwo);
+            }
+        }
+
+        models.GamePlayer gp1 = new models.GamePlayer();
+        gp1.setPlayer(dbPlayerOne);
+        gp1.setRedTeam(playerOne.getColor() == PieceColor.RED);
+        gp1.setGame(game);
+
+        models.GamePlayer gp2 = new models.GamePlayer();
+        gp2.setPlayer(dbPlayerTwo);
+        gp2.setRedTeam(playerTwo.getColor() == PieceColor.RED);
+        gp2.setGame(game);
+
+        game.getGamePlayers().add(gp1);
+        game.getGamePlayers().add(gp2);
+
+        gameService.saveGame(game);
+        System.out.println("[DEBUG] Partida guardada con éxito.");
+    }
+
 
 }

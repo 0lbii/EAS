@@ -1,11 +1,8 @@
 package edu.asu.stratego.game;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.time.LocalDateTime;
 
 import edu.asu.stratego.game.board.ClientSquare;
 import edu.asu.stratego.game.pieces.Piece;
@@ -16,26 +13,17 @@ import edu.asu.stratego.gui.ClientStage;
 import edu.asu.stratego.gui.ConnectionScene;
 import edu.asu.stratego.gui.board.BoardTurnIndicator;
 import edu.asu.stratego.media.ImageConstants;
-import edu.asu.stratego.media.PlaySound;
 import edu.asu.stratego.util.AlertUtils;
 import edu.asu.stratego.util.HashTables;
-import edu.asu.stratego.util.HashTables.SoundType;
-
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.util.Duration;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
-
-import models.GamePlayer;
-
-import services.GamePlayerService;
-import services.GameService;
-import services.PlayerService;
+import javafx.util.Duration;
 
 /**
  * Task to handle the Stratego game on the client-side.
@@ -200,10 +188,6 @@ public class ClientGameManager implements Runnable {
             if (GameStateManager.wasGameAbandoned()) {
                 clearLocalBoard();
             }
-
-            GameDatabaseManager.saveGameToDatabase(
-                    GameStateManager.isCurrentPlayerWinner(),
-                    GameStateManager.wasGameAbandoned());
 
             AlertUtils.showGameEndAlert(
                     "Fin de la partida",

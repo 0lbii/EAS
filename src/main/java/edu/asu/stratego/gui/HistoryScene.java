@@ -1,5 +1,10 @@
 package edu.asu.stratego.gui;
 
+import java.time.Duration;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.List;
+
 import edu.asu.stratego.game.Game;
 import edu.asu.stratego.game.ResourceBundleManager;
 import edu.asu.stratego.languages.LanguageObservable;
@@ -21,20 +26,15 @@ import models.Player;
 import services.GameService;
 import services.PlayerService;
 
-import java.time.Duration;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.List;
-
 public class HistoryScene implements LanguageObserver {
 
-    private Scene scene;
-    private VBox gamesContainer = new VBox(15);
-    private Label titleLabel = new Label();
-    private Button backButton = new Button();
+    private final Scene scene;
+    private final VBox gamesContainer = new VBox(15);
+    private final Label titleLabel = new Label();
+    private final Button backButton = new Button();
 
-    private Button prevButton = new Button("« " + ResourceBundleManager.get("history.previous"));
-    private Button nextButton = new Button(ResourceBundleManager.get("history.next") + " »");
+    private final Button prevButton = new Button("« " + ResourceBundleManager.get("history.previous"));
+    private final Button nextButton = new Button(ResourceBundleManager.get("history.next") + " »");
 
     private static final int SIDE = ClientStage.getSide();
 
@@ -43,7 +43,7 @@ public class HistoryScene implements LanguageObserver {
     private static final int PAGE_SIZE = 4;
 
     public HistoryScene(Runnable onBack) {
-        LanguageObservable.addObserver(this);
+        Platform.runLater(() -> LanguageObservable.addObserver(this));
 
         titleLabel.setStyle("-fx-font-size: 24px; -fx-text-fill: white; -fx-font-weight: bold;");
         backButton.setStyle("-fx-font-size: 18px; -fx-pref-width: 220px; -fx-pref-height: 45px;");
@@ -90,14 +90,11 @@ public class HistoryScene implements LanguageObserver {
             }
         });
 
-        updateTexts();
+        Platform.runLater(this::updateTexts);
         loadGamesHistory();
     }
 
-    public void onLanguageChanged() {
-        updateTexts();
-    }
-
+    @Override
     public void updateTexts() {
         titleLabel.setText(ResourceBundleManager.get("menu.history"));
         backButton.setText(ResourceBundleManager.get("menu.back"));
