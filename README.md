@@ -4,9 +4,10 @@
 
 ---
 
-> **Stratego** is a strategy board game for two players on a board of 10×10 squares. Each player controls 40 pieces representing individual officer ranks in an army. The objective of the game is to find and capture the opponent's *Flag*, or to capture so many enemy pieces that the opponent cannot make any further moves. *Stratego* has simple enough rules for young children to play, but a depth of strategy that is also appealing to adults.
+> **Stratego** is a strategy board game for two players on a board of 10×10 squares. Each player controls 40 pieces representing individual officer ranks in an army. The objective of the game is to find and capture the opponent's *Flag*, or to capture so many enemy pieces that the opponent cannot make any further moves. *Stratego* has simple enough rules for young children to play, but a depth of strategy that is also appealing to adults
 
 ---
+
 
 ## 👩‍👩‍👦‍👦 TEAM MEMBERS
 
@@ -75,7 +76,7 @@
 | <img src="https://github.com/user-attachments/assets/b0cfbe2e-6459-475d-bad6-265b72132861" width="500"/> | Menu | Main navigation screen to access all game options |
 | <img src="https://github.com/user-attachments/assets/6bf8d387-598d-46dd-b6b5-175e4ed5dbc1" width="500"/> | Set Up Game | Screen to configure and start a new game |
 | <img src="https://github.com/user-attachments/assets/ecc3d227-98b4-4da5-95bc-2b79a7815dec" width="500"/> | Game | Main gameplay screen where the match takes place |
-| <img src="https://github.com/user-attachments/assets/259f23b9-d458-4f7c-85dd-19e8fea72839" width="500"/> | Game History | Displays a list of previously played games |
+| <img src="https://github.com/user-attachments/assets/812282af-4a03-44ab-9219-7e012d7c9792" width="500"/> | Game History | Displays a list of previously played games |
 | <img src="https://github.com/user-attachments/assets/90e15061-6c36-435c-bfd8-1330234c36ce" width="500"/> | Profile | Shows user profile information |
 | <img src="https://github.com/user-attachments/assets/f71e4476-1914-4cc6-ba62-ec2082e9cc38" width="500"/> | Ranking | Shows the leaderboard with player scores and positions |
 | <img src="https://github.com/user-attachments/assets/15c92215-eaa6-4e3c-9018-82eb1f90eb45" width="500"/> | Settings | Screen to change game settings and preferences |
