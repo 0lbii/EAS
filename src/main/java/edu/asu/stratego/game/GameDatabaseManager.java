@@ -1,8 +1,6 @@
 package edu.asu.stratego.game;
 
 import java.time.LocalDateTime;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import models.GamePlayer;
 import services.GamePlayerService;
@@ -11,7 +9,6 @@ import services.PlayerService;
 import edu.asu.stratego.game.pieces.PieceColor;
 
 public class GameDatabaseManager {
-    private static final Logger logger = Logger.getLogger(GameDatabaseManager.class.getName());
 
     public static void saveGameToDatabase(boolean isWinner, boolean wasAbandoned) {
         try {
@@ -24,7 +21,6 @@ public class GameDatabaseManager {
             models.Player opponentPlayer = playerService.findByNickname(Game.getOpponent().getNickname());
 
             if (currentPlayer == null || opponentPlayer == null) {
-                logger.warning("No se pudo encontrar uno o ambos jugadores en la BD");
                 return;
             }
 
@@ -53,7 +49,6 @@ public class GameDatabaseManager {
             gamePlayerService.saveGamePlayer(currentGP);
             gamePlayerService.saveGamePlayer(opponentGP);
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error al guardar partida en BD", e);
         }
     }
 }

@@ -20,21 +20,28 @@ public class ExitScene implements LanguageObserver {
     private final Label goodbyeLabel = new Label();
     private final Label userLabel = new Label();
     private final Button exitButton = new Button();
+    private final Button backButton = new Button();
 
-    public ExitScene() {
+    public ExitScene(Runnable onBackAction) {
         Platform.runLater(() -> LanguageObservable.addObserver(this));
 
         // Style
         goodbyeLabel.setStyle("-fx-font-size: 24px; -fx-text-fill: white; -fx-font-weight: bold;");
         userLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: white;");
         exitButton.setStyle("-fx-font-size: 18px; -fx-pref-width: 220px; -fx-pref-height: 45px;");
+        backButton.setStyle("-fx-font-size: 18px; -fx-pref-width: 220px; -fx-pref-height: 45px;");
 
-        exitButton.setOnAction(e -> Platform.exit());
+        exitButton.setOnAction(e -> {
+            Platform.exit();
+            System.exit(0);
+        });
+
+        backButton.setOnAction(e -> onBackAction.run());
 
         Platform.runLater(this::updateTexts);
 
         // Layout
-        VBox exitBox = new VBox(20, goodbyeLabel, userLabel, exitButton);
+        VBox exitBox = new VBox(20, goodbyeLabel, userLabel, exitButton, backButton);
         exitBox.setAlignment(Pos.CENTER);
 
         ImageView backgroundImage = new ImageView(ImageConstants.MAIN_MENU);
@@ -52,6 +59,7 @@ public class ExitScene implements LanguageObserver {
         goodbyeLabel.setText(ResourceBundleManager.get("exit.goodbye"));
         userLabel.setText(Game.getPlayer().getNickname());
         exitButton.setText(ResourceBundleManager.get("exit.exitnow"));
+        backButton.setText(ResourceBundleManager.get("menu.back"));
     }
 
     public Scene getScene() {

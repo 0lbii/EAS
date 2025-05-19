@@ -1,14 +1,12 @@
 package edu.asu.stratego.game;
 
 import java.time.LocalDateTime;
-import java.util.logging.Logger;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import edu.asu.stratego.game.pieces.PieceColor;
 
 public class GameStateManager {
-    private static final Logger logger = Logger.getLogger(GameStateManager.class.getName());
 
     public static void initializeGameState(ObjectInputStream fromServer, ObjectOutputStream toServer)
             throws IOException, ClassNotFoundException {
@@ -58,18 +56,18 @@ public class GameStateManager {
     }
 
     public static String getEndGameMessage() {
-        String message = "";
+        String messageKey = "";
 
         if (Game.getStatus() == GameStatus.RED_CAPTURED || Game.getStatus() == GameStatus.RED_NO_MOVES) {
-            message = (Game.getPlayer().getColor() == PieceColor.BLUE) ? "¡Has ganado!" : "Has perdido";
+            messageKey = (Game.getPlayer().getColor() == PieceColor.BLUE) ? "game.end.you_win" : "game.end.you_lose";
         } else if (Game.getStatus() == GameStatus.BLUE_CAPTURED || Game.getStatus() == GameStatus.BLUE_NO_MOVES) {
-            message = (Game.getPlayer().getColor() == PieceColor.RED) ? "¡Has ganado!" : "Has perdido";
+            messageKey = (Game.getPlayer().getColor() == PieceColor.RED) ? "game.end.you_win" : "game.end.you_lose";
         } else if (Game.getStatus() == GameStatus.RED_DISCONNECTED
                 || Game.getStatus() == GameStatus.BLUE_DISCONNECTED) {
-            message = "El oponente ha abandonado la partida";
+            messageKey = "game.end.opponent_disconnected";
         }
 
-        return message;
+        return ResourceBundleManager.get(messageKey);
     }
 
     public static boolean isCurrentPlayerWinner() {

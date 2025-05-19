@@ -1,8 +1,6 @@
 package edu.asu.stratego.game;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import edu.asu.stratego.game.board.ClientSquare;
 import edu.asu.stratego.game.pieces.Piece;
@@ -29,8 +27,6 @@ import javafx.util.Duration;
  * Task to handle the Stratego game on the client-side.
  */
 public class ClientGameManager implements Runnable {
-
-    private static final Logger logger = Logger.getLogger(ClientGameManager.class.getName());
 
     private static final Object setupPieces = new Object();
     private static final Object sendMove = new Object();
@@ -136,7 +132,6 @@ public class ClientGameManager implements Runnable {
                     }
                 });
             } catch (InterruptedException | IOException | ClassNotFoundException e) {
-                logger.log(Level.SEVERE, "Error occurred while setting up the board", e);
                 Platform.runLater(() -> {
                     AlertUtils.showRetryAlert(
                             "Configuration problem",
@@ -159,7 +154,6 @@ public class ClientGameManager implements Runnable {
             try {
                 handleTurn();
                 if (GameStateManager.wasGameAbandoned() || Game.getMove() == null) {
-                    logger.info("Game was abandoned, returning to main menu");
                     handleGameEnd();
                     return;
                 }
@@ -190,9 +184,9 @@ public class ClientGameManager implements Runnable {
             }
 
             AlertUtils.showGameEndAlert(
-                    "Fin de la partida",
+                    ResourceBundleManager.get("game.end.title"),
                     message,
-                    "¿Quieres jugar otra partida?",
+                    ResourceBundleManager.get("game.end.prompt"),
                     () -> {
                         connectionManager.closeConnection();
                         GameStateManager.resetGameState();
@@ -233,7 +227,6 @@ public class ClientGameManager implements Runnable {
                     try {
                         connectionManager.sendAbandonSignal();
                     } catch (IOException ex) {
-                        logger.log(Level.SEVERE, "Error sending abandon signal", ex);
                     }
                     Platform.runLater(() -> sceneController.showMainMenu());
                 });
@@ -242,7 +235,6 @@ public class ClientGameManager implements Runnable {
                 StackPane.setMargin(abandonButton, new Insets(10, 10, 0, 0));
                 root.getChildren().add(abandonButton);
             } catch (Exception e) {
-                logger.log(Level.SEVERE, "Error adding abandon button", e);
             }
         });
     }

@@ -3,11 +3,8 @@ package edu.asu.stratego.game;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class GameConnectionManager {
-    private static final Logger logger = Logger.getLogger(GameConnectionManager.class.getName());
 
     private ObjectOutputStream toServer;
     private ObjectInputStream fromServer;
@@ -40,7 +37,6 @@ public class GameConnectionManager {
             }
             ClientSocket.getInstance().close();
         } catch (IOException e) {
-            logger.log(Level.WARNING, "Error closing connection", e);
         }
     }
 

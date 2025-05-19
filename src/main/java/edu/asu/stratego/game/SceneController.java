@@ -108,13 +108,17 @@ public class SceneController {
     }
 
     /**
-     * Displays the exit scene, allowing the user to exit the application
+     * Displays the exit scene, allowing the user to exit the application or return
+     * to menu
      */
     private void showExitScreen() {
         Platform.runLater(() -> {
-            ExitScene exitScene = new ExitScene();
+            ExitScene exitScene = new ExitScene(() -> {
+                // Lógica para volver al menú principal
+                showMainMenu();
+            });
             stage.setScene(exitScene.getScene());
         });
     }
-    
+
 }

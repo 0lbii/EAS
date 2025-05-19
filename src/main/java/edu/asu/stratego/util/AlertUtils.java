@@ -2,6 +2,7 @@ package edu.asu.stratego.util;
 
 import java.util.Optional;
 
+import edu.asu.stratego.game.ResourceBundleManager;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
@@ -76,8 +77,12 @@ public class AlertUtils {
             alert.setHeaderText(header);
             alert.setContentText(content);
 
-            ButtonType playAgainButton = new ButtonType("Jugar otra vez", ButtonData.YES);
-            ButtonType exitButton = new ButtonType("Salir", ButtonData.NO);
+            ButtonType playAgainButton = new ButtonType(
+                    ResourceBundleManager.get("game.end.play_again"),
+                    ButtonData.YES);
+            ButtonType exitButton = new ButtonType(
+                    ResourceBundleManager.get("game.end.exit"),
+                    ButtonData.NO);
 
             alert.getButtonTypes().setAll(playAgainButton, exitButton);
 

@@ -6,8 +6,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.time.LocalDateTime;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import edu.asu.stratego.game.board.ServerBoard;
 import edu.asu.stratego.game.gameRules.GameRules;
@@ -24,8 +22,6 @@ import services.PlayerService;
  * Task to manage a Stratego game between two clients.
  */
 public class ServerGameManager implements Runnable {
-
-    private static final Logger logger = Logger.getLogger(ServerGameManager.class.getName());
 
     private final String session;
 
@@ -120,32 +116,22 @@ public class ServerGameManager implements Runnable {
             if (toPlayerOne == null) {
                 toPlayerOne = new ObjectOutputStream(socketOne.getOutputStream());
                 toPlayerOne.flush();
-            } else {
-                logger.warning(session + "ObjectOutputStream for Player One already exists.");
             }
 
             if (fromPlayerOne == null) {
                 fromPlayerOne = new ObjectInputStream(socketOne.getInputStream());
-            } else {
             }
 
             if (toPlayerTwo == null) {
                 toPlayerTwo = new ObjectOutputStream(socketTwo.getOutputStream());
                 toPlayerTwo.flush();
-            } else {
-                logger.warning(session + "ObjectOutputStream for Player Two already exists.");
             }
 
             if (fromPlayerTwo == null) {
                 fromPlayerTwo = new ObjectInputStream(socketTwo.getInputStream());
-            } else {
-                logger.warning(session + "ObjectInputStream for Player Two already exists.");
             }
 
-            logger.info(session + "Streams successfully created.");
-
         } catch (IOException e) {
-            logger.log(Level.SEVERE, session + "Error establishing communication streams.", e);
             closeConnections();
             Thread.currentThread().interrupt();
         }
@@ -169,7 +155,6 @@ public class ServerGameManager implements Runnable {
             if (socketTwo != null)
                 socketTwo.close();
         } catch (IOException e) {
-            logger.log(Level.SEVERE, session + "Error while closing connections.", e);
         }
     }
 
@@ -181,7 +166,6 @@ public class ServerGameManager implements Runnable {
     private void exchangePlayers() {
         try {
             if (fromPlayerOne == null || fromPlayerTwo == null) {
-                logger.log(Level.SEVERE, "Input streams are null. Cannot exchange players.");
                 return;
             }
 
@@ -198,10 +182,7 @@ public class ServerGameManager implements Runnable {
 
             toPlayerOne.writeObject(playerTwo);
             toPlayerTwo.writeObject(playerOne);
-        } catch (ClassNotFoundException e) {
-            logger.log(Level.SEVERE, session + "Error receiving player information: Class not found.", e);
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, session + "Error in I/O communication with players.", e);
+        } catch (ClassNotFoundException | IOException e) {
         }
     }
 
@@ -213,14 +194,12 @@ public class ServerGameManager implements Runnable {
     private void exchangeSetup() {
         try {
             if (fromPlayerOne == null || fromPlayerTwo == null) {
-                logger.log(Level.SEVERE, session + "Error during setup exchange: Streams are null.");
                 return;
             }
             SetupBoard setupBoardOne = (SetupBoard) fromPlayerOne.readObject();
             SetupBoard setupBoardTwo = (SetupBoard) fromPlayerTwo.readObject();
 
             if (setupBoardOne == null || setupBoardTwo == null) {
-                logger.log(Level.SEVERE, session + "Error during setup exchange: Setup boards are null.");
                 return;
             }
 
@@ -257,7 +236,6 @@ public class ServerGameManager implements Runnable {
             toPlayerOne.writeObject(winCondition);
             toPlayerTwo.writeObject(winCondition);
         } catch (ClassNotFoundException | IOException e) {
-            logger.log(Level.SEVERE, session + "Error during setup exchange.", e);
         }
     }
 
@@ -285,7 +263,6 @@ public class ServerGameManager implements Runnable {
             toPlayerTwo.flush();
 
         } catch (IOException e) {
-            logger.log(Level.SEVERE, session + "Error sending abandon status", e);
         } finally {
             saveGameResult(status);
             resetServerBoard();
@@ -329,7 +306,6 @@ public class ServerGameManager implements Runnable {
                     break;
 
                 default:
-                    logger.warning(session + "Unknown win condition: " + winCondition);
                     return;
             }
 
@@ -347,20 +323,7 @@ public class ServerGameManager implements Runnable {
             winner.setPoints(winner.getPoints() + pointsToAdd);
             service.savePlayer(winner);
 
-            logger.info(session + String.format(
-                    "Awarded %d points to %s winner: %s (Color: %s)",
-                    pointsToAdd,
-                    winnerColor,
-                    winner.getEmail(),
-                    winnerColor));
-
-            logger.info(session + String.format(
-                    "Loser: %s (Color: %s)",
-                    loser.getEmail(),
-                    loserColor));
-
         } catch (Exception e) {
-            logger.log(Level.SEVERE, session + "Error updating player points", e);
         }
     }
 
@@ -413,7 +376,6 @@ public class ServerGameManager implements Runnable {
                 turn = (turn == PieceColor.RED) ? PieceColor.BLUE : PieceColor.RED;
 
             } catch (IOException | ClassNotFoundException e) {
-                logger.log(Level.SEVERE, session + "Error occurred during network I/O", e);
                 // If there's an IO error, treat it as abandonment
                 abandonGame(GameStatus.DISCONNECTED);
                 return;
@@ -576,10 +538,9 @@ public class ServerGameManager implements Runnable {
     }
 
     private void saveGameResult(GameStatus status) {
-        if (gameSaved) return;
+        if (gameSaved)
+            return;
         gameSaved = true;
-
-        System.out.println("[DEBUG] Guardando partida desde el servidor...");
 
         GameService gameService = new GameService();
         PlayerService playerService = new PlayerService();
@@ -619,8 +580,6 @@ public class ServerGameManager implements Runnable {
         game.getGamePlayers().add(gp2);
 
         gameService.saveGame(game);
-        System.out.println("[DEBUG] Partida guardada con éxito.");
     }
-
 
 }
