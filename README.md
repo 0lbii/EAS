@@ -71,14 +71,14 @@
 ## 📺 SCREENS
 | Screen image | Screen name | Screen description |
 |:------------:|:-----------:|:------------------:|
-| <img src="https://github.com/user-attachments/assets/61731811-330f-40fa-b2f7-836c1ccbb7fe" width="500"/> | Login | This screen is used by users to login using their credentials |
-| <img src="https://github.com/user-attachments/assets/140962c2-d3ec-4e57-9fbe-13be0f4cc2b9" width="500"/> | Register | This screen allows users to create a new account |
-| <img src="https://github.com/user-attachments/assets/b0cfbe2e-6459-475d-bad6-265b72132861" width="500"/> | Menu | Main navigation screen to access all game options |
-| <img src="https://github.com/user-attachments/assets/6bf8d387-598d-46dd-b6b5-175e4ed5dbc1" width="500"/> | Set Up Game | Screen to configure and start a new game |
-| <img src="https://github.com/user-attachments/assets/ecc3d227-98b4-4da5-95bc-2b79a7815dec" width="500"/> | Game | Main gameplay screen where the match takes place |
-| <img src="https://github.com/user-attachments/assets/812282af-4a03-44ab-9219-7e012d7c9792" width="500"/> | Game History | Displays a list of previously played games |
-| <img src="https://github.com/user-attachments/assets/90e15061-6c36-435c-bfd8-1330234c36ce" width="500"/> | Profile | Shows user profile information |
-| <img src="https://github.com/user-attachments/assets/f71e4476-1914-4cc6-ba62-ec2082e9cc38" width="500"/> | Ranking | Shows the leaderboard with player scores and positions |
-| <img src="https://github.com/user-attachments/assets/15c92215-eaa6-4e3c-9018-82eb1f90eb45" width="500"/> | Settings | Screen to change game settings and preferences |
-| <img src="https://github.com/user-attachments/assets/b170ab39-af92-4d22-ba4d-b975625a3517" width="500"/> | Edit profile | Screen where users can edit their personal data |
-| <img src="https://github.com/user-attachments/assets/4ec62961-0b90-409a-aed2-7a85fa12ee33" width="500"/> | Log out | Allows users to securely log out of the app |
+| <img src="src/main/resources/readme-images/login.png" width="500"/> | Login | This screen is used by users to login using their credentials |
+| <img src="src/main/resources/readme-images/register.png" width="500"/> | Register | This screen allows users to create a new account |
+| <img src="src/main/resources/readme-images/menu.png" width="500"/> | Menu | Main navigation screen to access all game options |
+| <img src="src/main/resources/readme-images/setUpGame.png" width="500"/> | Set Up Game | Screen to configure and start a new game |
+| <img src="src/main/resources/readme-images/game.png" width="500"/> | Game | Main gameplay screen where the match takes place |
+| <img src="src/main/resources/readme-images/gameHistory.jpg" width="500"/> | Game History | Displays a list of previously played games |
+| <img src="src/main/resources/readme-images/profile.png" width="500"/> | Profile | Shows user profile information |
+| <img src="src/main/resources/readme-images/ranking.png" width="500"/> | Ranking | Shows the leaderboard with player scores and positions |
+| <img src="src/main/resources/readme-images/settings.png" width="500"/> | Settings | Screen to change game settings and preferences |
+| <img src="src/main/resources/readme-images/editProfile.png" width="500"/> | Edit profile | Screen where users can edit their personal data |
+| <img src="src/main/resources/readme-images/logOut.png" width="500"/> | Log out | Allows users to securely log out of the app |
